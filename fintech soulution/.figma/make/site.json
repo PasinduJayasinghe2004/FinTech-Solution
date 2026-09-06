@@ -1,5 +1,6 @@
 {
-  "description": "Enables users to quickly initiate and manage tasks or projects with an intuitive interface designed for efficient collaboration and productivity.",
+  "title": "TuitionPay",
+  "description": "Smart Fee & Student Management Platform for Private Tutors and Tuition Classes.",
   "robots": {
     "index": false
   },
