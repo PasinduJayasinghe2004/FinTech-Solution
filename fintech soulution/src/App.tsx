@@ -11,12 +11,29 @@ import Notifications from './components/Notifications';
 import CTA from './components/CTA';
 import Footer from './components/Footer';
 import LoginPage from './components/LoginPage';
+import StudentDashboard from './components/StudentDashboard';
 
 export default function App() {
-  const [view, setView] = useState<'home' | 'login'>('home');
+  const [view, setView] = useState<'home' | 'login' | 'student_dashboard'>('home');
 
   if (view === 'login') {
-    return <LoginPage onBackToHome={() => setView('home')} />;
+    return (
+      <LoginPage 
+        onBackToHome={() => setView('home')} 
+        onLoginSuccess={(role) => {
+          if (role === 'student') {
+            setView('student_dashboard');
+          } else {
+            alert('Teacher Dashboard logged in successfully!');
+            setView('home');
+          }
+        }}
+      />
+    );
+  }
+
+  if (view === 'student_dashboard') {
+    return <StudentDashboard onLogout={() => setView('home')} />;
   }
 
   return (
@@ -37,4 +54,5 @@ export default function App() {
     </div>
   );
 }
+
 

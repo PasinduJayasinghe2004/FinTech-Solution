@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 
 interface LoginPageProps {
   onBackToHome?: () => void;
+  onLoginSuccess?: (role: 'student' | 'teacher') => void;
 }
 
-export default function LoginPage({ onBackToHome }: LoginPageProps) {
+export default function LoginPage({ onBackToHome, onLoginSuccess }: LoginPageProps) {
   const [role, setRole] = useState<'student' | 'teacher'>('student');
   const [idOrEmail, setIdOrEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -13,7 +14,11 @@ export default function LoginPage({ onBackToHome }: LoginPageProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert(`Logging in as ${role === 'student' ? 'Student (' + (idOrEmail || 'STU-001') + ')' : 'Teacher (' + (idOrEmail || 'teacher@tuitionpay.com') + ')'}`);
+    if (onLoginSuccess) {
+      onLoginSuccess(role);
+    } else {
+      alert(`Logging in as ${role === 'student' ? 'Student (' + (idOrEmail || 'STU-001') + ')' : 'Teacher (' + (idOrEmail || 'teacher@tuitionpay.com') + ')'}`);
+    }
   };
 
   return (
