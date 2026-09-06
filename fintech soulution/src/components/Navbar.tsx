@@ -3,7 +3,11 @@ import { MenuIcon, CloseIcon } from './Icons';
 
 const navLinks = ['Home', 'Features', 'How It Works', 'Pricing', 'About Us'];
 
-export default function Navbar() {
+interface NavbarProps {
+  onLoginClick?: () => void;
+}
+
+export default function Navbar({ onLoginClick }: NavbarProps) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -44,15 +48,18 @@ export default function Navbar() {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-3">
-            <a href="#" className="text-slate-700 hover:text-blue-700 text-sm font-medium transition-colors px-3 py-1.5">
+            <button 
+              onClick={onLoginClick}
+              className="text-slate-700 hover:text-blue-700 text-sm font-medium transition-colors px-3 py-1.5 cursor-pointer"
+            >
               Login
-            </a>
-            <a
-              href="#"
-              className="bg-blue-700 hover:bg-blue-800 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors shadow-sm"
+            </button>
+            <button
+              onClick={onLoginClick}
+              className="bg-blue-700 hover:bg-blue-800 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors shadow-sm cursor-pointer"
             >
               Get Started
-            </a>
+            </button>
           </div>
 
           {/* Mobile toggle */}
@@ -76,18 +83,18 @@ export default function Navbar() {
             ))}
           </div>
           <div className="flex gap-3 pt-4 border-t border-slate-100">
-            <a
-              href="#"
-              className="flex-1 text-center border border-blue-200 text-blue-700 text-sm font-semibold py-2.5 rounded-lg hover:bg-blue-50 transition-colors"
+            <button
+              onClick={() => { setOpen(false); onLoginClick?.(); }}
+              className="flex-1 text-center border border-blue-200 text-blue-700 text-sm font-semibold py-2.5 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer"
             >
               Login
-            </a>
-            <a
-              href="#"
-              className="flex-1 text-center bg-blue-700 text-white text-sm font-semibold py-2.5 rounded-lg hover:bg-blue-800 transition-colors"
+            </button>
+            <button
+              onClick={() => { setOpen(false); onLoginClick?.(); }}
+              className="flex-1 text-center bg-blue-700 text-white text-sm font-semibold py-2.5 rounded-lg hover:bg-blue-800 transition-colors cursor-pointer"
             >
               Get Started
-            </a>
+            </button>
           </div>
         </div>
       )}
