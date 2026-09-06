@@ -1,0 +1,10 @@
+{
+  "description": "Enables users to quickly initiate and manage tasks or projects with an intuitive interface designed for efficient collaboration and productivity.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
