@@ -71,11 +71,11 @@ export default function Footer() {
             &copy; 2026 TuitionPay. All rights reserved.
           </p>
           <div className="flex items-center gap-1">
-            <span className="text-xs text-slate-500">Made with</span>
+            <span className="text-xs text-slate-500">Develop By</span>
             <svg className="w-3.5 h-3.5 text-red-400 fill-current" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
             </svg>
-            <span className="text-xs text-slate-500">for teachers</span>
+            <span className="text-xs text-slate-500">Pasindu Jayasinghe</span>
           </div>
         </div>
       </div>
