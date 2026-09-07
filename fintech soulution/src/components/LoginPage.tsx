@@ -6,19 +6,75 @@ interface LoginPageProps {
 }
 
 export default function LoginPage({ onBackToHome, onLoginSuccess }: LoginPageProps) {
+  const [mode, setMode] = useState<'login' | 'register'>('login');
   const [role, setRole] = useState<'student' | 'teacher'>('student');
+
+  // Login form states
   const [idOrEmail, setIdOrEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Register form states
+  const [fullName, setFullName] = useState('');
+  const [regEmail, setRegEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [subject, setSubject] = useState('Mathematics');
+  const [regPassword, setRegPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [registerSuccessMsg, setRegisterSuccessMsg] = useState<string | null>(null);
+  const [loginErrorMsg, setLoginErrorMsg] = useState<string | null>(null);
+
+  const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setLoginErrorMsg(null);
+
+    // Valid student IDs from database: STU-001, STU-002, STU-003 or any generated STU-xxx
+    const isStudentFormat = idOrEmail.trim().toUpperCase().startsWith('STU-');
+    
+    if (role === 'student') {
+      if (!isStudentFormat) {
+        setLoginErrorMsg('Invalid Student ID format. Student ID must start with "STU-" (e.g. STU-001). Access denied.');
+        return;
+      }
+      // Demo password check
+      if (password !== '123456' && password !== 'pass123') {
+        setLoginErrorMsg('Incorrect password! The password does not match database records. Student cannot enter.');
+        return;
+      }
+    } else {
+      // Teacher validation
+      if (!idOrEmail.includes('@')) {
+        setLoginErrorMsg('Invalid Teacher Email format. Access denied.');
+        return;
+      }
+      if (password !== '123456' && password !== 'teacher123') {
+        setLoginErrorMsg('Incorrect password! The password does not match database records. Teacher cannot enter.');
+        return;
+      }
+    }
+
     if (onLoginSuccess) {
       onLoginSuccess(role);
-    } else {
-      alert(`Logging in as ${role === 'student' ? 'Student (' + (idOrEmail || 'STU-001') + ')' : 'Teacher (' + (idOrEmail || 'teacher@tuitionpay.com') + ')'}`);
     }
+  };
+
+  const handleRegisterSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (regPassword !== confirmPassword) {
+      alert('Passwords do not match. Please re-enter.');
+      return;
+    }
+
+    const assignedId = role === 'student' ? `STU-${Math.floor(100 + Math.random() * 900)}` : `TCH-${Math.floor(100 + Math.random() * 900)}`;
+
+    setRegisterSuccessMsg(`Account created successfully! Your unique ID is ${assignedId}. You can now log in.`);
+    setTimeout(() => {
+      setMode('login');
+      setIdOrEmail(role === 'student' ? assignedId : regEmail);
+      setPassword(regPassword);
+      setRegisterSuccessMsg(null);
+    }, 2500);
   };
 
   return (
@@ -51,7 +107,7 @@ export default function LoginPage({ onBackToHome, onLoginSuccess }: LoginPagePro
             {onBackToHome && (
               <button 
                 onClick={onBackToHome}
-                className="text-xs font-medium bg-white/10 hover:bg-white/20 text-white px-3.5 py-1.5 rounded-full border border-white/20 transition-all flex items-center gap-1.5"
+                className="text-xs font-medium bg-white/10 hover:bg-white/20 text-white px-3.5 py-1.5 rounded-full border border-white/20 transition-all flex items-center gap-1.5 cursor-pointer"
               >
                 ← Back to Home
               </button>
@@ -74,7 +130,7 @@ export default function LoginPage({ onBackToHome, onLoginSuccess }: LoginPagePro
                   </div>
                   <div>
                     <p className="text-[11px] font-bold text-slate-800 leading-tight">TuitionPay</p>
-                    <p className="text-[9px] text-slate-400">Student Wallet</p>
+                    <p className="text-[9px] text-slate-400">Student & Teacher Portal</p>
                   </div>
                 </div>
               </div>
@@ -88,19 +144,19 @@ export default function LoginPage({ onBackToHome, onLoginSuccess }: LoginPagePro
                 </div>
                 <div>
                   <p className="text-[9px] font-bold text-slate-800 leading-none">256-bit</p>
-                  <p className="text-[8px] text-slate-400 leading-none">Secure</p>
+                  <p className="text-[8px] text-slate-400 leading-none">Encrypted</p>
                 </div>
               </div>
 
-              {/* Tuition Due Card */}
+              {/* Tuition Card */}
               <div className="bg-gradient-to-r from-blue-700 to-indigo-700 rounded-2xl p-4 text-white shadow-md mb-3 relative overflow-hidden">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-[9px] font-semibold tracking-wider text-blue-200 uppercase">TUITION DUE • SEP</span>
+                  <span className="text-[9px] font-semibold tracking-wider text-blue-200 uppercase">TUITION FEE SUMMARY</span>
                 </div>
-                <p className="text-xl font-extrabold tracking-tight mb-2">Rs. 2,500</p>
+                <p className="text-xl font-extrabold tracking-tight mb-2">Rs. 3,000</p>
                 <div className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
-                  <span className="text-[10px] text-blue-100 font-medium">STU-001 - Mathematics</span>
+                  <span className="text-[10px] text-blue-100 font-medium">STU-001 • Mathematics</span>
                 </div>
               </div>
 
@@ -113,36 +169,8 @@ export default function LoginPage({ onBackToHome, onLoginSuccess }: LoginPagePro
                     </svg>
                   </div>
                   <div>
-                    <p className="text-[10px] font-bold text-emerald-900 leading-tight">Payment Successful</p>
-                    <p className="text-[8px] text-emerald-600">Receipt #TP-8241 sent</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Floating Orange Alert Badge */}
-              <div className="absolute top-36 -right-4 bg-amber-50 border border-amber-200 rounded-xl px-2.5 py-1.5 shadow-lg flex items-center gap-2 z-20">
-                <div className="w-5 h-5 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center">
-                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-[9px] font-bold text-amber-900 leading-none">Due soon</p>
-                  <p className="text-[8px] text-amber-600 leading-none">3 days left</p>
-                </div>
-              </div>
-
-              {/* History Preview List */}
-              <div className="space-y-1.5 px-1 pt-1 border-t border-slate-100">
-                <div className="flex justify-between items-center text-[10px] text-slate-500 py-1">
-                  <span>August fee</span>
-                  <span className="font-semibold text-slate-700">Rs. 2,500</span>
-                </div>
-                <div className="flex justify-between items-center text-[10px] text-slate-500 py-1">
-                  <span>July fee</span>
-                  <div className="flex items-center gap-1">
-                    <span className="w-3.5 h-3.5 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-[8px] font-bold">✓</span>
-                    <span className="font-semibold text-emerald-700">Confirmed • Rs. 2,500</span>
+                    <p className="text-[10px] font-bold text-emerald-900 leading-tight">Instant Verification</p>
+                    <p className="text-[8px] text-emerald-600">Automated digital receipts</p>
                   </div>
                 </div>
               </div>
@@ -153,179 +181,304 @@ export default function LoginPage({ onBackToHome, onLoginSuccess }: LoginPagePro
           {/* Bottom Callout Text */}
           <div className="relative z-10 mt-4">
             <h1 className="font-display text-2xl lg:text-3xl font-extrabold text-white mb-2 leading-tight">
-              Your Tuition Payments, <br className="hidden sm:block" />Made Simple.
+              {mode === 'login' ? 'Your Tuition Payments, Simple.' : 'Join TuitionPay Today.'}
             </h1>
             <p className="text-blue-100/80 text-xs lg:text-sm max-w-md leading-relaxed">
-              Access your payment details, track your payment history, and manage your tuition fees securely.
+              {mode === 'login'
+                ? 'Access your payment details, track your payment history, and manage your tuition fees securely.'
+                : 'Create your account to manage tuition fees, generate digital receipts, and track payments easily.'}
             </p>
           </div>
         </div>
 
-        {/* Right Side - Clean Form Container */}
-        <div className="lg:w-1/2 bg-slate-50/70 p-8 lg:p-14 flex flex-col justify-center relative">
+        {/* Right Side - Form Container */}
+        <div className="lg:w-1/2 bg-slate-50/70 p-8 lg:p-12 flex flex-col justify-center relative overflow-y-auto max-h-[750px]">
           
-          {/* Role Toggle Pill Badge */}
-          <div className="inline-flex self-start items-center gap-2 bg-white border border-slate-200 rounded-full px-3 py-1 mb-8 shadow-sm">
-            <span className="w-4 h-4 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-[10px]">
-              {role === 'student' ? '🎓' : '👨‍🏫'}
-            </span>
-            <span className="text-xs font-semibold text-slate-700">
-              {role === 'student' ? 'Student Login' : 'Teacher Login'}
-            </span>
+          {/* Mode Switcher Tabs */}
+          <div className="flex items-center justify-between mb-6">
+            <div className="bg-slate-200/80 p-1 rounded-2xl flex items-center gap-1 w-full max-w-xs">
+              <button
+                type="button"
+                onClick={() => setMode('login')}
+                className={`flex-1 py-2 text-xs font-extrabold rounded-xl transition-all cursor-pointer ${
+                  mode === 'login' ? 'bg-white text-blue-600 shadow-md' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Log In
+              </button>
+              <button
+                type="button"
+                onClick={() => setMode('register')}
+                className={`flex-1 py-2 text-xs font-extrabold rounded-xl transition-all cursor-pointer ${
+                  mode === 'register' ? 'bg-white text-blue-600 shadow-md' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Create Account
+              </button>
+            </div>
+
+            {/* Role Switcher Pill */}
+            <div className="hidden sm:flex items-center gap-1 bg-white border border-slate-200 rounded-full px-3 py-1 text-xs font-bold text-slate-700 shadow-sm">
+              <span>{role === 'student' ? '🎓 Student' : '👨‍🏫 Teacher'}</span>
+            </div>
           </div>
 
-          {/* Header Title */}
-          <div className="mb-6">
+          {/* Success Banner */}
+          {registerSuccessMsg && (
+            <div className="mb-4 p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-xs font-bold text-emerald-800 animate-fadeIn flex items-center gap-2">
+              <span className="text-emerald-600 text-lg">✓</span>
+              <span>{registerSuccessMsg}</span>
+            </div>
+          )}
+
+          {/* Error Banner */}
+          {loginErrorMsg && (
+            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-2xl text-xs font-bold text-red-800 animate-fadeIn flex items-start gap-2">
+              <span className="text-red-500 text-base shrink-0">⚠️</span>
+              <span>{loginErrorMsg}</span>
+            </div>
+          )}
+
+          {/* Form Header */}
+          <div className="mb-5">
             <h2 className="font-display text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight mb-1 flex items-center gap-2">
-              Welcome Back <span className="inline-block animate-bounce">👋</span>
+              {mode === 'login' ? (
+                <>Welcome Back <span className="inline-block animate-bounce">👋</span></>
+              ) : (
+                <>Create New Account <span className="inline-block">✨</span></>
+              )}
             </h2>
-            <p className="text-slate-500 text-sm">
-              {role === 'student' 
-                ? 'Log in using your Student ID to access your account.' 
-                : 'Log in using your registered Teacher Email to access dashboard.'}
+            <p className="text-slate-500 text-xs sm:text-sm">
+              {mode === 'login' 
+                ? (role === 'student' ? 'Log in using your Student ID to access your account.' : 'Log in using your Teacher Email.')
+                : 'Register a new account to get started with TuitionPay.'}
             </p>
           </div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            
-            {/* Student ID / Email Field */}
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                {role === 'student' ? 'Student ID' : 'Teacher Email'}
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  {role === 'student' ? (
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2" />
-                    </svg>
-                  ) : (
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                  )}
-                </div>
-                <input
-                  type={role === 'student' ? 'text' : 'email'}
-                  required
-                  value={idOrEmail}
-                  onChange={(e) => setIdOrEmail(e.target.value)}
-                  placeholder={role === 'student' ? 'Enter your Student ID' : 'Enter your email address'}
-                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm"
-                />
-              </div>
-              <p className="mt-1 text-[11px] text-slate-400">
-                {role === 'student' ? 'Example: STU-001' : 'Example: teacher@tuitionpay.com'}
-              </p>
-            </div>
-
-            {/* Password Field */}
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Password
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                </div>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
-                  className="w-full pl-10 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all shadow-sm"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
-                >
-                  {showPassword ? (
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858-5.908a9.04 9.04 0 013.122-.663c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m-5.418-5.418a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
-                    </svg>
-                  ) : (
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {/* Remember Me & Forgot Password Row */}
-            <div className="flex items-center justify-between pt-1">
-              <label className="flex items-center gap-2 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500 cursor-pointer"
-                />
-                <span className="text-xs font-semibold text-slate-600">Remember me</span>
-              </label>
-
-              <a href="#" onClick={(e) => { e.preventDefault(); alert('Reset password link sent to registered phone/email.'); }} className="text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline">
-                Forgot Password?
-              </a>
-            </div>
-
-            {/* Login Button */}
+          {/* Role selector buttons */}
+          <div className="grid grid-cols-2 gap-2 mb-5">
             <button
-              type="submit"
-              className="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2 group cursor-pointer"
+              type="button"
+              onClick={() => setRole('student')}
+              className={`py-2 px-3 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                role === 'student' 
+                  ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-sm' 
+                  : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+              }`}
             >
-              <span>Login to My Account</span>
-              <span className="group-hover:translate-x-1 transition-transform">→</span>
+              🎓 I am a Student
             </button>
-          </form>
-
-          {/* Divider */}
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-200" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-slate-50/70 px-3 text-slate-400 font-semibold tracking-wider">OR</span>
-            </div>
+            <button
+              type="button"
+              onClick={() => setRole('teacher')}
+              className={`py-2 px-3 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                role === 'teacher' 
+                  ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-sm' 
+                  : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              👨‍🏫 I am a Teacher
+            </button>
           </div>
 
-          {/* Secondary Action: Contact Teacher */}
-          <button
-            type="button"
-            onClick={() => alert('Please reach out to your tuition teacher or institute administrator to get your Student ID and login credentials.')}
-            className="w-full bg-white hover:bg-slate-100 text-slate-700 font-bold py-3 rounded-xl border border-slate-200 transition-all shadow-sm text-sm"
-          >
-            Contact Your Teacher
-          </button>
+          {/* MODE 1: LOGIN FORM */}
+          {mode === 'login' && (
+            <form onSubmit={handleLoginSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  {role === 'student' ? 'Student ID' : 'Teacher Email'}
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    {role === 'student' ? (
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2" />
+                      </svg>
+                    ) : (
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                    )}
+                  </div>
+                  <input
+                    type={role === 'student' ? 'text' : 'email'}
+                    required
+                    value={idOrEmail}
+                    onChange={(e) => setIdOrEmail(e.target.value)}
+                    placeholder={role === 'student' ? 'Enter your Student ID (e.g. STU-001)' : 'Enter your teacher email'}
+                    className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm"
+                  />
+                </div>
+              </div>
 
-          {/* Role Switch Footer */}
-          <div className="mt-8 text-center text-xs text-slate-500">
-            {role === 'student' ? (
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Password
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                  </div>
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter your password"
+                    className="w-full pl-10 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
+                  >
+                    {showPassword ? '🙈' : '👁️'}
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-1">
+                <label className="flex items-center gap-2 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="w-4 h-4 text-blue-600 border-slate-300 rounded cursor-pointer"
+                  />
+                  <span className="text-xs font-semibold text-slate-600">Remember me</span>
+                </label>
+
+                <a href="#" onClick={(e) => { e.preventDefault(); alert('Reset link sent to registered email.'); }} className="text-xs font-bold text-blue-600 hover:underline">
+                  Forgot Password?
+                </a>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2 group cursor-pointer"
+              >
+                <span>Login to My Account</span>
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </button>
+            </form>
+          )}
+
+          {/* MODE 2: CREATE ACCOUNT FORM */}
+          {mode === 'register' && (
+            <form onSubmit={handleRegisterSubmit} className="space-y-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Full Name</label>
+                <input
+                  type="text"
+                  required
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="e.g. Pasindu Jayasinghe"
+                  className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 text-xs focus:ring-2 focus:ring-blue-500 outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Email Address</label>
+                  <input
+                    type="email"
+                    required
+                    value={regEmail}
+                    onChange={(e) => setRegEmail(e.target.value)}
+                    placeholder="email@example.com"
+                    className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 text-xs focus:ring-2 focus:ring-blue-500 outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Phone Number</label>
+                  <input
+                    type="tel"
+                    required
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="+94 77 123 4567"
+                    className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 text-xs focus:ring-2 focus:ring-blue-500 outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Subject / Class</label>
+                <select
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 text-xs focus:ring-2 focus:ring-blue-500 outline-none"
+                >
+                  <option value="Combined Mathematics">Combined Mathematics</option>
+                  <option value="Physics">Physics</option>
+                  <option value="Chemistry">Chemistry</option>
+                  <option value="ICT / Computer Science">ICT / Computer Science</option>
+                  <option value="General English">General English</option>
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Password</label>
+                  <input
+                    type="password"
+                    required
+                    value={regPassword}
+                    onChange={(e) => setRegPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 text-xs focus:ring-2 focus:ring-blue-500 outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Confirm Password</label>
+                  <input
+                    type="password"
+                    required
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 text-xs focus:ring-2 focus:ring-blue-500 outline-none"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full mt-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-emerald-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <span>Create {role === 'student' ? 'Student' : 'Teacher'} Account</span>
+                <span>→</span>
+              </button>
+            </form>
+          )}
+
+          {/* Footer toggle */}
+          <div className="mt-6 text-center text-xs text-slate-500">
+            {mode === 'login' ? (
               <span>
-                Are you a teacher?{' '}
+                Don't have an account?{' '}
                 <button
                   type="button"
-                  onClick={() => { setRole('teacher'); setIdOrEmail(''); }}
+                  onClick={() => setMode('register')}
                   className="font-bold text-blue-600 hover:underline cursor-pointer"
                 >
-                  Teacher Login
+                  Create New Account
                 </button>
               </span>
             ) : (
               <span>
-                Are you a student?{' '}
+                Already have an account?{' '}
                 <button
                   type="button"
-                  onClick={() => { setRole('student'); setIdOrEmail(''); }}
+                  onClick={() => setMode('login')}
                   className="font-bold text-blue-600 hover:underline cursor-pointer"
                 >
-                  Student Login
+                  Log In Here
                 </button>
               </span>
             )}

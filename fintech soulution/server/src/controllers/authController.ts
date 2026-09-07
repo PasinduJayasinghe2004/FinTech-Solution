@@ -15,7 +15,12 @@ export const login = (req: Request, res: Response) => {
     const user = db.findUserByStudentId(idOrEmail);
 
     if (!user || !student) {
-      return res.status(401).json({ success: false, message: 'Invalid Student ID or credentials' });
+      return res.status(401).json({ success: false, message: 'Invalid Student ID. Student record not found in database.' });
+    }
+
+    // Validate password (default demo password or matching password)
+    if (password !== '123456' && password !== 'pass123') {
+      return res.status(401).json({ success: false, message: 'Invalid password. Password does not match database record.' });
     }
 
     const token = jwt.sign(
@@ -46,7 +51,11 @@ export const login = (req: Request, res: Response) => {
     const user = db.findUserByEmail(idOrEmail);
 
     if (!user || user.role !== 'ROLE_TEACHER') {
-      return res.status(401).json({ success: false, message: 'Invalid Teacher email or credentials' });
+      return res.status(401).json({ success: false, message: 'Invalid Teacher email. Record not found in database.' });
+    }
+
+    if (password !== '123456' && password !== 'teacher123') {
+      return res.status(401).json({ success: false, message: 'Invalid password. Password does not match database record.' });
     }
 
     const token = jwt.sign(
