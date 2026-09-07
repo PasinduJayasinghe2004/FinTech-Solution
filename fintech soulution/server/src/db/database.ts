@@ -238,6 +238,32 @@ class Database {
     return newPayment;
   }
 
+  updateStudent(studentUniqueId: string, updates: Partial<StudentRecord>): StudentRecord | null {
+    const idx = this.students.findIndex(s => s.studentUniqueId.toUpperCase() === studentUniqueId.toUpperCase() || s.id === studentUniqueId);
+    if (idx === -1) return null;
+    this.students[idx] = { ...this.students[idx], ...updates };
+    return this.students[idx];
+  }
+
+  deleteStudent(studentUniqueId: string): boolean {
+    const initialLen = this.students.length;
+    this.students = this.students.filter(s => s.studentUniqueId.toUpperCase() !== studentUniqueId.toUpperCase() && s.id !== studentUniqueId);
+    return this.students.length < initialLen;
+  }
+
+  updatePayment(id: string, updates: Partial<PaymentRecord>): PaymentRecord | null {
+    const idx = this.payments.findIndex(p => p.id === id);
+    if (idx === -1) return null;
+    this.payments[idx] = { ...this.payments[idx], ...updates };
+    return this.payments[idx];
+  }
+
+  deletePayment(id: string): boolean {
+    const initialLen = this.payments.length;
+    this.payments = this.payments.filter(p => p.id !== id);
+    return this.payments.length < initialLen;
+  }
+
   // Notifications
   getNotifications(userId: string): NotificationRecord[] {
     return this.notifications.filter((n) => n.userId.toUpperCase() === userId.toUpperCase());
