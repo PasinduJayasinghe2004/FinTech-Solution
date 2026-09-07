@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import StudentManagement from './StudentManagement';
 import PaymentManagement from './PaymentManagement';
+import AnalyticsDashboard from './AnalyticsDashboard';
 
 interface TeacherDashboardProps {
   teacherName?: string;
@@ -30,6 +31,18 @@ export default function TeacherDashboard({
         onLogout={onLogout} 
         onNavigateToDashboard={() => setActiveTab('dashboard')} 
         onNavigateToStudents={() => setActiveTab('students')}
+      />
+    );
+  }
+
+  if (activeTab === 'analytics') {
+    return (
+      <AnalyticsDashboard 
+        teacherName={teacherName} 
+        onLogout={onLogout} 
+        onNavigateToDashboard={() => setActiveTab('dashboard')} 
+        onNavigateToStudents={() => setActiveTab('students')}
+        onNavigateToPayments={() => setActiveTab('payments')}
       />
     );
   }
