@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import StudentManagement from './StudentManagement';
+import PaymentManagement from './PaymentManagement';
 
 interface TeacherDashboardProps {
   teacherName?: string;
@@ -18,6 +19,17 @@ export default function TeacherDashboard({
         teacherName={teacherName} 
         onLogout={onLogout} 
         onNavigateToDashboard={() => setActiveTab('dashboard')} 
+      />
+    );
+  }
+
+  if (activeTab === 'payments') {
+    return (
+      <PaymentManagement 
+        teacherName={teacherName} 
+        onLogout={onLogout} 
+        onNavigateToDashboard={() => setActiveTab('dashboard')} 
+        onNavigateToStudents={() => setActiveTab('students')}
       />
     );
   }
