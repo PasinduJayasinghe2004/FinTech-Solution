@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import StudentPaymentPage from './StudentPaymentPage';
 import StudentPaymentHistory from './StudentPaymentHistory';
 import StudentNotificationsPage from './StudentNotificationsPage';
 import StudentProfilePage from './StudentProfilePage';
+import { apiService } from '../services/api';
 
 interface StudentDashboardProps {
   studentName?: string;
@@ -18,6 +19,17 @@ export default function StudentDashboard({
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState<'card' | 'bank' | 'qr'>('card');
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [dbData, setDbData] = useState<any>(null);
+
+  useEffect(() => {
+    apiService.getStudentDashboard().then((res) => {
+      if (res.success && res.data) {
+        setDbData(res.data);
+      }
+    });
+  }, []);
+
+  const currentStudentName = dbData?.student?.name || studentName;
 
   if (activeTab === 'payments') {
     return (

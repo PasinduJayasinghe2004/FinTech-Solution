@@ -1,55 +1,23 @@
 const API_BASE_URL = 'http://localhost:5000/api';
 
-export interface LoginResponse {
+export interface UserData {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  studentId?: string;
+  subject?: string;
+}
+
+export interface AuthResponse {
   success: boolean;
   token?: string;
-  user?: {
-    id: string;
-    name: string;
-    email: string;
-    role: string;
-    studentId?: string;
-    subject?: string;
-  };
+  user?: UserData;
   message?: string;
 }
 
-export interface StudentDashboardData {
-  student: {
-    name: string;
-    studentUniqueId: string;
-    subject: string;
-    email: string;
-  };
-  summary: {
-    currentPayment: number;
-    outstandingBalance: number;
-    paymentStatus: string;
-    overdueCount: number;
-    dueDate: string;
-  };
-  recentPayments: Array<{
-    id: string;
-    month: string;
-    paymentDate: string;
-    amount: number;
-    method: string;
-    status: string;
-    transactionId?: string;
-  }>;
-  notifications: Array<{
-    id: string;
-    title: string;
-    message: string;
-    type: string;
-    isRead: boolean;
-    createdAt: string;
-  }>;
-}
-
-export const api = {
-  // Login
-  async login(role: 'student' | 'teacher', idOrEmail: string, password: string): Promise<LoginResponse> {
+export const apiService = {
+  async login(role: 'student' | 'teacher', idOrEmail: string, password: string): Promise<AuthResponse> {
     try {
       const res = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
@@ -57,46 +25,73 @@ export const api = {
         body: JSON.stringify({ role, idOrEmail, password }),
       });
       const data = await res.json();
-      if (data.token) {
+      if (res.ok && data.token) {
         localStorage.setItem('tuitionpay_token', data.token);
+        localStorage.setItem('tuitionpay_user', JSON.stringify(data.user));
       }
       return data;
-    } catch {
-      // Offline / Fallback mode
-      return {
-        success: true,
-        token: 'mock_jwt_token_2026',
-        user: {
-          id: role === 'student' ? 'usr_stu_1' : 'usr_tch_1',
-          name: role === 'student' ? 'Pasindu Jayasinghe' : 'Dr. Wickramasinghe',
-          email: role === 'student' ? 'pasindu@example.com' : 'teacher@tuitionpay.com',
-          role: role === 'student' ? 'ROLE_STUDENT' : 'ROLE_TEACHER',
-          studentId: role === 'student' ? 'STU-001' : undefined,
-        },
-      };
+    } catch (err) {
+      return { success: false, message: 'Unable to connect to backend database server' };
     }
   },
 
-  // Get Student Dashboard Data
-  async getStudentDashboard(): Promise<StudentDashboardData | null> {
-    const token = localStorage.getItem('tuitionpay_token');
+  async registerStudent(studentData: { name: string; email: string; subject: string; phone: string }): Promise<any> {
     try {
-      const res = await fetch(`${API_BASE_URL}/student/dashboard`, {
+      const token = localStorage.getItem('tuitionpay_token');
+      const res = await fetch(`${API_BASE_URL}/students`, {
+        method: 'POST',
         headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
+        body: JSON.stringify(studentData),
       });
-      const json = await res.json();
-      return json.data;
-    } catch {
-      return null;
+      return await res.json();
+    } catch (err) {
+      return { success: false, message: 'Failed to create student' };
     }
   },
 
-  // Process Student Payment
-  async processPayment(amount: number, method: string) {
-    const token = localStorage.getItem('tuitionpay_token');
+  async getStudentDashboard(): Promise<any> {
     try {
+      const token = localStorage.getItem('tuitionpay_token');
+      const res = await fetch(`${API_BASE_URL}/student/dashboard`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return await res.json();
+    } catch (err) {
+      return { success: false, message: 'Failed to fetch student dashboard data' };
+    }
+  },
+
+  async getTeacherDashboard(): Promise<any> {
+    try {
+      const token = localStorage.getItem('tuitionpay_token');
+      const res = await fetch(`${API_BASE_URL}/teacher/dashboard`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return await res.json();
+    } catch (err) {
+      return { success: false, message: 'Failed to fetch teacher dashboard data' };
+    }
+  },
+
+  async fetchStudents(): Promise<any[]> {
+    try {
+      const token = localStorage.getItem('tuitionpay_token');
+      const res = await fetch(`${API_BASE_URL}/students`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      return data.students || [];
+    } catch (err) {
+      return [];
+    }
+  },
+
+  async processPayment(amount: number, method: string): Promise<any> {
+    try {
+      const token = localStorage.getItem('tuitionpay_token');
       const res = await fetch(`${API_BASE_URL}/student/pay`, {
         method: 'POST',
         headers: {
@@ -106,8 +101,8 @@ export const api = {
         body: JSON.stringify({ amount, method }),
       });
       return await res.json();
-    } catch {
-      return { success: true, message: 'Mock payment success' };
+    } catch (err) {
+      return { success: false, message: 'Failed to process payment' };
     }
   },
 };

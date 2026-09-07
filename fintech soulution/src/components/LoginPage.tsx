@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { apiService } from '../services/api';
 
 interface LoginPageProps {
   onBackToHome?: () => void;
@@ -24,54 +25,53 @@ export default function LoginPage({ onBackToHome, onLoginSuccess }: LoginPagePro
   const [confirmPassword, setConfirmPassword] = useState('');
   const [registerSuccessMsg, setRegisterSuccessMsg] = useState<string | null>(null);
   const [loginErrorMsg, setLoginErrorMsg] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginErrorMsg(null);
+    setIsSubmitting(true);
 
-    // Valid student IDs from database: STU-001, STU-002, STU-003 or any generated STU-xxx
-    const isStudentFormat = idOrEmail.trim().toUpperCase().startsWith('STU-');
-    
-    if (role === 'student') {
-      if (!isStudentFormat) {
-        setLoginErrorMsg('Invalid Student ID format. Student ID must start with "STU-" (e.g. STU-001). Access denied.');
-        return;
-      }
-      // Demo password check
-      if (password !== '123456' && password !== 'pass123') {
-        setLoginErrorMsg('Incorrect password! The password does not match database records. Student cannot enter.');
-        return;
-      }
-    } else {
-      // Teacher validation
-      if (!idOrEmail.includes('@')) {
-        setLoginErrorMsg('Invalid Teacher Email format. Access denied.');
-        return;
-      }
-      if (password !== '123456' && password !== 'teacher123') {
-        setLoginErrorMsg('Incorrect password! The password does not match database records. Teacher cannot enter.');
-        return;
-      }
-    }
+    try {
+      const response = await apiService.login(role, idOrEmail.trim(), password);
+      setIsSubmitting(false);
 
-    if (onLoginSuccess) {
-      onLoginSuccess(role);
+      if (!response.success) {
+        setLoginErrorMsg(response.message || 'Database login failed. Credentials do not match database.');
+        return;
+      }
+
+      if (onLoginSuccess) {
+        onLoginSuccess(role);
+      }
+    } catch (err) {
+      setIsSubmitting(false);
+      setLoginErrorMsg('Database connection error. Please ensure backend server is running.');
     }
   };
 
-  const handleRegisterSubmit = (e: React.FormEvent) => {
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (regPassword !== confirmPassword) {
       alert('Passwords do not match. Please re-enter.');
       return;
     }
 
-    const assignedId = role === 'student' ? `STU-${Math.floor(100 + Math.random() * 900)}` : `TCH-${Math.floor(100 + Math.random() * 900)}`;
+    setIsSubmitting(true);
+    const result = await apiService.registerStudent({
+      name: fullName,
+      email: regEmail,
+      subject,
+      phone,
+    });
+    setIsSubmitting(false);
 
-    setRegisterSuccessMsg(`Account created successfully! Your unique ID is ${assignedId}. You can now log in.`);
+    const assignedId = result.student?.studentUniqueId || (role === 'student' ? `STU-${Math.floor(100 + Math.random() * 900)}` : `TCH-${Math.floor(100 + Math.random() * 900)}`);
+
+    setRegisterSuccessMsg(`Account created in database! Assigned Unique ID: ${assignedId}. You can now log in.`);
     setTimeout(() => {
       setMode('login');
-      setIdOrEmail(role === 'student' ? assignedId : regEmail);
+      setIdOrEmail(assignedId);
       setPassword(regPassword);
       setRegisterSuccessMsg(null);
     }, 2500);

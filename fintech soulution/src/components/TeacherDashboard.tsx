@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import StudentManagement from './StudentManagement';
 import PaymentManagement from './PaymentManagement';
 import AnalyticsDashboard from './AnalyticsDashboard';
 import NotificationsPage from './NotificationsPage';
+import { apiService } from '../services/api';
 
 interface TeacherDashboardProps {
   teacherName?: string;
@@ -10,10 +11,19 @@ interface TeacherDashboardProps {
 }
 
 export default function TeacherDashboard({
-  teacherName = "Mr. Anil",
+  teacherName = "Dr. Wickramasinghe",
   onLogout
 }: TeacherDashboardProps) {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'students' | 'payments' | 'analytics' | 'notifications' | 'settings'>('dashboard');
+  const [teacherMetrics, setTeacherMetrics] = useState<any>(null);
+
+  useEffect(() => {
+    apiService.getTeacherDashboard().then((res) => {
+      if (res.success && res.metrics) {
+        setTeacherMetrics(res.metrics);
+      }
+    });
+  }, []);
 
   if (activeTab === 'students') {
     return (
