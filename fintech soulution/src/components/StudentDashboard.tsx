@@ -1,4 +1,8 @@
 import React, { useState } from 'react';
+import StudentPaymentPage from './StudentPaymentPage';
+import StudentPaymentHistory from './StudentPaymentHistory';
+import StudentNotificationsPage from './StudentNotificationsPage';
+import StudentProfilePage from './StudentProfilePage';
 
 interface StudentDashboardProps {
   studentName?: string;
@@ -14,6 +18,58 @@ export default function StudentDashboard({
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState<'card' | 'bank' | 'qr'>('card');
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+
+  if (activeTab === 'payments') {
+    return (
+      <StudentPaymentPage
+        studentName={studentName}
+        onLogout={onLogout}
+        onNavigateToDashboard={() => setActiveTab('dashboard')}
+        onNavigateToHistory={() => setActiveTab('history')}
+        onNavigateToNotifications={() => setActiveTab('notifications')}
+        onNavigateToProfile={() => setActiveTab('profile')}
+      />
+    );
+  }
+
+  if (activeTab === 'history') {
+    return (
+      <StudentPaymentHistory
+        studentName={studentName}
+        onLogout={onLogout}
+        onNavigateToDashboard={() => setActiveTab('dashboard')}
+        onNavigateToPayments={() => setActiveTab('payments')}
+        onNavigateToNotifications={() => setActiveTab('notifications')}
+        onNavigateToProfile={() => setActiveTab('profile')}
+      />
+    );
+  }
+
+  if (activeTab === 'notifications') {
+    return (
+      <StudentNotificationsPage
+        studentName={studentName}
+        onLogout={onLogout}
+        onNavigateToDashboard={() => setActiveTab('dashboard')}
+        onNavigateToPayments={() => setActiveTab('payments')}
+        onNavigateToHistory={() => setActiveTab('history')}
+        onNavigateToProfile={() => setActiveTab('profile')}
+      />
+    );
+  }
+
+  if (activeTab === 'profile') {
+    return (
+      <StudentProfilePage
+        studentName={studentName}
+        onLogout={onLogout}
+        onNavigateToDashboard={() => setActiveTab('dashboard')}
+        onNavigateToPayments={() => setActiveTab('payments')}
+        onNavigateToHistory={() => setActiveTab('history')}
+        onNavigateToNotifications={() => setActiveTab('notifications')}
+      />
+    );
+  }
 
   const handlePayNow = (e: React.FormEvent) => {
     e.preventDefault();
