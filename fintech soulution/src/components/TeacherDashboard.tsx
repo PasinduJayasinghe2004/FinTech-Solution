@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import StudentManagement from './StudentManagement';
 
 interface TeacherDashboardProps {
   teacherName?: string;
@@ -10,6 +11,16 @@ export default function TeacherDashboard({
   onLogout
 }: TeacherDashboardProps) {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'students' | 'payments' | 'analytics' | 'notifications' | 'settings'>('dashboard');
+
+  if (activeTab === 'students') {
+    return (
+      <StudentManagement 
+        teacherName={teacherName} 
+        onLogout={onLogout} 
+        onNavigateToDashboard={() => setActiveTab('dashboard')} 
+      />
+    );
+  }
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   
   // Modals
