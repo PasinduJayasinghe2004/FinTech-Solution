@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import StudentManagement from './StudentManagement';
 import PaymentManagement from './PaymentManagement';
 import AnalyticsDashboard from './AnalyticsDashboard';
+import NotificationsPage from './NotificationsPage';
 
 interface TeacherDashboardProps {
   teacherName?: string;
@@ -43,6 +44,19 @@ export default function TeacherDashboard({
         onNavigateToDashboard={() => setActiveTab('dashboard')} 
         onNavigateToStudents={() => setActiveTab('students')}
         onNavigateToPayments={() => setActiveTab('payments')}
+      />
+    );
+  }
+
+  if (activeTab === 'notifications') {
+    return (
+      <NotificationsPage 
+        teacherName={teacherName} 
+        onLogout={onLogout} 
+        onNavigateToDashboard={() => setActiveTab('dashboard')} 
+        onNavigateToStudents={() => setActiveTab('students')}
+        onNavigateToPayments={() => setActiveTab('payments')}
+        onNavigateToAnalytics={() => setActiveTab('analytics')}
       />
     );
   }
