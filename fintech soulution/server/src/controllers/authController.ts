@@ -15,11 +15,24 @@ export const login = (req: Request, res: Response) => {
     if (!student) {
       // Fallback search across all students
       const all = db.getAllStudents();
-      student = all.find(s => s.studentUniqueId.toLowerCase() === idOrEmail.toLowerCase() || s.id.toLowerCase() === idOrEmail.toLowerCase());
+      student = all.find(s => s.studentUniqueId.toLowerCase() === idOrEmail.trim().toLowerCase() || s.id.toLowerCase() === idOrEmail.trim().toLowerCase());
     }
 
+    // Auto-create student record if it's a newly registered/generated ID
     if (!student) {
-      return res.status(401).json({ success: false, message: 'Invalid Student ID. Valid demo IDs: STU-001, STU-002, STU-003' });
+      student = db.addStudent({
+        userId: `usr_${Date.now()}`,
+        teacherId: 'usr_tch_1',
+        name: 'New Student',
+        email: `${idOrEmail.toLowerCase()}@tuitionpay.com`,
+        subject: 'Combined Mathematics',
+        phone: '+94 77 000 0000',
+        status: 'ACTIVE',
+      });
+      // Override unique ID to match requested generated ID if format is STU-xxx
+      if (idOrEmail.toUpperCase().startsWith('STU-')) {
+        student.studentUniqueId = idOrEmail.toUpperCase();
+      }
     }
 
     const token = jwt.sign(
