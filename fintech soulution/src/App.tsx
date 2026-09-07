@@ -13,8 +13,10 @@ import Footer from './components/Footer';
 import LoginPage from './components/LoginPage';
 import StudentDashboard from './components/StudentDashboard';
 
+import TeacherDashboard from './components/TeacherDashboard';
+
 export default function App() {
-  const [view, setView] = useState<'home' | 'login' | 'student_dashboard'>('home');
+  const [view, setView] = useState<'home' | 'login' | 'student_dashboard' | 'teacher_dashboard'>('home');
 
   if (view === 'login') {
     return (
@@ -24,8 +26,7 @@ export default function App() {
           if (role === 'student') {
             setView('student_dashboard');
           } else {
-            alert('Teacher Dashboard logged in successfully!');
-            setView('home');
+            setView('teacher_dashboard');
           }
         }}
       />
@@ -36,9 +37,16 @@ export default function App() {
     return <StudentDashboard onLogout={() => setView('home')} />;
   }
 
+  if (view === 'teacher_dashboard') {
+    return <TeacherDashboard onLogout={() => setView('home')} />;
+  }
+
   return (
     <div className="min-h-full">
-      <Navbar onLoginClick={() => setView('login')} />
+      <Navbar 
+        onLoginClick={() => setView('login')} 
+        onTeacherDashboardClick={() => setView('teacher_dashboard')}
+      />
       <main>
         <Hero />
         <Stats />

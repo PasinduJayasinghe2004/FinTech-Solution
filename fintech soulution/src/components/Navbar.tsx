@@ -5,9 +5,10 @@ const navLinks = ['Home', 'Features', 'How It Works', 'Pricing', 'About Us'];
 
 interface NavbarProps {
   onLoginClick?: () => void;
+  onTeacherDashboardClick?: () => void;
 }
 
-export default function Navbar({ onLoginClick }: NavbarProps) {
+export default function Navbar({ onLoginClick, onTeacherDashboardClick }: NavbarProps) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -53,6 +54,12 @@ export default function Navbar({ onLoginClick }: NavbarProps) {
               className="text-slate-700 hover:text-blue-700 text-sm font-medium transition-colors px-3 py-1.5 cursor-pointer"
             >
               Login
+            </button>
+            <button
+              onClick={onTeacherDashboardClick}
+              className="bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors shadow-sm cursor-pointer"
+            >
+              Teacher Portal
             </button>
             <button
               onClick={onLoginClick}
