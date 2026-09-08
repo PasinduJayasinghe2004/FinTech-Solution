@@ -287,7 +287,7 @@ export default function StudentManagement({
                   </svg>
                 </div>
                 <p className="text-xs font-semibold text-slate-400">Total Students</p>
-                <h3 className="text-3xl font-extrabold text-slate-900 mt-1">128</h3>
+                <h3 className="text-3xl font-extrabold text-slate-900 mt-1">12</h3>
               </div>
               <p className="text-xs font-semibold text-slate-400 mt-3">
                 12 new this month
@@ -303,7 +303,7 @@ export default function StudentManagement({
                   </svg>
                 </div>
                 <p className="text-xs font-semibold text-slate-400">Active Students</p>
-                <h3 className="text-3xl font-extrabold text-slate-900 mt-1">110</h3>
+                <h3 className="text-3xl font-extrabold text-slate-900 mt-1">10</h3>
               </div>
               <p className="text-xs font-semibold text-slate-400 mt-3">
                 Currently enrolled
@@ -319,7 +319,7 @@ export default function StudentManagement({
                   </svg>
                 </div>
                 <p className="text-xs font-semibold text-slate-400">Pending Payments</p>
-                <h3 className="text-3xl font-extrabold text-amber-600 mt-1">12</h3>
+                <h3 className="text-3xl font-extrabold text-amber-600 mt-1">2</h3>
               </div>
               <p className="text-xs font-semibold text-slate-400 mt-3">
                 Students haven't paid yet
@@ -335,7 +335,7 @@ export default function StudentManagement({
                   </svg>
                 </div>
                 <p className="text-xs font-semibold text-slate-400">Overdue Payments</p>
-                <h3 className="text-3xl font-extrabold text-red-600 mt-1">6</h3>
+                <h3 className="text-3xl font-extrabold text-red-600 mt-1">5</h3>
               </div>
               <p className="text-xs font-semibold text-slate-400 mt-3">
                 Require immediate attention
