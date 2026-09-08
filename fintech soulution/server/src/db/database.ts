@@ -40,8 +40,43 @@ export interface NotificationRecord {
   createdAt: string;
 }
 
+export interface TeacherProfile {
+  id: string;
+  name: string;
+  title: string;
+  email: string;
+  phone: string;
+  subjects: string[];
+  qualification: string;
+  experienceYears: number;
+  bio: string;
+  bankName: string;
+  accountNumber: string;
+  accountName: string;
+  branchName: string;
+  defaultMonthlyFee: number;
+  paymentNotes: string;
+}
+
 // In-Memory Database initialized with default mock records matching the development guide specs
 class Database {
+  private teacherProfile: TeacherProfile = {
+    id: 'usr_tch_1',
+    name: 'Dr. Wickramasinghe',
+    title: 'Senior Mathematics Lecturer & Tutor',
+    email: 'teacher@tuitionpay.com',
+    phone: '+94 77 987 6543',
+    subjects: ['Combined Mathematics', 'Higher Mathematics', 'Physics'],
+    qualification: 'Ph.D. in Applied Mathematics (Univ. of Colombo), B.Sc. (Hons)',
+    experienceYears: 12,
+    bio: 'Dedicated tuition educator specializing in Advanced Level Combined Mathematics and Physics with over 12 years of proven success preparing students for national examinations.',
+    bankName: 'Commercial Bank of Ceylon',
+    accountNumber: '8004591204',
+    accountName: 'Dr. A. Wickramasinghe',
+    branchName: 'Colombo Main Branch',
+    defaultMonthlyFee: 3000,
+    paymentNotes: 'Please include student ID (e.g. STU-001) as reference in bank transfer remark.'
+  };
   private users: User[] = [
     {
       id: 'usr_stu_1',
@@ -267,6 +302,16 @@ class Database {
   // Notifications
   getNotifications(userId: string): NotificationRecord[] {
     return this.notifications.filter((n) => n.userId.toUpperCase() === userId.toUpperCase());
+  }
+
+  // Teacher Profile
+  getTeacherProfile(): TeacherProfile {
+    return this.teacherProfile;
+  }
+
+  updateTeacherProfile(updates: Partial<TeacherProfile>): TeacherProfile {
+    this.teacherProfile = { ...this.teacherProfile, ...updates };
+    return this.teacherProfile;
   }
 }
 

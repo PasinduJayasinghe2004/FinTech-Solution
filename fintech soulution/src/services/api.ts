@@ -105,4 +105,33 @@ export const apiService = {
       return { success: false, message: 'Failed to process payment' };
     }
   },
+
+  async getTeacherProfile(): Promise<any> {
+    try {
+      const token = localStorage.getItem('tuitionpay_token');
+      const res = await fetch(`${API_BASE_URL}/teacher/profile`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return await res.json();
+    } catch (err) {
+      return { success: false, message: 'Failed to fetch teacher profile' };
+    }
+  },
+
+  async updateTeacherProfile(profileData: any): Promise<any> {
+    try {
+      const token = localStorage.getItem('tuitionpay_token');
+      const res = await fetch(`${API_BASE_URL}/teacher/profile`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(profileData),
+      });
+      return await res.json();
+    } catch (err) {
+      return { success: false, message: 'Failed to update teacher profile' };
+    }
+  },
 };

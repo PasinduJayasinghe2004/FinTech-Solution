@@ -55,3 +55,18 @@ export const addStudent = (req: Request, res: Response) => {
     student: newStudent,
   });
 };
+
+export const getTeacherProfile = (_req: Request, res: Response) => {
+  const profile = db.getTeacherProfile();
+  return res.json({ success: true, profile });
+};
+
+export const updateTeacherProfile = (req: Request, res: Response) => {
+  const updates = req.body;
+  const updatedProfile = db.updateTeacherProfile(updates);
+  return res.json({
+    success: true,
+    message: 'Teacher profile updated successfully',
+    profile: updatedProfile,
+  });
+};
