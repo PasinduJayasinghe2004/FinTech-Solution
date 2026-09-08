@@ -16,6 +16,17 @@ export default function TeacherDashboard({
 }: TeacherDashboardProps) {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'students' | 'payments' | 'analytics' | 'notifications' | 'settings'>('dashboard');
   const [teacherMetrics, setTeacherMetrics] = useState<any>(null);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  
+  // Modals
+  const [showAddStudentModal, setShowAddStudentModal] = useState(false);
+  const [showCreatePaymentModal, setShowCreatePaymentModal] = useState(false);
+  const [showReminderModal, setShowReminderModal] = useState(false);
+  const [actionSuccessMsg, setActionSuccessMsg] = useState<string | null>(null);
+
+  // Form states
+  const [newStudent, setNewStudent] = useState({ name: '', id: '', subject: 'Mathematics', phone: '', fee: '3000' });
+  const [newPayment, setNewPayment] = useState({ studentName: 'Kasun Perera', amount: '3000', method: 'Card', note: 'Monthly tuition fee' });
 
   useEffect(() => {
     apiService.getTeacherDashboard().then((res) => {
@@ -76,17 +87,6 @@ export default function TeacherDashboard({
       />
     );
   }
-  const [notificationsOpen, setNotificationsOpen] = useState(false);
-  
-  // Modals
-  const [showAddStudentModal, setShowAddStudentModal] = useState(false);
-  const [showCreatePaymentModal, setShowCreatePaymentModal] = useState(false);
-  const [showReminderModal, setShowReminderModal] = useState(false);
-  const [actionSuccessMsg, setActionSuccessMsg] = useState<string | null>(null);
-
-  // Form states
-  const [newStudent, setNewStudent] = useState({ name: '', id: '', subject: 'Mathematics', phone: '', fee: '3000' });
-  const [newPayment, setNewPayment] = useState({ studentName: 'Kasun Perera', amount: '3000', method: 'Card', note: 'Monthly tuition fee' });
 
   const triggerSuccess = (msg: string) => {
     setActionSuccessMsg(msg);
