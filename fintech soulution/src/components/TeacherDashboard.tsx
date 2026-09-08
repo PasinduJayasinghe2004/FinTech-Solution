@@ -31,6 +31,9 @@ export default function TeacherDashboard({
         teacherName={teacherName} 
         onLogout={onLogout} 
         onNavigateToDashboard={() => setActiveTab('dashboard')} 
+        onNavigateToPayments={() => setActiveTab('payments')}
+        onNavigateToAnalytics={() => setActiveTab('analytics')}
+        onNavigateToNotifications={() => setActiveTab('notifications')}
       />
     );
   }
@@ -42,6 +45,8 @@ export default function TeacherDashboard({
         onLogout={onLogout} 
         onNavigateToDashboard={() => setActiveTab('dashboard')} 
         onNavigateToStudents={() => setActiveTab('students')}
+        onNavigateToAnalytics={() => setActiveTab('analytics')}
+        onNavigateToNotifications={() => setActiveTab('notifications')}
       />
     );
   }
@@ -54,6 +59,7 @@ export default function TeacherDashboard({
         onNavigateToDashboard={() => setActiveTab('dashboard')} 
         onNavigateToStudents={() => setActiveTab('students')}
         onNavigateToPayments={() => setActiveTab('payments')}
+        onNavigateToNotifications={() => setActiveTab('notifications')}
       />
     );
   }
