@@ -41,12 +41,13 @@ export default function App() {
     <div className="relative w-screen h-screen overflow-hidden bg-slate-950 flex flex-col justify-between font-sans">
       {/* Background Fullscreen Video */}
       <video
+        key="/hero-video.mp4"
         autoPlay
         loop
         muted
         playsInline
         aria-hidden="true"
-        className="absolute inset-0 w-full h-full object-cover z-0 opacity-80 pointer-events-none"
+        className="absolute inset-0 w-full h-full object-cover z-0 opacity-85 pointer-events-none"
       >
         <source src="/hero-video.mp4" type="video/mp4" />
         Your browser does not support the video tag.
