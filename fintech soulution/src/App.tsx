@@ -3,7 +3,6 @@ import { logoImg } from '@/assets/logo';
 import LoginPage from './components/LoginPage';
 import StudentDashboard from './components/StudentDashboard';
 import TeacherDashboard from './components/TeacherDashboard';
-import videoSource from '../7683396-hd_1920_1080_30fps.mp4';
 
 export default function App() {
   const [view, setView] = useState<'home' | 'login' | 'student_dashboard' | 'teacher_dashboard'>('home');
@@ -46,9 +45,10 @@ export default function App() {
         loop
         muted
         playsInline
-        className="absolute inset-0 w-full h-full object-cover z-0 opacity-80"
+        aria-hidden="true"
+        className="absolute inset-0 w-full h-full object-cover z-0 opacity-80 pointer-events-none"
       >
-        <source src={videoSource} type="video/mp4" />
+        <source src="/hero-video.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
 
