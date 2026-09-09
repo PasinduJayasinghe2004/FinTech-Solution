@@ -1,25 +1,28 @@
-# Dockerfile
+# Dockerfile for Render / Deployment (Root directory set to 'server')
 FROM node:22-alpine AS builder
 WORKDIR /app
 
-# Copy lock and package files first for better caching
+# Copy server package files
 COPY package*.json ./
-COPY server/package*.json ./server/
 
-# Copy all source files
+# Install dependencies
+RUN npm ci
+
+# Copy all server source code
 COPY . .
 
-# Build the server application
-WORKDIR /app/server
-RUN npm ci && npm run build
+# Build the TypeScript server code to dist/
+RUN npm run build
 
-# Production image
+# Production image stage
 FROM node:22-alpine
 WORKDIR /app
 
-COPY --from=builder /app/server/dist ./dist
-COPY --from=builder /app/server/package*.json ./
+# Copy built js files and package info from builder
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package*.json ./
 
+# Install production dependencies only
 RUN npm ci --only=production
 
 EXPOSE 10000
