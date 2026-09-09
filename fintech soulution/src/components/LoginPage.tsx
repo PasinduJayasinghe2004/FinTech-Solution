@@ -5,11 +5,12 @@ import { apiService } from '../services/api';
 interface LoginPageProps {
   onBackToHome?: () => void;
   onLoginSuccess?: (role: 'student' | 'teacher') => void;
+  initialRole?: 'student' | 'teacher';
 }
 
-export default function LoginPage({ onBackToHome, onLoginSuccess }: LoginPageProps) {
+export default function LoginPage({ onBackToHome, onLoginSuccess, initialRole = 'student' }: LoginPageProps) {
   const [mode, setMode] = useState<'login' | 'register'>('login');
-  const [role, setRole] = useState<'student' | 'teacher'>('student');
+  const [role, setRole] = useState<'student' | 'teacher'>(initialRole);
 
   // Login form states
   const [idOrEmail, setIdOrEmail] = useState('');
