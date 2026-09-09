@@ -1,5 +1,6 @@
 import { logoImg } from '@/assets/logo';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { apiService } from '../services/api';
 
 interface StudentPaymentHistoryProps {
   studentName?: string;
@@ -39,12 +40,12 @@ export default function StudentPaymentHistory({
 }: StudentPaymentHistoryProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'PAID' | 'OVERDUE'>('ALL');
-  const [historyList, setHistoryList] = useState<any[]>(mockHistory);
+  const [historyList, setHistoryList] = useState<PaymentRecord[]>(mockHistory);
 
-  React.useEffect(() => {
+  useEffect(() => {
     apiService.getPaymentHistory().then((res) => {
       if (res.success && res.payments && res.payments.length > 0) {
-        const mapped = res.payments.map((p: any) => ({
+        const mapped: PaymentRecord[] = res.payments.map((p: { id: string; month: string; paymentDate?: string; amount: number; method: string; status: string; transactionId?: string }) => ({
           id: p.id,
           month: p.month,
           date: p.paymentDate || '—',

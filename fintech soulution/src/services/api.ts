@@ -106,6 +106,18 @@ export const apiService = {
     }
   },
 
+  async getPaymentHistory(): Promise<any> {
+    try {
+      const token = localStorage.getItem('ria_token');
+      const res = await fetch(`${API_BASE_URL}/student/payments`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return await res.json();
+    } catch (err) {
+      return { success: false, message: 'Failed to fetch payment history' };
+    }
+  },
+
   async getTeacherProfile(): Promise<any> {
     try {
       const token = localStorage.getItem('ria_token');
