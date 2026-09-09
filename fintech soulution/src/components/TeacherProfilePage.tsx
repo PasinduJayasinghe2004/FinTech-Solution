@@ -1,4 +1,4 @@
-import logoImg from '@/assets/logo.jpg';
+import { logoImg } from '@/assets/logo';
 import React, { useState, useEffect } from 'react';
 import { apiService } from '../services/api';
 

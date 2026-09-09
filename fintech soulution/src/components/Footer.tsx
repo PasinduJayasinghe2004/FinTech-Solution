@@ -1,4 +1,4 @@
-import logoImg from '@/assets/logo.jpg';
+import { logoImg } from '@/assets/logo';
 const links = {
   Product: ['Features', 'Pricing', 'Dashboard', 'Integrations'],
   Resources: ['Help Center', 'Documentation', 'API Reference', 'Changelog'],

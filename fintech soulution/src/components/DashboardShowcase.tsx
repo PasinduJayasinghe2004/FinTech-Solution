@@ -1,4 +1,4 @@
-import logoImg from '@/assets/logo.jpg';
+import { logoImg } from '@/assets/logo';
 function DonutChart() {
   // Paid 65%, Pending 22%, Overdue 13%
   // r=38, cx=45, cy=45, C = 2π*38 ≈ 238.76
