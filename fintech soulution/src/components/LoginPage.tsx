@@ -98,9 +98,7 @@ export default function LoginPage({ onBackToHome, onLoginSuccess }: LoginPagePro
               onClick={onBackToHome}
               className="flex items-center gap-3 group text-left cursor-pointer focus:outline-none"
             >
-              <div className="w-10 h-10 rounded-xl bg-teal-400 flex items-center justify-center shadow-lg shadow-teal-500/30 group-hover:scale-105 transition-transform">
-                <span className="text-blue-950 font-display font-extrabold text-xl leading-none">T</span>
-              </div>
+              <img src="/logo.jpg" alt="TuitionPay Logo" className="w-10 h-10 rounded-xl object-cover shadow-lg shadow-teal-500/30 group-hover:scale-105 transition-transform" />
               <span className="font-display font-bold text-2xl tracking-tight text-white">TuitionPay</span>
             </button>
 
@@ -125,9 +123,7 @@ export default function LoginPage({ onBackToHome, onLoginSuccess }: LoginPagePro
               {/* App Internal Header */}
               <div className="flex items-center justify-between px-2 mb-4">
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-lg bg-teal-500 flex items-center justify-center">
-                    <span className="text-white text-xs font-bold">T</span>
-                  </div>
+                  <img src="/logo.jpg" alt="TuitionPay Logo" className="w-6 h-6 rounded-lg object-cover" />
                   <div>
                     <p className="text-[11px] font-bold text-slate-800 leading-tight">TuitionPay</p>
                     <p className="text-[9px] text-slate-400">Student & Teacher Portal</p>

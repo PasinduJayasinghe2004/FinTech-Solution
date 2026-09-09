@@ -85,9 +85,7 @@ export default function DashboardShowcase() {
           {/* Top bar */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
             <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-600 to-teal-500 flex items-center justify-center">
-                <span className="text-white text-xs font-bold">T</span>
-              </div>
+              <img src="/logo.jpg" alt="TuitionPay Logo" className="w-7 h-7 rounded-lg object-cover" />
               <span className="font-display font-semibold text-blue-900 text-sm">TuitionPay</span>
             </div>
             <div className="flex items-center gap-3">

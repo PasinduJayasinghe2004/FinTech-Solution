@@ -28,9 +28,7 @@ export default function Navbar({ onLoginClick, onTeacherDashboardClick }: Navbar
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <a href="#" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-teal-500 flex items-center justify-center shadow-sm">
-              <span className="text-white font-display font-bold text-sm leading-none">T</span>
-            </div>
+            <img src="/logo.jpg" alt="TuitionPay Logo" className="w-8 h-8 rounded-lg object-cover shadow-sm" />
             <span className="font-display font-semibold text-blue-900 text-lg tracking-tight">TuitionPay</span>
           </a>
 

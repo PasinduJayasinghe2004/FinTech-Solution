@@ -27,9 +27,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-2">
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-teal-400 flex items-center justify-center">
-                <span className="text-white font-display font-bold text-sm">T</span>
-              </div>
+              <img src="/logo.jpg" alt="TuitionPay Logo" className="w-8 h-8 rounded-lg object-cover" />
               <span className="font-display font-semibold text-white text-lg tracking-tight">TuitionPay</span>
             </div>
             <p className="text-sm text-slate-400 leading-relaxed mb-6 max-w-xs">

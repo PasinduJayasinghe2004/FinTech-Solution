@@ -147,9 +147,7 @@ export default function TeacherDashboard({
         <div>
           {/* Brand Logo */}
           <div className="flex items-center gap-3.5 mb-9 px-1">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-400 via-teal-400 to-blue-600 flex items-center justify-center shadow-lg shadow-teal-500/25">
-              <span className="text-white font-display font-black text-xl leading-none">T</span>
-            </div>
+            <img src="/logo.jpg" alt="TuitionPay Logo" className="w-10 h-10 rounded-2xl object-cover shadow-lg shadow-teal-500/25" />
             <div>
               <span className="font-display font-extrabold text-xl tracking-tight text-blue-950 block leading-none">TuitionPay</span>
               <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest mt-1 block">Teacher Portal</span>

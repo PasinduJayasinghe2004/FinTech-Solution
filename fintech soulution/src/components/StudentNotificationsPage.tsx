@@ -73,9 +73,7 @@ export default function StudentNotificationsPage({
       <aside className="w-64 bg-white border-r border-slate-100/80 p-6 flex flex-col justify-between shrink-0 hidden md:flex min-h-screen select-none">
         <div>
           <div className="flex items-center gap-3.5 mb-9 px-1">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-400 via-teal-400 to-blue-600 flex items-center justify-center shadow-lg shadow-teal-500/25">
-              <span className="text-white font-display font-black text-xl leading-none">T</span>
-            </div>
+            <img src="/logo.jpg" alt="TuitionPay Logo" className="w-10 h-10 rounded-2xl object-cover shadow-lg shadow-teal-500/25" />
             <span className="font-display font-extrabold text-xl tracking-tight text-blue-950">TuitionPay</span>
           </div>
 

@@ -94,9 +94,7 @@ export default function Notifications() {
                 {/* Lock screen / notification area */}
                 <div className="px-3 py-2 space-y-2">
                   <div className="flex items-center justify-center mb-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-teal-500 flex items-center justify-center">
-                      <span className="text-white text-sm font-bold">T</span>
-                    </div>
+                    <img src="/logo.jpg" alt="TuitionPay Logo" className="w-10 h-10 rounded-xl object-cover" />
                   </div>
 
                   {pushNotifications.map((n, i) => (
@@ -153,9 +151,7 @@ export default function Notifications() {
                   <div key={i} className={`px-5 py-4 hover:bg-slate-50 transition-colors cursor-pointer ${i === 0 ? 'bg-blue-50/30' : ''}`}>
                     <div className="flex items-start justify-between gap-3 mb-1.5">
                       <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-600 to-teal-500 flex items-center justify-center shrink-0">
-                          <span className="text-white text-[10px] font-bold">T</span>
-                        </div>
+                        <img src="/logo.jpg" alt="TuitionPay Logo" className="w-7 h-7 rounded-full object-cover shrink-0" />
                         <span className="text-xs font-semibold text-slate-800 truncate">TuitionPay</span>
                       </div>
                       <span className="text-[10px] text-slate-400 shrink-0">{e.date}</span>
