@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { logoImg } from '@/assets/logo';
+import { heroVideo } from '@/assets/heroVideo';
 import LoginPage from './components/LoginPage';
 import StudentDashboard from './components/StudentDashboard';
 import TeacherDashboard from './components/TeacherDashboard';
@@ -41,7 +42,6 @@ export default function App() {
     <div className="relative w-screen h-screen overflow-hidden bg-slate-950 flex flex-col justify-between font-sans">
       {/* Background Fullscreen Video */}
       <video
-        key="/hero-video.mp4"
         autoPlay
         loop
         muted
@@ -49,7 +49,7 @@ export default function App() {
         aria-hidden="true"
         className="absolute inset-0 w-full h-full object-cover z-0 opacity-85 pointer-events-none"
       >
-        <source src="/hero-video.mp4" type="video/mp4" />
+        <source src={heroVideo} type="video/mp4" />
         Your browser does not support the video tag.
       </video>
 
