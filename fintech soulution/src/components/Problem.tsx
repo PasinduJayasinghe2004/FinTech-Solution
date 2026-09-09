@@ -27,12 +27,12 @@ export default function Problem() {
             <span className="text-blue-700">{"Shouldn't"} Be Complicated.</span>
           </h2>
           <p className="text-slate-500 max-w-md mx-auto">
-            Most teachers struggle with outdated manual methods. TuitionPay was built to change that.
+            Most teachers struggle with outdated manual methods. RIA was built to change that.
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-5 max-w-4xl mx-auto">
-          {/* Without TuitionPay */}
+          {/* Without RIA */}
           <div className="bg-white rounded-2xl p-8 border border-red-100 shadow-sm">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-9 h-9 bg-red-100 rounded-full flex items-center justify-center shrink-0">
@@ -40,7 +40,7 @@ export default function Problem() {
               </div>
               <div>
                 <p className="text-[10px] text-red-400 font-semibold uppercase tracking-wide">Before</p>
-                <h3 className="font-display font-bold text-slate-800">Without TuitionPay</h3>
+                <h3 className="font-display font-bold text-slate-800">Without RIA</h3>
               </div>
             </div>
             <div className="space-y-3.5">
@@ -55,7 +55,7 @@ export default function Problem() {
             </div>
           </div>
 
-          {/* With TuitionPay */}
+          {/* With RIA */}
           <div className="bg-gradient-to-br from-blue-700 to-teal-600 rounded-2xl p-8 shadow-lg">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center shrink-0">
@@ -63,7 +63,7 @@ export default function Problem() {
               </div>
               <div>
                 <p className="text-[10px] text-blue-200 font-semibold uppercase tracking-wide">After</p>
-                <h3 className="font-display font-bold text-white">With TuitionPay</h3>
+                <h3 className="font-display font-bold text-white">With RIA</h3>
               </div>
             </div>
             <div className="space-y-3.5">

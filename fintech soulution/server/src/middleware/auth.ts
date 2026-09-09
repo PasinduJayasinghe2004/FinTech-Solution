@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-export const JWT_SECRET = process.env.JWT_SECRET || 'tuitionpay_secret_key_2026';
+export const JWT_SECRET = process.env.JWT_SECRET || 'ria_secret_key_2026';
 
 export interface AuthRequest extends Request {
   user?: {

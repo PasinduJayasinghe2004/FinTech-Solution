@@ -1,4 +1,4 @@
--- TuitionPay PostgreSQL Database Schema Initialization
+-- RIA PostgreSQL Database Schema Initialization
 
 -- 1. Create ENUM types
 CREATE TYPE user_role AS ENUM ('ROLE_TEACHER', 'ROLE_STUDENT', 'ROLE_ADMIN');
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS notifications (
 
 -- Seed Initial Demo Data
 INSERT INTO users (id, name, email, password, role) VALUES
-('usr_tch_1', 'Dr. Wickramasinghe', 'teacher@tuitionpay.com', '$2b$10$e8w3u...', 'ROLE_TEACHER'),
+('usr_tch_1', 'Dr. Wickramasinghe', 'teacher@ria.com', '$2b$10$e8w3u...', 'ROLE_TEACHER'),
 ('usr_stu_1', 'Pasindu Jayasinghe', 'pasindu@example.com', '$2b$10$e8w3u...', 'ROLE_STUDENT')
 ON CONFLICT (email) DO NOTHING;
 

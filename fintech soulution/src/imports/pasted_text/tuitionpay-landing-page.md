@@ -1,6 +1,6 @@
-Design a modern, premium, and professional SaaS landing page for a web platform called "TuitionPay".
+Design a modern, premium, and professional SaaS landing page for a web platform called "RIA".
 
-TuitionPay is a teacher-centric tuition payment and student monitoring platform designed for private tuition teachers. The platform helps teachers manage students, track monthly tuition payments, monitor outstanding balances, receive payment notifications, and view financial analytics from one centralized dashboard.
+RIA is a teacher-centric tuition payment and student monitoring platform designed for private tuition teachers. The platform helps teachers manage students, track monthly tuition payments, monitor outstanding balances, receive payment notifications, and view financial analytics from one centralized dashboard.
 
 TARGET USERS:
 Private tuition teachers and educational instructors who manage multiple students and need a simple digital system for student payments and monitoring.
@@ -34,7 +34,7 @@ LANDING PAGE STRUCTURE:
 
 1. NAVIGATION BAR
 Include:
-- TuitionPay logo
+- RIA logo
 - Home
 - Features
 - How It Works
@@ -51,7 +51,7 @@ Main headline:
 "Manage Your Tuition Payments. Without the Stress."
 
 Supporting text:
-"TuitionPay helps teachers manage students, track payments, monitor outstanding balances, and receive real-time updates — all in one platform."
+"RIA helps teachers manage students, track payments, monitor outstanding balances, and receive real-time updates — all in one platform."
 
 Include two CTA buttons:
 - Get Started Free
@@ -94,7 +94,7 @@ Show common problems teachers face:
 - Sending payment reminders manually
 - Using spreadsheets and notebooks
 
-Use a modern visual comparison between traditional manual management and the TuitionPay platform.
+Use a modern visual comparison between traditional manual management and the RIA platform.
 
 5. FEATURES SECTION
 
@@ -206,7 +206,7 @@ Use a strong gradient background and visually attractive design.
 11. FOOTER
 
 Include:
-- TuitionPay logo
+- RIA logo
 - Product links
 - Features
 - Pricing

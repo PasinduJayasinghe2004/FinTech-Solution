@@ -24,7 +24,7 @@ export const login = (req: Request, res: Response) => {
         userId: `usr_${Date.now()}`,
         teacherId: 'usr_tch_1',
         name: 'New Student',
-        email: `${idOrEmail.toLowerCase()}@tuitionpay.com`,
+        email: `${idOrEmail.toLowerCase()}@ria.com`,
         subject: 'Combined Mathematics',
         phone: '+94 77 000 0000',
         status: 'ACTIVE',
@@ -65,7 +65,7 @@ export const login = (req: Request, res: Response) => {
       user = {
         id: 'usr_tch_1',
         name: 'Dr. Wickramasinghe',
-        email: idOrEmail || 'teacher@tuitionpay.com',
+        email: idOrEmail || 'teacher@ria.com',
         role: 'ROLE_TEACHER',
       };
     }

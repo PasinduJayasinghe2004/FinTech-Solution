@@ -28,8 +28,8 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-2">
             <div className="flex items-center gap-2.5 mb-4">
-              <img src={logoImg} alt="TuitionPay Logo" className="w-8 h-8 rounded-lg object-cover" />
-              <span className="font-display font-semibold text-white text-lg tracking-tight">TuitionPay</span>
+              <img src={logoImg} alt="RIA Logo" className="w-8 h-8 rounded-lg object-cover" />
+              <span className="font-display font-semibold text-white text-lg tracking-tight">RIA</span>
             </div>
             <p className="text-sm text-slate-400 leading-relaxed mb-6 max-w-xs">
               The modern platform for private tuition teachers to manage students, track payments, and grow their teaching business.
@@ -67,7 +67,7 @@ export default function Footer() {
         {/* Bottom */}
         <div className="py-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-slate-500">
-            &copy; 2026 TuitionPay. All rights reserved.
+            &copy; 2026 RIA. All rights reserved.
           </p>
           <div className="flex items-center gap-1">
             <span className="text-xs text-slate-500">Develop By</span>

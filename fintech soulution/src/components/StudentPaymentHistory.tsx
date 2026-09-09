@@ -53,8 +53,8 @@ export default function StudentPaymentHistory({
       <aside className="w-64 bg-white border-r border-slate-100/80 p-6 flex flex-col justify-between shrink-0 hidden md:flex min-h-screen select-none">
         <div>
           <div className="flex items-center gap-3.5 mb-9 px-1">
-            <img src={logoImg} alt="TuitionPay Logo" className="w-10 h-10 rounded-2xl object-cover shadow-lg shadow-teal-500/25" />
-            <span className="font-display font-extrabold text-xl tracking-tight text-blue-950">TuitionPay</span>
+            <img src={logoImg} alt="RIA Logo" className="w-10 h-10 rounded-2xl object-cover shadow-lg shadow-teal-500/25" />
+            <span className="font-display font-extrabold text-xl tracking-tight text-blue-950">RIA</span>
           </div>
 
           <nav className="space-y-1.5">

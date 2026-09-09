@@ -101,8 +101,8 @@ export default function StudentDashboard({
         <div>
           {/* Logo */}
           <div className="flex items-center gap-3.5 mb-9 px-1">
-            <img src={logoImg} alt="TuitionPay Logo" className="w-10 h-10 rounded-2xl object-cover shadow-lg shadow-teal-500/25" />
-            <span className="font-display font-extrabold text-xl tracking-tight text-blue-950">TuitionPay</span>
+            <img src={logoImg} alt="RIA Logo" className="w-10 h-10 rounded-2xl object-cover shadow-lg shadow-teal-500/25" />
+            <span className="font-display font-extrabold text-xl tracking-tight text-blue-950">RIA</span>
           </div>
 
           {/* Main Nav Links */}
@@ -352,7 +352,7 @@ export default function StudentDashboard({
                 <svg className="w-3.5 h-3.5 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
-                <span>Secure Payment Powered by TuitionPay</span>
+                <span>Secure Payment Powered by RIA</span>
               </div>
             </div>
           </div>
@@ -535,7 +535,7 @@ export default function StudentDashboard({
 
       {/* Floating Help Button (Bottom Right) */}
       <button 
-        onClick={() => alert('Need support? Contact TuitionPay HelpDesk at support@tuitionpay.com')}
+        onClick={() => alert('Need support? Contact RIA HelpDesk at support@ria.com')}
         className="fixed bottom-6 right-6 w-10 h-10 rounded-full bg-slate-900 text-white font-extrabold text-sm flex items-center justify-center shadow-xl hover:scale-110 transition-transform z-40 cursor-pointer"
       >
         ?
@@ -619,7 +619,7 @@ export default function StudentDashboard({
 
                 {selectedMethod === 'bank' && (
                   <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-600 space-y-1">
-                    <p className="font-bold text-slate-800">TuitionPay Bank Account</p>
+                    <p className="font-bold text-slate-800">RIA Bank Account</p>
                     <p>Bank: Commercial Bank</p>
                     <p>Account No: 8009-1234-5678</p>
                     <p>Reference: STU-001</p>

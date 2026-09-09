@@ -24,11 +24,11 @@ app.use('/api/payments', paymentsCrudRoutes);
 app.get('/api/health', (_req, res) => {
   res.json({
     status: 'ok',
-    service: 'TuitionPay Backend API',
+    service: 'RIA Backend API',
     timestamp: new Date().toISOString(),
   });
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 TuitionPay Backend Server running on http://localhost:${PORT}`);
+  console.log(`🚀 RIA Backend Server running on http://localhost:${PORT}`);
 });

@@ -86,8 +86,8 @@ export default function DashboardShowcase() {
           {/* Top bar */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
             <div className="flex items-center gap-2.5">
-              <img src={logoImg} alt="TuitionPay Logo" className="w-7 h-7 rounded-lg object-cover" />
-              <span className="font-display font-semibold text-blue-900 text-sm">TuitionPay</span>
+              <img src={logoImg} alt="RIA Logo" className="w-7 h-7 rounded-lg object-cover" />
+              <span className="font-display font-semibold text-blue-900 text-sm">RIA</span>
             </div>
             <div className="flex items-center gap-3">
               <span className="text-xs text-slate-400 font-medium">September 2026</span>

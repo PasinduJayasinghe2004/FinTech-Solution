@@ -64,7 +64,7 @@ class Database {
     id: 'usr_tch_1',
     name: 'Dr. Wickramasinghe',
     title: 'Senior Mathematics Lecturer & Tutor',
-    email: 'teacher@tuitionpay.com',
+    email: 'teacher@ria.com',
     phone: '+94 77 987 6543',
     subjects: ['Combined Mathematics', 'Higher Mathematics', 'Physics'],
     qualification: 'Ph.D. in Applied Mathematics (Univ. of Colombo), B.Sc. (Hons)',
@@ -88,7 +88,7 @@ class Database {
     {
       id: 'usr_tch_1',
       name: 'Dr. Wickramasinghe',
-      email: 'teacher@tuitionpay.com',
+      email: 'teacher@ria.com',
       role: 'ROLE_TEACHER',
     },
   ];

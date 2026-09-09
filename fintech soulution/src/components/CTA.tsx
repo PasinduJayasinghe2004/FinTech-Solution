@@ -12,7 +12,7 @@ export default function CTA() {
       <div className="max-w-4xl mx-auto px-6 lg:px-8 text-center relative">
         <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 mb-6">
           <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-          <span className="text-xs font-semibold text-white/90">Join 20+ teachers already using TuitionPay</span>
+          <span className="text-xs font-semibold text-white/90">Join 20+ teachers already using RIA</span>
         </div>
 
         <h2 className="font-display text-3xl lg:text-5xl font-bold text-white mb-5 leading-tight">

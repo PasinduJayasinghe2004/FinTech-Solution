@@ -4,12 +4,12 @@ services:
   # PostgreSQL Database Service
   postgres:
     image: postgres:16-alpine
-    container_name: tuitionpay-postgres
+    container_name: ria-postgres
     restart: always
     environment:
-      POSTGRES_USER: tuitionpay_user
-      POSTGRES_PASSWORD: tuitionpay_password
-      POSTGRES_DB: tuitionpay_db
+      POSTGRES_USER: ria_user
+      POSTGRES_PASSWORD: ria_password
+      POSTGRES_DB: ria_db
     ports:
       - '5432:5432'
     volumes:
@@ -19,10 +19,10 @@ services:
   # Optional PgAdmin Web GUI for managing database (Access via http://localhost:5050)
   pgadmin:
     image: dpage/pgadmin4:latest
-    container_name: tuitionpay-pgadmin
+    container_name: ria-pgadmin
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@tuitionpay.com
+      PGADMIN_DEFAULT_EMAIL: admin@ria.com
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
       - '5050:80'

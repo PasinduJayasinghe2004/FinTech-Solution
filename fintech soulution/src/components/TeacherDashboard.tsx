@@ -148,9 +148,9 @@ export default function TeacherDashboard({
         <div>
           {/* Brand Logo */}
           <div className="flex items-center gap-3.5 mb-9 px-1">
-            <img src={logoImg} alt="TuitionPay Logo" className="w-10 h-10 rounded-2xl object-cover shadow-lg shadow-teal-500/25" />
+            <img src={logoImg} alt="RIA Logo" className="w-10 h-10 rounded-2xl object-cover shadow-lg shadow-teal-500/25" />
             <div>
-              <span className="font-display font-extrabold text-xl tracking-tight text-blue-950 block leading-none">TuitionPay</span>
+              <span className="font-display font-extrabold text-xl tracking-tight text-blue-950 block leading-none">RIA</span>
               <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest mt-1 block">Teacher Portal</span>
             </div>
           </div>
@@ -875,7 +875,7 @@ export default function TeacherDashboard({
               <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-amber-900">
                 <p className="font-bold">Reminder Message Preview:</p>
                 <p className="mt-1 text-[11px] text-amber-800">
-                  "Dear Student/Parent, your tuition fee of Rs. 3,000 for September 2026 is pending. Please complete your payment via TuitionPay portal."
+                  "Dear Student/Parent, your tuition fee of Rs. 3,000 for September 2026 is pending. Please complete your payment via RIA portal."
                 </p>
               </div>
               <button

@@ -97,9 +97,9 @@ export default function StudentManagement({
         <div>
           {/* Brand Logo */}
           <div className="flex items-center gap-3.5 mb-9 px-1">
-            <img src={logoImg} alt="TuitionPay Logo" className="w-10 h-10 rounded-2xl object-cover shadow-lg shadow-teal-500/25" />
+            <img src={logoImg} alt="RIA Logo" className="w-10 h-10 rounded-2xl object-cover shadow-lg shadow-teal-500/25" />
             <div>
-              <span className="font-display font-extrabold text-xl tracking-tight text-blue-950 block leading-none">TuitionPay</span>
+              <span className="font-display font-extrabold text-xl tracking-tight text-blue-950 block leading-none">RIA</span>
             </div>
           </div>
 

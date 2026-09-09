@@ -99,8 +99,8 @@ export default function LoginPage({ onBackToHome, onLoginSuccess }: LoginPagePro
               onClick={onBackToHome}
               className="flex items-center gap-3 group text-left cursor-pointer focus:outline-none"
             >
-              <img src={logoImg} alt="TuitionPay Logo" className="w-10 h-10 rounded-xl object-cover shadow-lg shadow-teal-500/30 group-hover:scale-105 transition-transform" />
-              <span className="font-display font-bold text-2xl tracking-tight text-white">TuitionPay</span>
+              <img src={logoImg} alt="RIA Logo" className="w-10 h-10 rounded-xl object-cover shadow-lg shadow-teal-500/30 group-hover:scale-105 transition-transform" />
+              <span className="font-display font-bold text-2xl tracking-tight text-white">RIA</span>
             </button>
 
             {onBackToHome && (
@@ -124,9 +124,9 @@ export default function LoginPage({ onBackToHome, onLoginSuccess }: LoginPagePro
               {/* App Internal Header */}
               <div className="flex items-center justify-between px-2 mb-4">
                 <div className="flex items-center gap-2">
-                  <img src={logoImg} alt="TuitionPay Logo" className="w-6 h-6 rounded-lg object-cover" />
+                  <img src={logoImg} alt="RIA Logo" className="w-6 h-6 rounded-lg object-cover" />
                   <div>
-                    <p className="text-[11px] font-bold text-slate-800 leading-tight">TuitionPay</p>
+                    <p className="text-[11px] font-bold text-slate-800 leading-tight">RIA</p>
                     <p className="text-[9px] text-slate-400">Student & Teacher Portal</p>
                   </div>
                 </div>
@@ -178,7 +178,7 @@ export default function LoginPage({ onBackToHome, onLoginSuccess }: LoginPagePro
           {/* Bottom Callout Text */}
           <div className="relative z-10 mt-4">
             <h1 className="font-display text-2xl lg:text-3xl font-extrabold text-white mb-2 leading-tight">
-              {mode === 'login' ? 'Your Tuition Payments, Simple.' : 'Join TuitionPay Today.'}
+              {mode === 'login' ? 'Your Tuition Payments, Simple.' : 'Join RIA Today.'}
             </h1>
             <p className="text-blue-100/80 text-xs lg:text-sm max-w-md leading-relaxed">
               {mode === 'login'
@@ -248,7 +248,7 @@ export default function LoginPage({ onBackToHome, onLoginSuccess }: LoginPagePro
             <p className="text-slate-500 text-xs sm:text-sm">
               {mode === 'login' 
                 ? (role === 'student' ? 'Log in using your Student ID to access your account.' : 'Log in using your Teacher Email.')
-                : 'Register a new account to get started with TuitionPay.'}
+                : 'Register a new account to get started with RIA.'}
             </p>
           </div>
 

@@ -41,7 +41,7 @@ export default function PaymentSecurity() {
               Simple Payments.<br />Secure Transactions.
             </h2>
             <p className="text-blue-200 mb-10 leading-relaxed">
-              TuitionPay is built with the same security standards as modern banking apps. Teachers and students can transact with complete confidence.
+              RIA is built with the same security standards as modern banking apps. Teachers and students can transact with complete confidence.
             </p>
 
             <div className="grid sm:grid-cols-2 gap-5">

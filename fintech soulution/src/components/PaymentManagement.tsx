@@ -108,9 +108,9 @@ export default function PaymentManagement({
         <div>
           {/* Brand Logo */}
           <div className="flex items-center gap-3.5 mb-9 px-1">
-            <img src={logoImg} alt="TuitionPay Logo" className="w-10 h-10 rounded-2xl object-cover shadow-lg shadow-teal-500/25" />
+            <img src={logoImg} alt="RIA Logo" className="w-10 h-10 rounded-2xl object-cover shadow-lg shadow-teal-500/25" />
             <div>
-              <span className="font-display font-extrabold text-xl tracking-tight text-blue-950 block leading-none">TuitionPay</span>
+              <span className="font-display font-extrabold text-xl tracking-tight text-blue-950 block leading-none">RIA</span>
             </div>
           </div>
 
@@ -727,7 +727,7 @@ export default function PaymentManagement({
               <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-amber-900">
                 <p className="font-bold">Message Content:</p>
                 <p className="mt-1 text-[11px] text-amber-800">
-                  "TuitionPay Alert: Your monthly tuition fee payment is pending. Please log in to complete your payment."
+                  "RIA Alert: Your monthly tuition fee payment is pending. Please log in to complete your payment."
                 </p>
               </div>
               <button

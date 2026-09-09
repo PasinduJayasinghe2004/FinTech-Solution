@@ -181,7 +181,7 @@ export default function Hero() {
             </h1>
 
             <p className="text-slate-500 text-lg leading-relaxed mb-8 max-w-lg">
-              TuitionPay helps teachers manage students, track payments, monitor outstanding balances, and receive real-time updates — all in one platform.
+              RIA helps teachers manage students, track payments, monitor outstanding balances, and receive real-time updates — all in one platform.
             </p>
 
             <div className="flex flex-wrap gap-3 mb-10">
@@ -222,7 +222,7 @@ export default function Hero() {
                 ))}
               </div>
               <div>
-                <p className="text-sm font-semibold text-slate-800">500+ teachers trust TuitionPay</p>
+                <p className="text-sm font-semibold text-slate-800">500+ teachers trust RIA</p>
                 <div className="flex items-center gap-1 mt-0.5">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <svg key={i} className="w-3 h-3 text-amber-400 fill-current" viewBox="0 0 20 20">

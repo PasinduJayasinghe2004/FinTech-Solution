@@ -43,7 +43,7 @@ export default function HowItWorks() {
             Up and Running in Minutes
           </h2>
           <p className="text-blue-200 max-w-md mx-auto">
-            TuitionPay is designed to be simple. Four steps and your tuition management is fully digital.
+            RIA is designed to be simple. Four steps and your tuition management is fully digital.
           </p>
         </div>
 

@@ -26,8 +26,8 @@ export const apiService = {
       });
       const data = await res.json();
       if (res.ok && data.token) {
-        localStorage.setItem('tuitionpay_token', data.token);
-        localStorage.setItem('tuitionpay_user', JSON.stringify(data.user));
+        localStorage.setItem('ria_token', data.token);
+        localStorage.setItem('ria_user', JSON.stringify(data.user));
       }
       return data;
     } catch (err) {
@@ -37,7 +37,7 @@ export const apiService = {
 
   async registerStudent(studentData: { name: string; email: string; subject: string; phone: string }): Promise<any> {
     try {
-      const token = localStorage.getItem('tuitionpay_token');
+      const token = localStorage.getItem('ria_token');
       const res = await fetch(`${API_BASE_URL}/students`, {
         method: 'POST',
         headers: {
@@ -54,7 +54,7 @@ export const apiService = {
 
   async getStudentDashboard(): Promise<any> {
     try {
-      const token = localStorage.getItem('tuitionpay_token');
+      const token = localStorage.getItem('ria_token');
       const res = await fetch(`${API_BASE_URL}/student/dashboard`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -66,7 +66,7 @@ export const apiService = {
 
   async getTeacherDashboard(): Promise<any> {
     try {
-      const token = localStorage.getItem('tuitionpay_token');
+      const token = localStorage.getItem('ria_token');
       const res = await fetch(`${API_BASE_URL}/teacher/dashboard`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -78,7 +78,7 @@ export const apiService = {
 
   async fetchStudents(): Promise<any[]> {
     try {
-      const token = localStorage.getItem('tuitionpay_token');
+      const token = localStorage.getItem('ria_token');
       const res = await fetch(`${API_BASE_URL}/students`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -91,7 +91,7 @@ export const apiService = {
 
   async processPayment(amount: number, method: string): Promise<any> {
     try {
-      const token = localStorage.getItem('tuitionpay_token');
+      const token = localStorage.getItem('ria_token');
       const res = await fetch(`${API_BASE_URL}/student/pay`, {
         method: 'POST',
         headers: {
@@ -108,7 +108,7 @@ export const apiService = {
 
   async getTeacherProfile(): Promise<any> {
     try {
-      const token = localStorage.getItem('tuitionpay_token');
+      const token = localStorage.getItem('ria_token');
       const res = await fetch(`${API_BASE_URL}/teacher/profile`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -120,7 +120,7 @@ export const apiService = {
 
   async updateTeacherProfile(profileData: any): Promise<any> {
     try {
-      const token = localStorage.getItem('tuitionpay_token');
+      const token = localStorage.getItem('ria_token');
       const res = await fetch(`${API_BASE_URL}/teacher/profile`, {
         method: 'PUT',
         headers: {

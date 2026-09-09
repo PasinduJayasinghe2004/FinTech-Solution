@@ -33,7 +33,7 @@ export default function TeacherProfilePage({
   const [profile, setProfile] = useState({
     name: 'Dr. Wickramasinghe',
     title: 'Senior Mathematics Lecturer & Tutor',
-    email: 'teacher@tuitionpay.com',
+    email: 'teacher@ria.com',
     phone: '+94 77 987 6543',
     qualification: 'Ph.D. in Applied Mathematics (Univ. of Colombo), B.Sc. (Hons)',
     experienceYears: 12,
@@ -112,9 +112,9 @@ export default function TeacherProfilePage({
         <div>
           {/* Brand Logo */}
           <div className="flex items-center gap-3.5 mb-9 px-1">
-            <img src={logoImg} alt="TuitionPay Logo" className="w-10 h-10 rounded-2xl object-cover shadow-lg shadow-teal-500/25" />
+            <img src={logoImg} alt="RIA Logo" className="w-10 h-10 rounded-2xl object-cover shadow-lg shadow-teal-500/25" />
             <div>
-              <span className="font-display font-extrabold text-xl tracking-tight text-blue-950 block leading-none">TuitionPay</span>
+              <span className="font-display font-extrabold text-xl tracking-tight text-blue-950 block leading-none">RIA</span>
               <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest mt-1 block">Teacher Portal</span>
             </div>
           </div>

@@ -1,4 +1,4 @@
-# TuitionPay -- Development Guide
+# RIA -- Development Guide
 
 ## Teacher-Centric Tuition Payment & Monitoring Platform
 
@@ -10,7 +10,7 @@
 
 # 1. Project Overview
 
-TuitionPay is a digital platform designed to help private tuition
+RIA is a digital platform designed to help private tuition
 teachers manage students and monitor tuition payments.
 
 The system allows:
@@ -476,7 +476,7 @@ A student can have many payments.
 Recommended Spring Boot package structure:
 
 ``` text
-com.tuitionpay
+com.ria
 
 ├── config
 ├── controller
@@ -808,7 +808,7 @@ Platform
           └── Students
 ```
 
-This can transform TuitionPay into a scalable SaaS platform.
+This can transform RIA into a scalable SaaS platform.
 
 ------------------------------------------------------------------------
 
@@ -848,7 +848,7 @@ Follow this exact order:
 
 # Final Vision
 
-**TuitionPay** should become a simple but powerful platform where:
+**RIA** should become a simple but powerful platform where:
 
 > Teachers can manage their tuition business.
 
