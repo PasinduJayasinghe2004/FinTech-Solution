@@ -410,11 +410,18 @@ export default function LoginPage({ onBackToHome, onLoginSuccess }: LoginPagePro
                   onChange={(e) => setSubject(e.target.value)}
                   className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 text-xs focus:ring-2 focus:ring-blue-500 outline-none"
                 >
-                  <option value="Combined Mathematics">Combined Mathematics</option>
-                  <option value="Physics">Physics</option>
-                  <option value="Chemistry">Chemistry</option>
-                  <option value="ICT / Computer Science">ICT / Computer Science</option>
-                  <option value="General English">General English</option>
+                  <option value="" disabled>Select your subject</option>
+                  <option value="Accounting">Accounting</option>
+                  <option value="Econ">Econ</option>
+                  <option value="English">English</option>
+                  <option value="IT">IT</option>
+                  <option value="Sinhala">Sinhala</option>
+                  <option value="History">History</option>
+                  <option value="Maths">Maths</option>
+                  <option value="Science">Science</option>
+                  <option value="IT course">IT course</option>
+                  <option value="English course">English course</option>
+                  <option value="AAT">AAT</option>
                 </select>
               </div>
 
