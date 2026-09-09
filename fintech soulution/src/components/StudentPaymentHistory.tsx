@@ -39,8 +39,26 @@ export default function StudentPaymentHistory({
 }: StudentPaymentHistoryProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'PAID' | 'OVERDUE'>('ALL');
+  const [historyList, setHistoryList] = useState<any[]>(mockHistory);
 
-  const filteredHistory = mockHistory.filter((item) => {
+  React.useEffect(() => {
+    apiService.getPaymentHistory().then((res) => {
+      if (res.success && res.payments && res.payments.length > 0) {
+        const mapped = res.payments.map((p: any) => ({
+          id: p.id,
+          month: p.month,
+          date: p.paymentDate || '—',
+          amount: `Rs. ${p.amount.toLocaleString()}`,
+          method: p.method,
+          status: p.status.toUpperCase() === 'PAID' ? 'PAID' : 'OVERDUE',
+          receiptNo: p.transactionId || '—',
+        }));
+        setHistoryList(mapped);
+      }
+    });
+  }, []);
+
+  const filteredHistory = historyList.filter((item) => {
     const matchesSearch = item.month.toLowerCase().includes(searchQuery.toLowerCase()) || item.receiptNo.toLowerCase().includes(searchQuery.toLowerCase());
     if (statusFilter === 'PAID') return matchesSearch && item.status === 'PAID';
     if (statusFilter === 'OVERDUE') return matchesSearch && item.status === 'OVERDUE';

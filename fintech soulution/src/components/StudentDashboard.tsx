@@ -31,11 +31,26 @@ export default function StudentDashboard({
   }, []);
 
   const currentStudentName = dbData?.student?.name || studentName;
+  const currentStudentId = dbData?.student?.studentUniqueId || 'STU-001';
+  const summary = dbData?.summary || {
+    currentPayment: 3000,
+    outstandingBalance: 6000,
+    paymentStatus: 'Pending',
+    overdueCount: 2,
+    dueDate: 'September 15, 2026'
+  };
+  const recentPayments = dbData?.recentPayments || [
+    { id: 'pay_1', month: 'August 2026', paymentDate: 'Aug 10', amount: 3000, method: 'Card', status: 'Paid' },
+    { id: 'pay_2', month: 'July 2026', paymentDate: 'Jul 12', amount: 3000, method: 'Bank Transfer', status: 'Paid' },
+    { id: 'pay_3', month: 'June 2026', paymentDate: 'Jun 15', amount: 3000, method: 'QR Payment', status: 'Paid' },
+    { id: 'pay_4', month: 'May 2026', paymentDate: '—', amount: 3000, method: '—', status: 'Overdue' }
+  ];
+  const userNotifications = dbData?.notifications || [];
 
   if (activeTab === 'payments') {
     return (
       <StudentPaymentPage
-        studentName={studentName}
+        studentName={currentStudentName}
         onLogout={onLogout}
         onNavigateToDashboard={() => setActiveTab('dashboard')}
         onNavigateToHistory={() => setActiveTab('history')}
@@ -48,7 +63,7 @@ export default function StudentDashboard({
   if (activeTab === 'history') {
     return (
       <StudentPaymentHistory
-        studentName={studentName}
+        studentName={currentStudentName}
         onLogout={onLogout}
         onNavigateToDashboard={() => setActiveTab('dashboard')}
         onNavigateToPayments={() => setActiveTab('payments')}
@@ -61,7 +76,7 @@ export default function StudentDashboard({
   if (activeTab === 'notifications') {
     return (
       <StudentNotificationsPage
-        studentName={studentName}
+        studentName={currentStudentName}
         onLogout={onLogout}
         onNavigateToDashboard={() => setActiveTab('dashboard')}
         onNavigateToPayments={() => setActiveTab('payments')}
@@ -74,7 +89,7 @@ export default function StudentDashboard({
   if (activeTab === 'profile') {
     return (
       <StudentProfilePage
-        studentName={studentName}
+        studentName={currentStudentName}
         onLogout={onLogout}
         onNavigateToDashboard={() => setActiveTab('dashboard')}
         onNavigateToPayments={() => setActiveTab('payments')}
@@ -84,8 +99,17 @@ export default function StudentDashboard({
     );
   }
 
-  const handlePayNow = (e: React.FormEvent) => {
+  const handlePayNow = async (e: React.FormEvent) => {
     e.preventDefault();
+    try {
+      await apiService.processPayment(summary.currentPayment, selectedMethod === 'card' ? 'Card' : selectedMethod === 'bank' ? 'Bank Transfer' : 'QR Payment');
+      const res = await apiService.getStudentDashboard();
+      if (res.success && res.data) {
+        setDbData(res.data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
     setPaymentSuccess(true);
     setTimeout(() => {
       setPaymentSuccess(false);
@@ -215,9 +239,9 @@ export default function StudentDashboard({
         <header className="bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between sticky top-0 z-30">
           <div>
             <h1 className="font-display text-xl font-bold text-slate-900 flex items-center gap-2">
-              Good Morning, {studentName} <span className="animate-bounce">👋</span>
+              Good Morning, {currentStudentName} <span className="animate-bounce">👋</span>
             </h1>
-            <p className="text-xs text-slate-500">Here's an overview of your tuition payments.</p>
+            <p className="text-xs text-slate-500">Here's an overview of your tuition payments ({currentStudentId}).</p>
           </div>
 
           <div className="flex items-center gap-3">
@@ -230,7 +254,9 @@ export default function StudentDashboard({
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                 </svg>
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-500 ring-2 ring-white" />
+                {userNotifications.length > 0 && (
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-500 ring-2 ring-white" />
+                )}
               </button>
 
               {/* Notifications Dropdown */}
@@ -238,17 +264,19 @@ export default function StudentDashboard({
                 <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-slate-100 p-4 z-50">
                   <div className="flex justify-between items-center mb-3">
                     <h4 className="font-bold text-sm text-slate-900">Notifications</h4>
-                    <span className="text-[10px] bg-blue-50 text-blue-600 font-bold px-2 py-0.5 rounded-full">2 New</span>
+                    <span className="text-[10px] bg-blue-50 text-blue-600 font-bold px-2 py-0.5 rounded-full">{userNotifications.length} New</span>
                   </div>
                   <div className="space-y-2 text-xs">
-                    <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-100">
-                      <p className="font-semibold text-amber-900">September Payment Due</p>
-                      <p className="text-amber-700 text-[11px]">Rs. 3,000 is due in 5 days (Sep 15, 2026).</p>
-                    </div>
-                    <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-100">
-                      <p className="font-semibold text-emerald-900">August Payment Received</p>
-                      <p className="text-emerald-700 text-[11px]">Receipt #TP-8241 sent to your email.</p>
-                    </div>
+                    {userNotifications.length === 0 ? (
+                      <p className="text-slate-400 text-xs py-2">No new notifications.</p>
+                    ) : (
+                      userNotifications.map((n: any) => (
+                        <div key={n.id} className="p-2.5 rounded-xl bg-blue-50 border border-blue-100">
+                          <p className="font-semibold text-blue-900">{n.title}</p>
+                          <p className="text-blue-700 text-[11px]">{n.message}</p>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
               )}
@@ -257,10 +285,9 @@ export default function StudentDashboard({
             {/* Profile Dropdown Badge */}
             <div className="flex items-center gap-2.5 bg-slate-100 hover:bg-slate-200/80 px-3 py-1.5 rounded-full cursor-pointer transition-colors">
               <div className="w-7 h-7 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center">
-                {studentName.charAt(0)}
+                {currentStudentName.charAt(0)}
               </div>
-              <span className="text-xs font-bold text-slate-800">{studentName}</span>
-              <span className="text-slate-400 text-xs">∨</span>
+              <span className="text-xs font-bold text-slate-800">{currentStudentName}</span>
             </div>
           </div>
         </header>
@@ -284,7 +311,7 @@ export default function StudentDashboard({
                 </span>
               </div>
               <p className="text-xs font-semibold text-slate-400">Current Payment</p>
-              <h3 className="text-2xl font-extrabold text-slate-900 mt-1">Rs. 3,000</h3>
+              <h3 className="text-2xl font-extrabold text-slate-900 mt-1">Rs. {summary.currentPayment.toLocaleString()}</h3>
             </div>
 
             {/* Card 2: Outstanding Balance */}
@@ -296,11 +323,11 @@ export default function StudentDashboard({
                   </svg>
                 </div>
                 <span className="text-[11px] font-bold text-red-700 bg-red-50 border border-red-200/60 px-2.5 py-1 rounded-full">
-                  2 Payments Overdue
+                  {summary.overdueCount} Overdue
                 </span>
               </div>
               <p className="text-xs font-semibold text-slate-400">Outstanding Balance</p>
-              <h3 className="text-2xl font-extrabold text-red-600 mt-1">Rs. 6,000</h3>
+              <h3 className="text-2xl font-extrabold text-red-600 mt-1">Rs. {summary.outstandingBalance.toLocaleString()}</h3>
             </div>
 
             {/* Card 3: Payment Status */}
@@ -312,31 +339,25 @@ export default function StudentDashboard({
                   </svg>
                 </div>
                 <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2.5 py-1 rounded-full">
-                  On Track
+                  Status
                 </span>
               </div>
               <p className="text-xs font-semibold text-slate-400">Payment Status</p>
-              <h3 className="text-2xl font-extrabold text-emerald-600 mt-1">Paid This Month</h3>
+              <h3 className="text-2xl font-extrabold text-emerald-600 mt-1">{summary.paymentStatus}</h3>
             </div>
 
           </div>
 
           {/* Featured Blue Gradient Action Banner */}
           <div className="bg-gradient-to-r from-blue-800 via-blue-900 to-indigo-950 rounded-3xl p-6 lg:p-8 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
-            {/* Ambient Lighting Background */}
-            <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-
             <div className="space-y-3 z-10 text-center md:text-left">
               <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 backdrop-blur-md px-3 py-1 rounded-full">
                 <span className="text-[10px] font-extrabold tracking-widest text-white uppercase">SEPTEMBER TUITION FEE</span>
-                <span className="text-[9px] font-bold text-amber-300 bg-amber-400/20 px-2 py-0.5 rounded-full border border-amber-300/30">PENDING</span>
+                <span className="text-[9px] font-bold text-amber-300 bg-amber-400/20 px-2 py-0.5 rounded-full border border-amber-300/30">{summary.paymentStatus.toUpperCase()}</span>
               </div>
-              <h2 className="text-3xl lg:text-4xl font-extrabold tracking-tight">Rs. 3,000</h2>
+              <h2 className="text-3xl lg:text-4xl font-extrabold tracking-tight">Rs. {summary.currentPayment.toLocaleString()}</h2>
               <p className="text-xs text-blue-200 flex items-center justify-center md:justify-start gap-1.5">
-                <svg className="w-4 h-4 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <span>Due on September 15, 2026</span>
+                <span>Due on {summary.dueDate}</span>
               </p>
             </div>
 
@@ -348,35 +369,13 @@ export default function StudentDashboard({
                 <span>Pay Now</span>
                 <span>→</span>
               </button>
-              <div className="flex items-center gap-1.5 text-[11px] text-blue-200/80">
-                <svg className="w-3.5 h-3.5 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-                <span>Secure Payment Powered by RIA</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Payment Overview Section Header */}
-          <div className="flex items-center justify-between pt-2">
-            <h3 className="font-display font-bold text-lg text-slate-900">Your Payment Overview</h3>
-            <div className="flex items-center gap-4 text-xs font-semibold text-slate-500">
-              <span className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" /> Paid
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-amber-500" /> Pending
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-red-500" /> Overdue
-              </span>
             </div>
           </div>
 
           {/* Recent Payments Table Card */}
           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
             <div className="p-5 flex items-center justify-between border-b border-slate-100">
-              <h3 className="font-display font-bold text-base text-slate-900">Recent Payments</h3>
+              <h3 className="font-display font-bold text-base text-slate-900">Your Recent Payments</h3>
               <button 
                 onClick={() => setActiveTab('history')}
                 className="text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1 cursor-pointer"
@@ -397,63 +396,32 @@ export default function StudentDashboard({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-sm">
-                  
-                  {/* Row 1 */}
-                  <tr className="hover:bg-slate-50/60 transition-colors">
-                    <td className="py-4 px-6 font-bold text-slate-900">August 2026</td>
-                    <td className="py-4 px-6 text-slate-500">Aug 10</td>
-                    <td className="py-4 px-6 font-bold text-slate-900">Rs. 3,000</td>
-                    <td className="py-4 px-6 text-slate-600">Card</td>
-                    <td className="py-4 px-6">
-                      <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full border border-emerald-200/60">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Paid
-                      </span>
-                    </td>
-                  </tr>
-
-                  {/* Row 2 */}
-                  <tr className="hover:bg-slate-50/60 transition-colors">
-                    <td className="py-4 px-6 font-bold text-slate-900">July 2026</td>
-                    <td className="py-4 px-6 text-slate-500">Jul 12</td>
-                    <td className="py-4 px-6 font-bold text-slate-900">Rs. 3,000</td>
-                    <td className="py-4 px-6 text-slate-600">Bank Transfer</td>
-                    <td className="py-4 px-6">
-                      <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full border border-emerald-200/60">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Paid
-                      </span>
-                    </td>
-                  </tr>
-
-                  {/* Row 3 */}
-                  <tr className="hover:bg-slate-50/60 transition-colors">
-                    <td className="py-4 px-6 font-bold text-slate-900">June 2026</td>
-                    <td className="py-4 px-6 text-slate-500">Jun 15</td>
-                    <td className="py-4 px-6 font-bold text-slate-900">Rs. 3,000</td>
-                    <td className="py-4 px-6 text-slate-600">QR Payment</td>
-                    <td className="py-4 px-6">
-                      <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full border border-emerald-200/60">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Paid
-                      </span>
-                    </td>
-                  </tr>
-
-                  {/* Row 4 */}
-                  <tr className="hover:bg-slate-50/60 transition-colors">
-                    <td className="py-4 px-6 font-bold text-slate-900">May 2026</td>
-                    <td className="py-4 px-6 text-slate-400">—</td>
-                    <td className="py-4 px-6 font-bold text-slate-900">Rs. 3,000</td>
-                    <td className="py-4 px-6 text-slate-400">—</td>
-                    <td className="py-4 px-6">
-                      <span className="inline-flex items-center gap-1.5 bg-red-50 text-red-700 text-xs font-bold px-3 py-1 rounded-full border border-red-200/60">
-                        <span className="w-1.5 h-1.5 rounded-full bg-red-500" /> Overdue
-                      </span>
-                    </td>
-                  </tr>
-
+                  {recentPayments.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="py-6 text-center text-xs text-slate-400">No payment records found.</td>
+                    </tr>
+                  ) : (
+                    recentPayments.map((p: any) => (
+                      <tr key={p.id} className="hover:bg-slate-50/60 transition-colors">
+                        <td className="py-4 px-6 font-bold text-slate-900">{p.month}</td>
+                        <td className="py-4 px-6 text-slate-500">{p.paymentDate || p.date || '—'}</td>
+                        <td className="py-4 px-6 font-bold text-slate-900">Rs. {p.amount.toLocaleString()}</td>
+                        <td className="py-4 px-6 text-slate-600">{p.method}</td>
+                        <td className="py-4 px-6">
+                          <span className={`inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full border ${
+                            p.status === 'Paid' ? 'bg-emerald-50 text-emerald-700 border-emerald-200/60' : 'bg-red-50 text-red-700 border-red-200/60'
+                          }`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${p.status === 'Paid' ? 'bg-emerald-500' : 'bg-red-500'}`} /> {p.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
           </div>
+
 
           {/* 3 Quick Action Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
