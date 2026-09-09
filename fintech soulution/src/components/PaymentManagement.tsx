@@ -1,3 +1,4 @@
+import logoImg from '@/assets/logo.jpg';
 import React, { useState } from 'react';
 
 interface PaymentManagementProps {
@@ -107,7 +108,7 @@ export default function PaymentManagement({
         <div>
           {/* Brand Logo */}
           <div className="flex items-center gap-3.5 mb-9 px-1">
-            <img src="/logo.jpg" alt="TuitionPay Logo" className="w-10 h-10 rounded-2xl object-cover shadow-lg shadow-teal-500/25" />
+            <img src={logoImg} alt="TuitionPay Logo" className="w-10 h-10 rounded-2xl object-cover shadow-lg shadow-teal-500/25" />
             <div>
               <span className="font-display font-extrabold text-xl tracking-tight text-blue-950 block leading-none">TuitionPay</span>
             </div>

@@ -1,3 +1,4 @@
+import logoImg from '@/assets/logo.jpg';
 function DonutChart() {
   // Paid 65%, Pending 22%, Overdue 13%
   // r=38, cx=45, cy=45, C = 2π*38 ≈ 238.76
@@ -85,7 +86,7 @@ export default function DashboardShowcase() {
           {/* Top bar */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
             <div className="flex items-center gap-2.5">
-              <img src="/logo.jpg" alt="TuitionPay Logo" className="w-7 h-7 rounded-lg object-cover" />
+              <img src={logoImg} alt="TuitionPay Logo" className="w-7 h-7 rounded-lg object-cover" />
               <span className="font-display font-semibold text-blue-900 text-sm">TuitionPay</span>
             </div>
             <div className="flex items-center gap-3">

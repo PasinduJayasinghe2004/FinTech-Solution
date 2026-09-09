@@ -1,3 +1,4 @@
+import logoImg from '@/assets/logo.jpg';
 const links = {
   Product: ['Features', 'Pricing', 'Dashboard', 'Integrations'],
   Resources: ['Help Center', 'Documentation', 'API Reference', 'Changelog'],
@@ -27,7 +28,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-2">
             <div className="flex items-center gap-2.5 mb-4">
-              <img src="/logo.jpg" alt="TuitionPay Logo" className="w-8 h-8 rounded-lg object-cover" />
+              <img src={logoImg} alt="TuitionPay Logo" className="w-8 h-8 rounded-lg object-cover" />
               <span className="font-display font-semibold text-white text-lg tracking-tight">TuitionPay</span>
             </div>
             <p className="text-sm text-slate-400 leading-relaxed mb-6 max-w-xs">

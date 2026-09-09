@@ -1,3 +1,4 @@
+import logoImg from '@/assets/logo.jpg';
 import { useState, useEffect } from 'react';
 import { MenuIcon, CloseIcon } from './Icons';
 
@@ -28,7 +29,7 @@ export default function Navbar({ onLoginClick, onTeacherDashboardClick }: Navbar
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <a href="#" className="flex items-center gap-2.5">
-            <img src="/logo.jpg" alt="TuitionPay Logo" className="w-8 h-8 rounded-lg object-cover shadow-sm" />
+            <img src={logoImg} alt="TuitionPay Logo" className="w-8 h-8 rounded-lg object-cover shadow-sm" />
             <span className="font-display font-semibold text-blue-900 text-lg tracking-tight">TuitionPay</span>
           </a>
 
