@@ -1,3 +1,4 @@
+import { logoImg } from '@/assets/logo';
 import { ArrowRightIcon, CheckIcon, UserPlusIcon, WarningIcon } from './Icons';
 
 function MiniBarChart() {
@@ -170,9 +171,9 @@ export default function Hero() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Left: Copy */}
           <div className="lg:py-12">
-            <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-full px-4 py-1.5 mb-6">
-              <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-              <span className="text-xs font-semibold text-blue-700">Built for Private Tuition Teachers</span>
+            <div className="inline-flex items-center gap-2.5 bg-blue-50 border border-blue-100 rounded-full px-4 py-1.5 mb-6 shadow-sm">
+              <img src={logoImg} alt="RIA Logo" className="w-5 h-5 rounded-full object-cover" />
+              <span className="text-xs font-semibold text-blue-700">Welcome to RIA</span>
             </div>
 
             <h1 className="font-display text-4xl lg:text-[52px] font-bold text-slate-900 leading-tight mb-6">

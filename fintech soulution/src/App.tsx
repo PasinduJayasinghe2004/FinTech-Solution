@@ -44,10 +44,6 @@ export default function App() {
 
   return (
     <div className="min-h-full">
-      <div className="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-900 text-white text-center py-2.5 px-4 flex items-center justify-center gap-3 border-b border-blue-700/50">
-        <img src={logoImg} alt="RIA Logo" className="w-6 h-6 rounded-md shadow-sm object-cover" />
-        <span className="text-sm font-medium tracking-wide">Welcome to RIA – Your Complete Tuition Management Solution</span>
-      </div>
       <Navbar 
         onLoginClick={() => setView('login')} 
         onTeacherDashboardClick={() => setView('teacher_dashboard')}
