@@ -117,6 +117,23 @@ export const apiService = {
     }
   },
 
+  async createPaymentRecord(studentId: string, amount: number, method: string): Promise<any> {
+    try {
+      const token = localStorage.getItem('ria_token');
+      const res = await fetch(`${API_BASE_URL}/payments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ studentId, amount, method }),
+      });
+      return await res.json();
+    } catch (err) {
+      return { success: false, message: 'Failed to create payment record' };
+    }
+  },
+
   async processPayment(amount: number, method: string): Promise<any> {
     try {
       const token = localStorage.getItem('ria_token');

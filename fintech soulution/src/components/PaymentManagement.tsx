@@ -123,19 +123,7 @@ export default function PaymentManagement({
     setShowCreatePaymentModal(false);
     
     // Send to backend database
-    const token = localStorage.getItem('ria_token');
-    await fetch(`http://localhost:5000/api/payments`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        studentId: 'STU-001',
-        amount: Number(newPayment.amount),
-        method: newPayment.method
-      })
-    });
+    await apiService.createPaymentRecord('STU-001', Number(newPayment.amount), newPayment.method);
     
     await loadBackendPayments();
     triggerSuccess(`Payment record of Rs. ${newPayment.amount} created successfully!`);
