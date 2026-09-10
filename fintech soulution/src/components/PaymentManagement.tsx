@@ -1,5 +1,6 @@
 import { logoImg } from '@/assets/logo';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { apiService } from '../services/api';
 
 interface PaymentManagementProps {
   teacherName?: string;
@@ -46,6 +47,7 @@ export default function PaymentManagement({
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [paymentsList, setPaymentsList] = useState<PaymentRecord[]>(mockPayments);
 
   // Modals & Action Toast
   const [showCreatePaymentModal, setShowCreatePaymentModal] = useState(false);
@@ -59,6 +61,56 @@ export default function PaymentManagement({
     month: 'September 2026'
   });
 
+  const loadBackendPayments = async () => {
+    try {
+      const [backendPayments, students] = await Promise.all([
+        apiService.fetchPayments(),
+        apiService.fetchStudents()
+      ]);
+
+      if (backendPayments && backendPayments.length > 0) {
+        const studentMap: Record<string, string> = {};
+        students.forEach((s: any) => {
+          if (s.studentUniqueId) studentMap[s.studentUniqueId.toUpperCase()] = s.name;
+        });
+
+        const bgColors = ['bg-blue-600', 'bg-emerald-600', 'bg-purple-600', 'bg-indigo-600', 'bg-pink-600', 'bg-orange-500'];
+
+        const mapped: PaymentRecord[] = backendPayments.map((p: any, idx: number) => {
+          const sName = studentMap[p.studentId?.toUpperCase()] || p.studentName || 'Student';
+          return {
+            id: p.transactionId || p.id || `TXN-${idx + 100}`,
+            studentName: sName,
+            studentId: p.studentId || 'STU-001',
+            initials: sName.charAt(0).toUpperCase(),
+            avatarBg: bgColors[idx % bgColors.length],
+            month: p.month || 'September 2026',
+            amount: `Rs. ${Number(p.amount || 0).toLocaleString()}`,
+            method: p.method || 'Card Payment',
+            date: p.paymentDate || 'Today',
+            status: (p.status?.toUpperCase() === 'PAID' ? 'PAID' : p.status?.toUpperCase() === 'OVERDUE' ? 'OVERDUE' : 'PROCESSING') as any,
+          };
+        });
+
+        // Merge live payments with mockPayments (avoid duplicates by ID)
+        const combined = [...mapped];
+        mockPayments.forEach(m => {
+          if (!combined.some(c => c.id === m.id || c.studentId === m.studentId && c.month === m.month)) {
+            combined.push(m);
+          }
+        });
+
+        setPaymentsList(combined);
+      }
+    } catch (err) {
+      console.error('Failed to load live backend payments:', err);
+    }
+  };
+
+  useEffect(() => {
+    loadBackendPayments();
+  }, []);
+
   const triggerSuccess = (msg: string) => {
     setActionSuccessMsg(msg);
     setTimeout(() => {
@@ -66,20 +118,37 @@ export default function PaymentManagement({
     }, 2500);
   };
 
-  const handleCreatePaymentSubmit = (e: React.FormEvent) => {
+  const handleCreatePaymentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setShowCreatePaymentModal(false);
+    
+    // Send to backend database
+    const token = localStorage.getItem('ria_token');
+    await fetch(`http://localhost:5000/api/payments`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        studentId: 'STU-001',
+        amount: Number(newPayment.amount),
+        method: newPayment.method
+      })
+    });
+    
+    await loadBackendPayments();
     triggerSuccess(`Payment record of Rs. ${newPayment.amount} created successfully!`);
   };
 
   const handleBulkReminderSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setShowReminderModal(false);
-    triggerSuccess('Bulk payment reminders sent to 16 pending students!');
+    triggerSuccess('Bulk payment reminders sent to pending students!');
   };
 
   // Filter payments
-  const filteredPayments = mockPayments.filter(p => {
+  const filteredPayments = paymentsList.filter(p => {
     const matchesSearch = p.studentName.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           p.studentId.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           p.id.toLowerCase().includes(searchQuery.toLowerCase());

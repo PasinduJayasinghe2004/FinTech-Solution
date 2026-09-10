@@ -104,6 +104,19 @@ export const apiService = {
     }
   },
 
+  async fetchPayments(): Promise<any[]> {
+    try {
+      const token = localStorage.getItem('ria_token');
+      const res = await fetch(`${API_BASE_URL}/payments`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      return data.payments || [];
+    } catch (err) {
+      return [];
+    }
+  },
+
   async processPayment(amount: number, method: string): Promise<any> {
     try {
       const token = localStorage.getItem('ria_token');
