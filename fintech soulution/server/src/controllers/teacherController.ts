@@ -56,14 +56,16 @@ export const addStudent = (req: Request, res: Response) => {
   });
 };
 
-export const getTeacherProfile = (_req: Request, res: Response) => {
-  const profile = db.getTeacherProfile();
+export const getTeacherProfile = (req: Request, res: Response) => {
+  const teacherId = (req as any).user?.id || 'usr_tch_1';
+  const profile = db.getTeacherProfile(teacherId);
   return res.json({ success: true, profile });
 };
 
 export const updateTeacherProfile = (req: Request, res: Response) => {
+  const teacherId = (req as any).user?.id || 'usr_tch_1';
   const updates = req.body;
-  const updatedProfile = db.updateTeacherProfile(updates);
+  const updatedProfile = db.updateTeacherProfile(teacherId, updates);
   return res.json({
     success: true,
     message: 'Teacher profile updated successfully',

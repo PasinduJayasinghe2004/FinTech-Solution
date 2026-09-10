@@ -62,10 +62,16 @@ export const login = (req: Request, res: Response) => {
     // Teacher login
     let user = db.findUserByEmail(idOrEmail);
     if (!user) {
+      const teacherProfile = db.addTeacher({
+        name: idOrEmail.includes('@') ? idOrEmail.split('@')[0].replace('.', ' ') : 'Teacher',
+        email: idOrEmail,
+        subject: 'General Tuition',
+        phone: '+94 77 000 0000',
+      });
       user = {
-        id: 'usr_tch_1',
-        name: 'Dr. Wickramasinghe',
-        email: idOrEmail || 'teacher@ria.com',
+        id: teacherProfile.id,
+        name: teacherProfile.name,
+        email: teacherProfile.email,
         role: 'ROLE_TEACHER',
       };
     }
@@ -91,4 +97,30 @@ export const login = (req: Request, res: Response) => {
       },
     });
   }
+};
+
+export const registerTeacher = (req: Request, res: Response) => {
+  const { name, email, subject, phone } = req.body;
+
+  if (!name || !email) {
+    return res.status(400).json({ success: false, message: 'Name and email are required for teacher registration' });
+  }
+
+  const teacher = db.addTeacher({
+    name,
+    email,
+    subject: subject || 'General Tuition',
+    phone: phone || '+94 77 000 0000',
+  });
+
+  return res.status(201).json({
+    success: true,
+    message: 'Teacher account created successfully',
+    teacher: {
+      id: teacher.id,
+      name: teacher.name,
+      email: teacher.email,
+      subject: teacher.subjects[0],
+    },
+  });
 };

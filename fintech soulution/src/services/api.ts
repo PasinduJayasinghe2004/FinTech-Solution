@@ -52,6 +52,21 @@ export const apiService = {
     }
   },
 
+  async registerTeacher(teacherData: { name: string; email: string; subject: string; phone: string }): Promise<any> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/register-teacher`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(teacherData),
+      });
+      return await res.json();
+    } catch (err) {
+      return { success: false, message: 'Failed to create teacher account' };
+    }
+  },
+
   async getStudentDashboard(): Promise<any> {
     try {
       const token = localStorage.getItem('ria_token');

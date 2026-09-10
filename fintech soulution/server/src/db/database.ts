@@ -60,23 +60,25 @@ export interface TeacherProfile {
 
 // In-Memory Database initialized with default mock records matching the development guide specs
 class Database {
-  private teacherProfile: TeacherProfile = {
-    id: 'usr_tch_1',
-    name: 'Dr. Wickramasinghe',
-    title: 'Senior Mathematics Lecturer & Tutor',
-    email: 'teacher@ria.com',
-    phone: '+94 77 987 6543',
-    subjects: ['Combined Mathematics', 'Higher Mathematics', 'Physics'],
-    qualification: 'Ph.D. in Applied Mathematics (Univ. of Colombo), B.Sc. (Hons)',
-    experienceYears: 12,
-    bio: 'Dedicated tuition educator specializing in Advanced Level Combined Mathematics and Physics with over 12 years of proven success preparing students for national examinations.',
-    bankName: 'Commercial Bank of Ceylon',
-    accountNumber: '8004591204',
-    accountName: 'Dr. A. Wickramasinghe',
-    branchName: 'Colombo Main Branch',
-    defaultMonthlyFee: 3000,
-    paymentNotes: 'Please include student ID (e.g. STU-001) as reference in bank transfer remark.'
-  };
+  private teacherProfiles: TeacherProfile[] = [
+    {
+      id: 'usr_tch_1',
+      name: 'Dr. Wickramasinghe',
+      title: 'Senior Mathematics Lecturer & Tutor',
+      email: 'teacher@ria.com',
+      phone: '+94 77 987 6543',
+      subjects: ['Combined Mathematics', 'Higher Mathematics', 'Physics'],
+      qualification: 'Ph.D. in Applied Mathematics (Univ. of Colombo), B.Sc. (Hons)',
+      experienceYears: 12,
+      bio: 'Dedicated tuition educator specializing in Advanced Level Combined Mathematics and Physics with over 12 years of proven success preparing students for national examinations.',
+      bankName: 'Commercial Bank of Ceylon',
+      accountNumber: '8004591204',
+      accountName: 'Dr. A. Wickramasinghe',
+      branchName: 'Colombo Main Branch',
+      defaultMonthlyFee: 3000,
+      paymentNotes: 'Please include student ID (e.g. STU-001) as reference in bank transfer remark.'
+    }
+  ];
   private users: User[] = [
     {
       id: 'usr_stu_1',
@@ -305,13 +307,51 @@ class Database {
   }
 
   // Teacher Profile
-  getTeacherProfile(): TeacherProfile {
-    return this.teacherProfile;
+  getTeacherProfile(teacherId: string = 'usr_tch_1'): TeacherProfile {
+    let profile = this.teacherProfiles.find(p => p.id === teacherId || p.email.toLowerCase() === teacherId.toLowerCase());
+    if (!profile) {
+      profile = this.teacherProfiles[0];
+    }
+    return profile;
   }
 
-  updateTeacherProfile(updates: Partial<TeacherProfile>): TeacherProfile {
-    this.teacherProfile = { ...this.teacherProfile, ...updates };
-    return this.teacherProfile;
+  updateTeacherProfile(teacherId: string, updates: Partial<TeacherProfile>): TeacherProfile {
+    const idx = this.teacherProfiles.findIndex(p => p.id === teacherId || p.email.toLowerCase() === teacherId.toLowerCase());
+    if (idx !== -1) {
+      this.teacherProfiles[idx] = { ...this.teacherProfiles[idx], ...updates };
+      return this.teacherProfiles[idx];
+    }
+    this.teacherProfiles[0] = { ...this.teacherProfiles[0], ...updates };
+    return this.teacherProfiles[0];
+  }
+
+  addTeacher(teacher: { name: string; email: string; subject: string; phone: string }): TeacherProfile {
+    const id = `usr_tch_${Date.now()}`;
+    const newProfile: TeacherProfile = {
+      id,
+      name: teacher.name,
+      title: `${teacher.subject} Lecturer & Tutor`,
+      email: teacher.email,
+      phone: teacher.phone || '+94 77 000 0000',
+      subjects: [teacher.subject || 'General Tuition'],
+      qualification: 'B.Sc. / Lecturer',
+      experienceYears: 5,
+      bio: `Professional tuition educator specializing in ${teacher.subject}.`,
+      bankName: 'Commercial Bank of Ceylon',
+      accountNumber: '8001234567',
+      accountName: teacher.name,
+      branchName: 'Main Branch',
+      defaultMonthlyFee: 3000,
+      paymentNotes: 'Please include student reference on transfer.',
+    };
+    this.teacherProfiles.push(newProfile);
+    this.users.push({
+      id,
+      name: teacher.name,
+      email: teacher.email,
+      role: 'ROLE_TEACHER',
+    });
+    return newProfile;
   }
 }
 

@@ -60,23 +60,44 @@ export default function LoginPage({ onBackToHome, onLoginSuccess, initialRole = 
     }
 
     setIsSubmitting(true);
-    const result = await apiService.registerStudent({
-      name: fullName,
-      email: regEmail,
-      subject,
-      phone,
-    });
+    let result: any;
+    
+    if (role === 'teacher') {
+      result = await apiService.registerTeacher({
+        name: fullName,
+        email: regEmail,
+        subject,
+        phone,
+      });
+    } else {
+      result = await apiService.registerStudent({
+        name: fullName,
+        email: regEmail,
+        subject,
+        phone,
+      });
+    }
     setIsSubmitting(false);
 
-    const assignedId = result.student?.studentUniqueId || (role === 'student' ? `STU-${Math.floor(100 + Math.random() * 900)}` : `TCH-${Math.floor(100 + Math.random() * 900)}`);
-
-    setRegisterSuccessMsg(`Account created in database! Assigned Unique ID: ${assignedId}. You can now log in.`);
-    setTimeout(() => {
-      setMode('login');
-      setIdOrEmail(assignedId);
-      setPassword(regPassword);
-      setRegisterSuccessMsg(null);
-    }, 2500);
+    if (role === 'teacher') {
+      const teacherEmail = result.teacher?.email || regEmail;
+      setRegisterSuccessMsg(`Teacher account created in database for ${fullName}! You can now log in using email: ${teacherEmail}`);
+      setTimeout(() => {
+        setMode('login');
+        setIdOrEmail(teacherEmail);
+        setPassword(regPassword);
+        setRegisterSuccessMsg(null);
+      }, 2500);
+    } else {
+      const assignedId = result.student?.studentUniqueId || `STU-${Math.floor(100 + Math.random() * 900)}`;
+      setRegisterSuccessMsg(`Student account created in database! Assigned Student ID: ${assignedId}. You can now log in.`);
+      setTimeout(() => {
+        setMode('login');
+        setIdOrEmail(assignedId);
+        setPassword(regPassword);
+        setRegisterSuccessMsg(null);
+      }, 2500);
+    }
   };
 
   return (
