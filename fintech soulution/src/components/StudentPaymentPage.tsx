@@ -33,210 +33,194 @@ export default function StudentPaymentPage({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex font-sans antialiased text-slate-900">
-      {/* Left Sidebar */}
-      <aside className="w-64 bg-white border-r border-slate-100/80 p-6 flex flex-col justify-between shrink-0 hidden md:flex min-h-screen select-none">
-        <div>
-          <div className="flex items-center gap-3.5 mb-9 px-1">
-            <img src={logoImg} alt="RIA Logo" className="w-10 h-10 rounded-2xl object-cover shadow-lg shadow-teal-500/25" />
-            <span className="font-display font-extrabold text-xl tracking-tight text-blue-950">RIA</span>
+    <div className="min-h-screen bg-slate-100/80 flex items-center justify-center p-4 font-sans antialiased text-slate-900">
+      
+      {/* PayHere Inspired Checkout Modal Dialog Shell */}
+      <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border border-slate-200/80 relative">
+        
+        {/* Top Header Panel - PayHere Vibrant Blue */}
+        <div className="bg-[#1b5bf7] p-6 text-white relative flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            {/* PayHere / Merchant Logo Badge Box */}
+            <div className="w-16 h-16 bg-white rounded-2xl p-2.5 shadow-md flex items-center justify-center shrink-0">
+              <img src={logoImg} alt="RIA Logo" className="w-full h-full object-contain" />
+            </div>
+            
+            {/* Merchant & Order Details */}
+            <div>
+              <h2 className="font-bold text-lg leading-tight tracking-tight">RIA Tuition Portal</h2>
+              <p className="text-xs text-blue-100 font-medium mt-0.5">Combined Mathematics - {month}</p>
+              <div className="mt-2 text-2xl font-black tracking-tight text-white">
+                Rs. {Number(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </div>
+            </div>
           </div>
 
-          <nav className="space-y-1.5">
-            <button onClick={onNavigateToDashboard} className="w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-semibold text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition-all cursor-pointer">
-              <svg className="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              </svg>
-              <span>Dashboard</span>
-            </button>
-            <button className="w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-semibold bg-blue-50/90 text-blue-600 transition-all cursor-pointer">
-              <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-              <span>Payments</span>
-            </button>
-            <button onClick={onNavigateToHistory} className="w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-semibold text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition-all cursor-pointer">
-              <svg className="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span>Payment History</span>
-            </button>
-            <button onClick={onNavigateToNotifications} className="w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-semibold text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition-all cursor-pointer">
-              <svg className="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-              </svg>
-              <span>Notifications</span>
-            </button>
-            <button onClick={onNavigateToProfile} className="w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-semibold text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition-all cursor-pointer">
-              <svg className="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              <span>My Profile</span>
-            </button>
-          </nav>
-        </div>
-
-        <div className="pt-6 border-t border-slate-100 space-y-1.5">
-          <button onClick={onLogout} className="w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-semibold text-red-500 hover:bg-red-50 transition-colors cursor-pointer">
-            <svg className="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-            <span>Logout</span>
+          {/* Close/Back Button */}
+          <button 
+            onClick={onNavigateToDashboard}
+            className="absolute top-4 right-4 text-blue-200 hover:text-white font-bold text-lg w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors cursor-pointer"
+            title="Cancel payment"
+          >
+            ✕
           </button>
         </div>
-      </aside>
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0">
-        <header className="bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between sticky top-0 z-30">
-          <div>
-            <h1 className="font-display text-xl font-bold text-slate-900">Tuition Fee Payment</h1>
-            <p className="text-xs text-slate-500">Pay your monthly tuition fees securely</p>
-          </div>
-          <div className="flex items-center gap-2.5 bg-slate-100 px-3 py-1.5 rounded-full">
-            <div className="w-7 h-7 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center">
-              {studentName.charAt(0)}
-            </div>
-            <span className="text-xs font-bold text-slate-800">{studentName}</span>
-          </div>
-        </header>
-
-        <main className="p-6 lg:p-8 max-w-4xl w-full mx-auto space-y-6">
+        {/* Modal Body */}
+        <div className="p-6 space-y-6">
           {paymentSuccess ? (
-            <div className="bg-white rounded-3xl p-8 border border-emerald-100 shadow-xl text-center space-y-4">
-              <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl font-bold">
+            <div className="text-center py-6 space-y-4">
+              <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl font-extrabold shadow-inner">
                 ✓
               </div>
-              <h2 className="text-2xl font-extrabold text-slate-900">Payment Successful!</h2>
-              <p className="text-sm text-slate-600 max-w-md mx-auto">
-                Rs. {Number(amount).toLocaleString()} for {month} has been successfully paid. Receipt #TP-{Math.floor(1000 + Math.random() * 9000)} generated.
+              <h3 className="text-xl font-black text-slate-900">Payment Successful!</h3>
+              <p className="text-xs text-slate-500 max-w-xs mx-auto">
+                Your payment of Rs. {Number(amount).toLocaleString()} has been processed via PayHere.
               </p>
               <button
                 onClick={onNavigateToHistory}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-bold text-sm rounded-2xl shadow-lg hover:bg-blue-700 transition-all cursor-pointer"
+                className="w-full py-3 bg-[#1b5bf7] text-white font-bold text-xs rounded-xl shadow-lg shadow-blue-600/30 hover:bg-blue-700 transition-all cursor-pointer"
               >
-                View Payment History →
+                View Payment Receipt →
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Fee Summary */}
-              <div className="md:col-span-1 bg-gradient-to-br from-blue-900 to-indigo-950 rounded-3xl p-6 text-white shadow-xl flex flex-col justify-between space-y-6">
-                <div>
-                  <span className="text-[10px] font-extrabold text-blue-300 uppercase tracking-widest bg-white/10 px-2.5 py-1 rounded-full">
-                    SELECTED FEE
-                  </span>
-                  <h3 className="text-2xl font-extrabold mt-3">{month}</h3>
-                  <p className="text-xs text-blue-200 mt-1">Combined Mathematics</p>
-                </div>
-                <div className="border-t border-white/10 pt-4 space-y-2">
-                  <div className="flex justify-between text-xs text-blue-200">
-                    <span>Tuition Fee</span>
-                    <span className="font-bold text-white">Rs. {Number(amount).toLocaleString()}</span>
+            <>
+              {/* Section Subtitle */}
+              <div>
+                <p className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">SELECT A PAYMENT METHOD</p>
+                
+                {/* Credit / Debit Card Group Label & Badges */}
+                <div className="mt-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-bold text-slate-700">Credit / Debit Card</span>
                   </div>
-                  <div className="flex justify-between text-xs text-blue-200">
-                    <span>Platform Fee</span>
-                    <span className="font-bold text-emerald-400">FREE</span>
-                  </div>
-                  <div className="flex justify-between text-base font-extrabold text-white border-t border-white/10 pt-2">
-                    <span>Total Amount</span>
-                    <span>Rs. {Number(amount).toLocaleString()}</span>
+
+                  {/* Card Provider Logos (VISA, Mastercard, AMEX, Discover, Diners Club) */}
+                  <div className="flex items-center gap-2">
+                    {/* VISA */}
+                    <div className="h-10 px-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center font-black italic text-blue-800 text-sm tracking-tighter shadow-2xs">
+                      VISA
+                    </div>
+                    {/* Mastercard */}
+                    <div className="h-10 px-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center gap-0.5 shadow-2xs">
+                      <span className="w-3.5 h-3.5 rounded-full bg-red-500 opacity-90" />
+                      <span className="w-3.5 h-3.5 rounded-full bg-amber-500 -ml-2 opacity-90" />
+                    </div>
+                    {/* AMEX */}
+                    <div className="h-10 px-2.5 bg-[#006fcf] text-white rounded-xl flex items-center justify-center font-black text-[9px] tracking-tighter shadow-2xs">
+                      AMEX
+                    </div>
+                    {/* Discover */}
+                    <div className="h-10 px-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center font-extrabold text-[10px] text-slate-700 shadow-2xs">
+                      DISCOVER
+                    </div>
+                    {/* Diners Club */}
+                    <div className="h-10 px-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center text-blue-700 text-xs font-serif font-black shadow-2xs">
+                      (D)
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Payment Form */}
-              <div className="md:col-span-2 bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-6">
-                <h3 className="font-display font-extrabold text-lg text-slate-900">Select Payment Method</h3>
-                
-                <div className="grid grid-cols-3 gap-3">
-                  {[
-                    { id: 'card', label: 'Credit/Debit Card', icon: '💳' },
-                    { id: 'bank', label: 'Bank Transfer', icon: '🏦' },
-                    { id: 'qr', label: 'LankaQR Pay', icon: '📱' },
-                  ].map((m) => (
-                    <button
-                      key={m.id}
-                      type="button"
-                      onClick={() => setSelectedMethod(m.id as any)}
-                      className={`p-4 rounded-2xl border text-center transition-all cursor-pointer ${
-                        selectedMethod === m.id
-                          ? 'border-blue-600 bg-blue-50/80 text-blue-900 font-bold shadow-sm'
-                          : 'border-slate-200 text-slate-600 hover:bg-slate-50 font-medium'
-                      }`}
-                    >
-                      <div className="text-xl mb-1">{m.icon}</div>
-                      <div className="text-xs">{m.label}</div>
-                    </button>
-                  ))}
-                </div>
+              {/* Payment Methods Tabs */}
+              <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100">
+                {[
+                  { id: 'card', label: 'Card Payment' },
+                  { id: 'bank', label: 'Bank Transfer' },
+                  { id: 'qr', label: 'LankaQR' },
+                ].map((m) => (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => setSelectedMethod(m.id as any)}
+                    className={`py-2 px-3 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                      selectedMethod === m.id
+                        ? 'border-[#1b5bf7] bg-blue-50 text-[#1b5bf7] shadow-2xs'
+                        : 'border-slate-200 text-slate-500 hover:bg-slate-50'
+                    }`}
+                  >
+                    {m.label}
+                  </button>
+                ))}
+              </div>
 
-                <form onSubmit={handlePayNow} className="space-y-4">
-                  {selectedMethod === 'card' && (
-                    <div className="space-y-3">
+              {/* Payment Form Fields */}
+              <form onSubmit={handlePayNow} className="space-y-4">
+                {selectedMethod === 'card' && (
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-600 mb-1">Card Number</label>
+                      <input
+                        type="text"
+                        placeholder="4242 •••• •••• 4242"
+                        required
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:border-[#1b5bf7] focus:bg-white outline-none transition-colors"
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">Card Number</label>
+                        <label className="block text-[11px] font-bold text-slate-600 mb-1">Expiry Date</label>
                         <input
                           type="text"
-                          placeholder="4242 4242 4242 4242"
+                          placeholder="MM / YY"
                           required
-                          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:ring-2 focus:ring-blue-500 outline-none"
+                          className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:border-[#1b5bf7] focus:bg-white outline-none transition-colors"
                         />
                       </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-xs font-bold text-slate-700 mb-1">Expiry Date</label>
-                          <input
-                            type="text"
-                            placeholder="MM/YY"
-                            required
-                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:ring-2 focus:ring-blue-500 outline-none"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-bold text-slate-700 mb-1">CVC / CVV</label>
-                          <input
-                            type="text"
-                            placeholder="123"
-                            required
-                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:ring-2 focus:ring-blue-500 outline-none"
-                          />
-                        </div>
+                      <div>
+                        <label className="block text-[11px] font-bold text-slate-600 mb-1">CVC / CVV</label>
+                        <input
+                          type="text"
+                          placeholder="123"
+                          required
+                          className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:border-[#1b5bf7] focus:bg-white outline-none transition-colors"
+                        />
                       </div>
                     </div>
-                  )}
+                  </div>
+                )}
 
-                  {selectedMethod === 'bank' && (
-                    <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs space-y-2 text-slate-700">
-                      <p className="font-bold text-slate-900 text-sm">Direct Bank Deposit Details</p>
-                      <div className="flex justify-between border-b border-slate-200 pb-1"><span>Bank Name:</span><span className="font-bold">Commercial Bank</span></div>
-                      <div className="flex justify-between border-b border-slate-200 pb-1"><span>Account Name:</span><span className="font-bold">RIA Private Ltd</span></div>
-                      <div className="flex justify-between border-b border-slate-200 pb-1"><span>Account Number:</span><span className="font-bold font-mono">8009-1234-5678</span></div>
-                      <div className="flex justify-between"><span>Reference Code:</span><span className="font-bold text-blue-600">STU-001</span></div>
+                {selectedMethod === 'bank' && (
+                  <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-[11px] space-y-1.5 text-slate-700">
+                    <p className="font-bold text-slate-900 text-xs mb-1">Direct Bank Account Deposit</p>
+                    <div className="flex justify-between border-b border-slate-200/80 pb-1"><span>Bank:</span><span className="font-bold">Commercial Bank</span></div>
+                    <div className="flex justify-between border-b border-slate-200/80 pb-1"><span>Account:</span><span className="font-bold font-mono">8009-1234-5678</span></div>
+                    <div className="flex justify-between"><span>Ref Code:</span><span className="font-bold text-[#1b5bf7]">STU-001</span></div>
+                  </div>
+                )}
+
+                {selectedMethod === 'qr' && (
+                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-center space-y-2">
+                    <div className="w-28 h-28 bg-white border border-slate-300 rounded-xl mx-auto flex items-center justify-center text-[10px] text-slate-400 font-mono shadow-2xs">
+                      [ Scan LankaQR ]
                     </div>
-                  )}
+                    <p className="text-[10px] text-slate-500 font-semibold">Scan with any Sri Lankan Banking App</p>
+                  </div>
+                )}
 
-                  {selectedMethod === 'qr' && (
-                    <div className="p-6 bg-slate-50 border border-slate-200 rounded-2xl text-center space-y-3">
-                      <div className="w-36 h-36 bg-white border-2 border-slate-300 rounded-xl mx-auto flex items-center justify-center text-xs text-slate-500 font-mono shadow-inner">
-                        [ LankaQR Code ]
-                      </div>
-                      <p className="text-xs text-slate-600 font-semibold">Scan with any Sri Lankan Banking App (SOLO, Flash, Q+)</p>
-                    </div>
-                  )}
+                {/* Submit Pay Button */}
+                <button
+                  type="submit"
+                  className="w-full py-3.5 bg-[#1b5bf7] hover:bg-blue-700 text-white font-extrabold text-sm rounded-2xl shadow-lg shadow-blue-600/30 transition-all cursor-pointer mt-2"
+                >
+                  Pay Rs. {Number(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </button>
+              </form>
 
-                  <button
-                    type="submit"
-                    className="w-full py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-base rounded-2xl shadow-lg shadow-emerald-500/25 transition-all cursor-pointer"
-                  >
-                    Confirm & Pay Rs. {Number(amount).toLocaleString()}
-                  </button>
-                </form>
+              {/* Secure Checkout Footer Badge */}
+              <div className="pt-2 text-center flex items-center justify-center gap-1.5 text-[10px] text-slate-400 font-semibold">
+                <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <span>256-bit Encrypted Secure PayHere Checkout</span>
               </div>
-            </div>
+            </>
           )}
-        </main>
+        </div>
+
       </div>
+
     </div>
   );
 }
