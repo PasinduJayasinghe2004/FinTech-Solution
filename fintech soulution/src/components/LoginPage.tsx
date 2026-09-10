@@ -112,67 +112,18 @@ export default function LoginPage({ onBackToHome, onLoginSuccess, initialRole = 
                 ← Back to Home
               </button>
             )}
-          </div>
-
-          {/* Center Showcase: Smartphone Card Mockup */}
-          <div className="relative z-10 my-8 flex justify-center items-center">
-            {/* Phone Shell Frame */}
-            <div className="w-[300px] sm:w-[330px] bg-white rounded-[36px] shadow-2xl p-4 border-4 border-white/20 relative transform hover:scale-[1.02] transition-transform duration-300">
-              
-              {/* Speaker Notch */}
-              <div className="w-24 h-4 bg-slate-100 rounded-full mx-auto mb-4" />
-
-              {/* App Internal Header */}
-              <div className="flex items-center justify-between px-2 mb-4">
-                <div className="flex items-center gap-2">
-                  <img src={logoImg} alt="RIA Logo" className="w-6 h-6 rounded-lg object-cover" />
-                  <div>
-                    <p className="text-[11px] font-bold text-slate-800 leading-tight">RIA</p>
-                    <p className="text-[9px] text-slate-400">Student & Teacher Portal</p>
-                  </div>
-                </div>
+          </div>          {/* Center Showcase: Institute Name Badge Card */}
+          <div className="relative z-10 my-10 flex justify-center items-center">
+            <div className="w-full max-w-sm bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-2xl relative text-center">
+              <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <img src={logoImg} alt="RIA Logo" className="w-12 h-12 rounded-xl object-cover" />
               </div>
-
-              {/* Floating Shield Badge */}
-              <div className="absolute -top-3 -left-3 bg-white border border-slate-100 rounded-xl px-2.5 py-1 shadow-lg flex items-center gap-1.5 z-20">
-                <div className="w-5 h-5 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
-                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-[9px] font-bold text-slate-800 leading-none">256-bit</p>
-                  <p className="text-[8px] text-slate-400 leading-none">Encrypted</p>
-                </div>
-              </div>
-
-              {/* Tuition Card */}
-              <div className="bg-gradient-to-r from-blue-700 to-indigo-700 rounded-2xl p-4 text-white shadow-md mb-3 relative overflow-hidden">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-[9px] font-semibold tracking-wider text-blue-200 uppercase">TUITION FEE SUMMARY</span>
-                </div>
-                <p className="text-xl font-extrabold tracking-tight mb-2">Rs. 3,000</p>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
-                  <span className="text-[10px] text-blue-100 font-medium">STU-001 • Mathematics</span>
-                </div>
-              </div>
-
-              {/* Payment Success Pill Banner */}
-              <div className="bg-emerald-50 border border-emerald-200/60 rounded-xl p-2.5 flex items-center justify-between mb-3 shadow-sm">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-bold text-emerald-900 leading-tight">Instant Verification</p>
-                    <p className="text-[8px] text-emerald-600">Automated digital receipts</p>
-                  </div>
-                </div>
-              </div>
-
+              <h2 className="text-2xl font-black text-white tracking-wide mb-1">
+                RIA Educational Institute
+              </h2>
+              <p className="text-xs text-blue-100/80 font-medium">
+                Premier Higher Tuition & Educational Management Platform
+              </p>
             </div>
           </div>
 
