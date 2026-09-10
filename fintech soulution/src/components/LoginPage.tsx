@@ -127,17 +127,6 @@ export default function LoginPage({ onBackToHome, onLoginSuccess, initialRole = 
             </div>
           </div>
 
-          {/* Bottom Callout Text */}
-          <div className="relative z-10 mt-4">
-            <h1 className="font-display text-2xl lg:text-3xl font-extrabold text-white mb-2 leading-tight">
-              {mode === 'login' ? 'Your Tuition Payments, Simple.' : 'Join RIA Today.'}
-            </h1>
-            <p className="text-blue-100/80 text-xs lg:text-sm max-w-md leading-relaxed">
-              {mode === 'login'
-                ? 'Access your payment details, track your payment history, and manage your tuition fees securely.'
-                : 'Create your account to manage tuition fees, generate digital receipts, and track payments easily.'}
-            </p>
-          </div>
         </div>
 
         {/* Right Side - Form Container */}
