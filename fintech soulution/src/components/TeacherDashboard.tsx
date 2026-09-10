@@ -850,7 +850,6 @@ export default function TeacherDashboard({
                   >
                     <option>Card</option>
                     <option>Cash</option>
-                    <option>Bank Transfer</option>
                     <option>QR Payment</option>
                   </select>
                 </div>

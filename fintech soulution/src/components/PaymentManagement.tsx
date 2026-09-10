@@ -386,7 +386,6 @@ export default function PaymentManagement({
                 <select className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none cursor-pointer">
                   <option>Payment Method</option>
                   <option>Card</option>
-                  <option>Bank Transfer</option>
                   <option>QR Payment</option>
                 </select>
 
@@ -603,7 +602,6 @@ export default function PaymentManagement({
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium"
                   >
                     <option>Card Payment</option>
-                    <option>Bank Transfer</option>
                     <option>QR Payment</option>
                     <option>Cash</option>
                   </select>

@@ -18,7 +18,7 @@ export default function StudentPaymentPage({
   onNavigateToNotifications,
   onNavigateToProfile,
 }: StudentPaymentPageProps) {
-  const [selectedMethod, setSelectedMethod] = useState<'card' | 'bank' | 'qr'>('card');
+  const [selectedMethod, setSelectedMethod] = useState<'card' | 'qr'>('card');
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [amount, setAmount] = useState('3000');
   const [month, setMonth] = useState('September 2026');
@@ -124,10 +124,9 @@ export default function StudentPaymentPage({
               </div>
 
               {/* Payment Methods Tabs */}
-              <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100">
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
                 {[
                   { id: 'card', label: 'Card Payment' },
-                  { id: 'bank', label: 'Bank Transfer' },
                   { id: 'qr', label: 'LankaQR' },
                 ].map((m) => (
                   <button
@@ -178,15 +177,6 @@ export default function StudentPaymentPage({
                         />
                       </div>
                     </div>
-                  </div>
-                )}
-
-                {selectedMethod === 'bank' && (
-                  <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-[11px] space-y-1.5 text-slate-700">
-                    <p className="font-bold text-slate-900 text-xs mb-1">Direct Bank Account Deposit</p>
-                    <div className="flex justify-between border-b border-slate-200/80 pb-1"><span>Bank:</span><span className="font-bold">Commercial Bank</span></div>
-                    <div className="flex justify-between border-b border-slate-200/80 pb-1"><span>Account:</span><span className="font-bold font-mono">8009-1234-5678</span></div>
-                    <div className="flex justify-between"><span>Ref Code:</span><span className="font-bold text-[#1b5bf7]">STU-001</span></div>
                   </div>
                 )}
 
