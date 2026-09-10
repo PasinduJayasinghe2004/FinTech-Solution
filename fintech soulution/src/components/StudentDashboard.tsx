@@ -21,6 +21,14 @@ export default function StudentDashboard({
   const [selectedMethod, setSelectedMethod] = useState<'card' | 'bank' | 'qr'>('card');
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [dbData, setDbData] = useState<any>(null);
+  const [storedUser, setStoredUser] = useState<any>(() => {
+    try {
+      const saved = localStorage.getItem('ria_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      return null;
+    }
+  });
 
   useEffect(() => {
     apiService.getStudentDashboard().then((res) => {
@@ -30,8 +38,8 @@ export default function StudentDashboard({
     });
   }, []);
 
-  const currentStudentName = dbData?.student?.name || studentName;
-  const currentStudentId = dbData?.student?.studentUniqueId || 'STU-001';
+  const currentStudentName = dbData?.student?.name || storedUser?.name || studentName;
+  const currentStudentId = dbData?.student?.studentUniqueId || storedUser?.studentId || 'STU-001';
   const summary = dbData?.summary || {
     currentPayment: 3000,
     outstandingBalance: 6000,

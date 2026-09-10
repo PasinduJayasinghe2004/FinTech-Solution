@@ -89,6 +89,17 @@ export default function TeacherDashboard({
     triggerSuccess('Payment reminder SMS & Notifications sent to 16 pending students!');
   };
 
+  const [storedUser, setStoredUser] = useState<any>(() => {
+    try {
+      const saved = localStorage.getItem('ria_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  const currentTeacherName = storedUser?.name || teacherName;
+
   return (
     <div className="min-h-screen bg-slate-50 flex font-sans antialiased text-slate-900">
       
@@ -224,7 +235,7 @@ export default function TeacherDashboard({
         <header className="bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between sticky top-0 z-30">
           <div>
             <h1 className="font-display text-xl font-bold text-slate-900 flex items-center gap-2">
-              Good Morning, Teacher <span className="animate-bounce">👋</span>
+              Good Morning, {currentTeacherName} <span className="animate-bounce">👋</span>
             </h1>
             <p className="text-xs text-slate-500">Here's what's happening with your tuition business today.</p>
           </div>
@@ -278,9 +289,9 @@ export default function TeacherDashboard({
               className="flex items-center gap-2.5 bg-slate-100 hover:bg-slate-200/80 px-3 py-1.5 rounded-full cursor-pointer transition-colors"
             >
               <div className="w-7 h-7 rounded-full bg-cyan-600 text-white font-bold text-xs flex items-center justify-center">
-                AK
+                {currentTeacherName.charAt(0).toUpperCase()}
               </div>
-              <span className="text-xs font-bold text-slate-800">{teacherName}</span>
+              <span className="text-xs font-bold text-slate-800">{currentTeacherName}</span>
               <span className="text-slate-400 text-xs">∨</span>
             </div>
           </div>
