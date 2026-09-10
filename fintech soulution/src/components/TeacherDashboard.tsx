@@ -288,9 +288,36 @@ export default function TeacherDashboard({
 
         {/* Dashboard Main Scrollable Area */}
         <main className="p-6 lg:p-8 space-y-6 max-w-7xl w-full mx-auto">
-          {activeTab === 'students' && <StudentManagement />}
-          {activeTab === 'payments' && <PaymentManagement />}
-          {activeTab === 'analytics' && <AnalyticsDashboard />}
+          {activeTab === 'students' && (
+            <StudentManagement 
+              teacherName={teacherName}
+              onNavigateToDashboard={() => setActiveTab('dashboard')}
+              onNavigateToPayments={() => setActiveTab('payments')}
+              onNavigateToAnalytics={() => setActiveTab('analytics')}
+              onNavigateToNotifications={() => setActiveTab('notifications')}
+              onLogout={onLogout}
+            />
+          )}
+          {activeTab === 'payments' && (
+            <PaymentManagement 
+              teacherName={teacherName}
+              onNavigateToDashboard={() => setActiveTab('dashboard')}
+              onNavigateToStudents={() => setActiveTab('students')}
+              onNavigateToAnalytics={() => setActiveTab('analytics')}
+              onNavigateToNotifications={() => setActiveTab('notifications')}
+              onLogout={onLogout}
+            />
+          )}
+          {activeTab === 'analytics' && (
+            <AnalyticsDashboard 
+              teacherName={teacherName}
+              onNavigateToDashboard={() => setActiveTab('dashboard')}
+              onNavigateToStudents={() => setActiveTab('students')}
+              onNavigateToPayments={() => setActiveTab('payments')}
+              onNavigateToNotifications={() => setActiveTab('notifications')}
+              onLogout={onLogout}
+            />
+          )}
           {activeTab === 'notifications' && <NotificationsPage />}
           {activeTab === 'settings' && <TeacherProfilePage teacherName={teacherName} />}
 

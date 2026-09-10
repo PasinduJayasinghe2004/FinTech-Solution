@@ -30,8 +30,12 @@ export default function AnalyticsDashboard({
     }, 2500);
   };
 
+  const handleExportReport = () => {
+    triggerSuccess('Report exported successfully');
+  };
+
   return (
-    <div className="min-h-screen bg-slate-50 flex font-sans antialiased text-slate-900">
+    <div className="space-y-6">
       
       {/* Toast Notification */}
       {actionSuccessMsg && (
@@ -43,192 +47,190 @@ export default function AnalyticsDashboard({
         </div>
       )}
 
-      {/* Left Sidebar */}
-      <aside className="w-64 bg-white border-r border-slate-100/80 p-6 flex flex-col justify-between shrink-0 hidden md:flex min-h-screen select-none">
+      {/* Page Heading & Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
         <div>
-          {/* Brand Logo */}
-          <div className="flex items-center gap-3.5 mb-9 px-1">
-            <img src={logoImg} alt="RIA Logo" className="w-10 h-10 rounded-2xl object-cover shadow-lg shadow-teal-500/25" />
+          <h1 className="font-display text-2xl font-bold text-slate-900">Analytics & Reports</h1>
+          <p className="text-xs text-slate-500">Understand your tuition business performance with real-time insights.</p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <select 
+            value={timeRange}
+            onChange={(e) => setTimeRange(e.target.value)}
+            className="bg-white border border-slate-200 text-slate-700 font-bold text-xs rounded-xl px-3.5 py-2 outline-none shadow-sm cursor-pointer"
+          >
+            <option>Last 6 Months</option>
+            <option>This Year (2026)</option>
+            <option>Last 30 Days</option>
+          </select>
+
+          <button 
+            onClick={handleExportReport}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-4 py-2 rounded-xl shadow-md shadow-blue-600/20 transition-all flex items-center gap-2 cursor-pointer"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            <span>Export Report</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Section 1: Top 4 KPI Cards (Exact matching Image 1) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        
+        {/* Card 1: Total Revenue */}
+        <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+              </div>
+              <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200/60">
+                ↑ 18.5%
+              </span>
+            </div>
+            <p className="text-xs font-semibold text-slate-400">Total Revenue</p>
+            <h3 className="text-3xl font-extrabold text-slate-900 mt-1">Rs. 1,560,000</h3>
+          </div>
+          <p className="text-xs text-slate-400 mt-3">+18.5% compared to previous period</p>
+        </div>
+
+        {/* Card 2: Average Monthly Revenue */}
+        <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden flex flex-col justify-between">
+          <div>
+            <div className="w-10 h-10 rounded-2xl bg-slate-100 text-slate-600 flex items-center justify-center mb-4">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <p className="text-xs font-semibold text-slate-400">Average Monthly Revenue</p>
+            <h3 className="text-3xl font-extrabold text-slate-900 mt-1">Rs. 260,000</h3>
+          </div>
+          <p className="text-xs text-slate-400 mt-3">Based on the last 6 months</p>
+        </div>
+
+        {/* Card 3: Payment Collection Rate */}
+        <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden flex flex-col justify-between">
+          <div className="flex justify-between items-start">
             <div>
-              <span className="font-display font-extrabold text-xl tracking-tight text-blue-950 block leading-none">RIA</span>
+              <p className="text-xs font-semibold text-slate-400">Payment Collection Rate</p>
+              <h3 className="text-3xl font-extrabold text-slate-900 mt-1">87.5%</h3>
+              <p className="text-xs text-slate-400 mt-3">112 of 128 students paid</p>
+            </div>
+            {/* Mini Donut Badge */}
+            <div className="w-11 h-11 rounded-full border-4 border-emerald-500 border-t-emerald-200 flex items-center justify-center shrink-0">
+              <span className="text-[10px] font-black text-emerald-700">88%</span>
             </div>
           </div>
+        </div>
 
-          {/* Navigation Links */}
-          <nav className="space-y-1.5">
+        {/* Card 4: Outstanding Revenue */}
+        <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-10 h-10 rounded-2xl bg-red-50 text-red-500 flex items-center justify-center">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <span className="text-[10px] font-bold text-red-700 bg-red-50 px-2.5 py-1 rounded-full border border-red-200/60 uppercase">
+                Action needed
+              </span>
+            </div>
+            <p className="text-xs font-semibold text-slate-400">Outstanding Revenue</p>
+            <h3 className="text-3xl font-extrabold text-red-600 mt-1">Rs. 48,000</h3>
+          </div>
+          <p className="text-xs text-slate-400 mt-3">16 payments require attention</p>
+        </div>
+
+      </div>
+
+      {/* Section 2: Revenue Performance Line Chart (Exact matching Image 1) */}
+      <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h3 className="font-display font-extrabold text-xl text-slate-900">Revenue Performance</h3>
+            <p className="text-xs text-slate-400 mt-0.5">Track your tuition income over time.</p>
+          </div>
+          <div className="flex items-center gap-6 text-xs font-bold text-slate-600">
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-1 bg-blue-600 rounded-full" />
+              <span className="text-slate-800">Actual</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-0.5 border-b-2 border-dashed border-slate-400" />
+              <span className="text-slate-400">Expected</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Custom SVG Line Chart with Gradient Fill */}
+        <div className="pt-4">
+          <svg viewBox="0 0 600 200" className="w-full h-56">
+            <defs>
+              <linearGradient id="blueGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.2" />
+                <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.0" />
+              </linearGradient>
+            </defs>
+
+            {/* Horizontal Grid lines */}
+            {[20, 60, 100, 140, 180].map((y) => (
+              <line key={y} x1="0" y1={y} x2="600" y2={y} stroke="#f1f5f9" strokeWidth="1.5" />
+            ))}
+
+            {/* Expected Line (Dashed Slate) */}
+            <path
+              d="M 20 150 L 120 135 L 220 120 L 320 100 L 420 80 L 580 40"
+              fill="none"
+              stroke="#94a3b8"
+              strokeWidth="2"
+              strokeDasharray="5,5"
+            />
+
+            {/* Gradient Area under Actual curve */}
+            <path
+              d="M 20 160 L 120 140 L 220 130 L 320 110 L 420 90 L 580 95 L 580 180 L 20 180 Z"
+              fill="url(#blueGradient)"
+            />
+
+            {/* Actual Line (Solid Vibrant Blue) */}
+            <path
+              d="M 20 160 L 120 140 L 220 130 L 320 110 L 420 90 L 580 95"
+              fill="none"
+              stroke="#2563eb"
+              strokeWidth="3.5"
+              strokeLinecap="round"
+            />
+
+            {/* Data Point Circles on Actual Line */}
             {[
-              {
-                id: 'dashboard',
-                label: 'Dashboard',
-                icon: (
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                  </svg>
-                )
-              },
-              {
-                id: 'students',
-                label: 'Students',
-                icon: (
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                  </svg>
-                )
-              },
-              {
-                id: 'payments',
-                label: 'Payments',
-                icon: (
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                )
-              },
-              {
-                id: 'analytics',
-                label: 'Analytics',
-                icon: (
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                  </svg>
-                )
-              },
-              {
-                id: 'notifications',
-                label: 'Reminders',
-                icon: (
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                  </svg>
-                )
-              },
-            ].map((item) => {
-              const isActive = activeTab === item.id;
+              { x: 20, y: 160 },
+              { x: 120, y: 140 },
+              { x: 220, y: 130 },
+              { x: 320, y: 110 },
+              { x: 420, y: 90 },
+              { x: 580, y: 95 },
+            ].map((pt, i) => (
+              <circle key={i} cx={pt.x} cy={pt.y} r="5" fill="#ffffff" stroke="#2563eb" strokeWidth="3" />
+            ))}
+
+            {/* X Axis Labels */}
+            {['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'].map((month, i) => {
+              const xCoords = [20, 120, 220, 320, 420, 580];
               return (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    setActiveTab(item.id as any);
-                    if (item.id === 'dashboard' && onNavigateToDashboard) onNavigateToDashboard();
-                    if (item.id === 'students' && onNavigateToStudents) onNavigateToStudents();
-                    if (item.id === 'payments' && onNavigateToPayments) onNavigateToPayments();
-                    if (item.id === 'notifications' && onNavigateToNotifications) onNavigateToNotifications();
-                  }}
-                  className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-semibold transition-all cursor-pointer ${
-                    isActive 
-                      ? 'bg-blue-50/90 text-blue-600' 
-                      : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
-                  }`}
-                >
-                  <span className={isActive ? 'text-blue-600' : 'text-slate-400'}>
-                    {item.icon}
-                  </span>
-                  <span className="tracking-tight">{item.label}</span>
-                </button>
+                <text key={month} x={xCoords[i]} y="198" textAnchor="middle" fontSize="11" fontWeight="600" fill="#94a3b8">
+                  {month}
+                </text>
               );
             })}
-          </nav>
+          </svg>
         </div>
-
-        {/* Sidebar Footer Links */}
-        <div className="pt-6 border-t border-slate-100/90 space-y-1.5">
-          <button
-            onClick={() => setActiveTab('settings')}
-            className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-semibold transition-colors cursor-pointer ${
-              activeTab === 'settings' 
-                ? 'bg-blue-50/90 text-blue-600' 
-                : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
-            }`}
-          >
-            <span className={activeTab === 'settings' ? 'text-blue-600' : 'text-slate-400'}>
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-            </span>
-            <span className="tracking-tight">Settings</span>
-          </button>
-
-          <button
-            onClick={onLogout}
-            className="w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-semibold text-red-500 hover:bg-red-50/70 transition-colors cursor-pointer"
-          >
-            <span className="text-red-500">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
-            </span>
-            <span className="tracking-tight">Logout</span>
-          </button>
-        </div>
-      </aside>
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0">
-        
-        {/* Top Header Bar */}
-        <header className="bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between sticky top-0 z-30">
-          <div>
-            <h1 className="font-display text-2xl font-bold text-slate-900">Analytics & Reports</h1>
-            <p className="text-xs text-slate-400 mt-0.5">Understand your tuition business performance with real-time insights.</p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {/* Search Icon */}
-            <button className="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition-colors cursor-pointer">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </button>
-
-            {/* Notifications Bell */}
-            <div className="relative">
-              <button 
-                onClick={() => setNotificationsOpen(!notificationsOpen)}
-                className="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 relative transition-colors cursor-pointer"
-              >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                </svg>
-                <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 text-white font-bold text-[10px] flex items-center justify-center border-2 border-white">
-                  5
-                </span>
-              </button>
-            </div>
-
-            {/* Profile Badge */}
-            <div className="flex items-center gap-2.5 bg-slate-100 hover:bg-slate-200/80 px-3 py-1.5 rounded-full cursor-pointer transition-colors">
-              <div className="w-7 h-7 rounded-full bg-cyan-600 text-white font-bold text-xs flex items-center justify-center">
-                AK
-              </div>
-              <span className="text-xs font-bold text-slate-800">{teacherName}</span>
-              <span className="text-slate-400 text-xs">∨</span>
-            </div>
-          </div>
-        </header>
-
-        {/* Scrollable Main Area */}
-        <main className="p-6 lg:p-8 space-y-6 max-w-7xl w-full mx-auto">
-          
-          {/* Time Range Filter Bar Header */}
-          <div className="flex items-center justify-end">
-            <div className="flex items-center gap-2 bg-white border border-slate-200/80 px-3 py-1.5 rounded-2xl shadow-sm text-xs font-semibold text-slate-700">
-              <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <select 
-                value={timeRange}
-                onChange={(e) => setTimeRange(e.target.value)}
-                className="outline-none bg-transparent cursor-pointer"
-              >
-                <option>Last 6 Months</option>
-                <option>Year 2026</option>
-                <option>Last 3 Months</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Section 1: Top 4 KPI Cards (Exact matching Image 1) */}
+      </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             
             {/* Card 1: Total Revenue */}
@@ -784,9 +786,6 @@ export default function AnalyticsDashboard({
             </div>
 
           </div>
-
-        </main>
-      </div>
 
     </div>
   );
