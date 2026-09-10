@@ -109,7 +109,7 @@ export const apiService = {
   async getPaymentHistory(): Promise<any> {
     try {
       const token = localStorage.getItem('ria_token');
-      const res = await fetch(`${API_BASE_URL}/student/payments`, {
+      const res = await fetch(`${API_BASE_URL}/student/history`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return await res.json();
