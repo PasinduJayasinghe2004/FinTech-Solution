@@ -288,7 +288,14 @@ export default function TeacherDashboard({
 
         {/* Dashboard Main Scrollable Area */}
         <main className="p-6 lg:p-8 space-y-6 max-w-7xl w-full mx-auto">
-          
+          {activeTab === 'students' && <StudentManagement />}
+          {activeTab === 'payments' && <PaymentManagement />}
+          {activeTab === 'analytics' && <AnalyticsDashboard />}
+          {activeTab === 'notifications' && <NotificationsPage />}
+          {activeTab === 'settings' && <TeacherProfilePage teacherName={teacherName} />}
+
+          {activeTab === 'dashboard' && (
+            <>
           {/* Top 4 Stat Cards Grid (Exact matching mockups) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             
@@ -669,6 +676,8 @@ export default function TeacherDashboard({
               </table>
             </div>
           </div>
+          </>
+          )}
 
         </main>
       </div>
