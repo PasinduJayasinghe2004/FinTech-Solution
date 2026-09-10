@@ -30,79 +30,28 @@ export default function TeacherDashboard({
   const [newStudent, setNewStudent] = useState({ name: '', id: '', subject: 'Mathematics', phone: '', fee: '3000' });
   const [newPayment, setNewPayment] = useState({ studentName: 'Kasun Perera', amount: '3000', method: 'Card', note: 'Monthly tuition fee' });
 
-  useEffect(() => {
-    apiService.getTeacherDashboard().then((res) => {
-      if (res.success && res.metrics) {
-        setTeacherMetrics(res.metrics);
+  const fetchTeacherData = async () => {
+    try {
+      const [dashRes, studentsRes] = await Promise.all([
+        apiService.getTeacherDashboard(),
+        apiService.fetchStudents()
+      ]);
+
+      if (dashRes && dashRes.success) {
+        const total = studentsRes && studentsRes.length > 0 ? studentsRes.length : dashRes.metrics?.totalStudents || 0;
+        setTeacherMetrics({
+          ...dashRes.metrics,
+          totalStudents: total
+        });
       }
-    });
+    } catch (err) {
+      console.error('Failed to fetch teacher dashboard data:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchTeacherData();
   }, []);
-
-  if (activeTab === 'students') {
-    return (
-      <StudentManagement 
-        teacherName={teacherName} 
-        onLogout={onLogout} 
-        onNavigateToDashboard={() => setActiveTab('dashboard')} 
-        onNavigateToPayments={() => setActiveTab('payments')}
-        onNavigateToAnalytics={() => setActiveTab('analytics')}
-        onNavigateToNotifications={() => setActiveTab('notifications')}
-      />
-    );
-  }
-
-  if (activeTab === 'payments') {
-    return (
-      <PaymentManagement 
-        teacherName={teacherName} 
-        onLogout={onLogout} 
-        onNavigateToDashboard={() => setActiveTab('dashboard')} 
-        onNavigateToStudents={() => setActiveTab('students')}
-        onNavigateToAnalytics={() => setActiveTab('analytics')}
-        onNavigateToNotifications={() => setActiveTab('notifications')}
-      />
-    );
-  }
-
-  if (activeTab === 'analytics') {
-    return (
-      <AnalyticsDashboard 
-        teacherName={teacherName} 
-        onLogout={onLogout} 
-        onNavigateToDashboard={() => setActiveTab('dashboard')} 
-        onNavigateToStudents={() => setActiveTab('students')}
-        onNavigateToPayments={() => setActiveTab('payments')}
-        onNavigateToNotifications={() => setActiveTab('notifications')}
-      />
-    );
-  }
-
-  if (activeTab === 'notifications') {
-    return (
-      <NotificationsPage 
-        teacherName={teacherName} 
-        onLogout={onLogout} 
-        onNavigateToDashboard={() => setActiveTab('dashboard')} 
-        onNavigateToStudents={() => setActiveTab('students')}
-        onNavigateToPayments={() => setActiveTab('payments')}
-        onNavigateToAnalytics={() => setActiveTab('analytics')}
-      />
-    );
-  }
-
-  if (activeTab === 'settings') {
-    return (
-      <TeacherProfilePage
-        teacherName={teacherName}
-        onLogout={onLogout}
-        onNavigateToDashboard={() => setActiveTab('dashboard')}
-        onNavigateToStudents={() => setActiveTab('students')}
-        onNavigateToPayments={() => setActiveTab('payments')}
-        onNavigateToAnalytics={() => setActiveTab('analytics')}
-        onNavigateToNotifications={() => setActiveTab('notifications')}
-      />
-    );
-  }
 
   const triggerSuccess = (msg: string) => {
     setActionSuccessMsg(msg);
@@ -111,9 +60,19 @@ export default function TeacherDashboard({
     }, 2500);
   };
 
-  const handleAddStudentSubmit = (e: React.FormEvent) => {
+  const handleAddStudentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setShowAddStudentModal(false);
+    
+    // Call backend API to create student
+    await apiService.registerStudent({
+      name: newStudent.name || 'New Student',
+      email: `${(newStudent.name || 'student').toLowerCase().replace(/\s+/g, '')}@ria.com`,
+      subject: newStudent.subject || 'Combined Mathematics',
+      phone: newStudent.phone || '+94 77 000 0000',
+    });
+
+    await fetchTeacherData();
     triggerSuccess(`Student ${newStudent.name || 'New Student'} added successfully!`);
     setNewStudent({ name: '', id: '', subject: 'Mathematics', phone: '', fee: '3000' });
   };
@@ -342,10 +301,12 @@ export default function TeacherDashboard({
                   </svg>
                 </div>
                 <p className="text-xs font-semibold text-slate-400">Total Students</p>
-                <h3 className="text-3xl font-extrabold text-slate-900 mt-1">128</h3>
+                <h3 className="text-3xl font-extrabold text-slate-900 mt-1">
+                  {teacherMetrics?.totalStudents ?? 4}
+                </h3>
               </div>
               <p className="text-xs font-semibold text-emerald-600 mt-3 flex items-center gap-1">
-                <span>+12 this month</span>
+                <span>+{teacherMetrics?.totalStudents ? teacherMetrics.totalStudents - 3 : 1} active</span>
               </p>
             </div>
 

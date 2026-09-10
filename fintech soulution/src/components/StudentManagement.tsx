@@ -1,5 +1,6 @@
 import { logoImg } from '@/assets/logo';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { apiService } from '../services/api';
 
 interface StudentManagementProps {
   teacherName?: string;
@@ -47,11 +48,49 @@ export default function StudentManagement({
   const [sortOption, setSortOption] = useState('recently_added');
   const [currentPage, setCurrentPage] = useState(1);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [studentsList, setStudentsList] = useState<StudentItem[]>(mockStudents);
 
   // Modals
   const [showAddStudentModal, setShowAddStudentModal] = useState(false);
   const [actionSuccessMsg, setActionSuccessMsg] = useState<string | null>(null);
   const [newStudent, setNewStudent] = useState({ name: '', id: '', email: '', fee: '3000' });
+
+  const loadBackendStudents = async () => {
+    try {
+      const backendStudents = await apiService.fetchStudents();
+      if (backendStudents && backendStudents.length > 0) {
+        const bgColors = ['bg-blue-600', 'bg-emerald-600', 'bg-purple-600', 'bg-indigo-600', 'bg-pink-600', 'bg-orange-500'];
+
+        const mapped: StudentItem[] = backendStudents.map((s: any, idx: number) => ({
+          id: s.studentUniqueId || s.id || `STU-${idx + 100}`,
+          name: s.name || 'New Student',
+          initials: (s.name || 'S').charAt(0).toUpperCase(),
+          avatarBg: bgColors[idx % bgColors.length],
+          contact: s.email || s.phone || 'student@email.com',
+          fee: `Rs. ${s.fee || 3000}`,
+          status: 'PAID',
+          lastPayment: s.registeredDate || 'Recently',
+          activeStatus: s.status === 'ACTIVE' || true,
+        }));
+
+        // Merge with mockStudents ensuring no duplicate IDs
+        const combined = [...mapped];
+        mockStudents.forEach(m => {
+          if (!combined.some(c => c.id.toUpperCase() === m.id.toUpperCase())) {
+            combined.push(m);
+          }
+        });
+
+        setStudentsList(combined);
+      }
+    } catch (err) {
+      console.error('Failed to load backend students:', err);
+    }
+  };
+
+  useEffect(() => {
+    loadBackendStudents();
+  }, []);
 
   const triggerSuccess = (msg: string) => {
     setActionSuccessMsg(msg);
@@ -60,15 +99,25 @@ export default function StudentManagement({
     }, 2500);
   };
 
-  const handleAddStudentSubmit = (e: React.FormEvent) => {
+  const handleAddStudentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setShowAddStudentModal(false);
+    
+    // Register student to backend database
+    await apiService.registerStudent({
+      name: newStudent.name || 'New Student',
+      email: newStudent.email || `${(newStudent.name || 'student').toLowerCase().replace(/\s+/g, '')}@ria.com`,
+      subject: 'Combined Mathematics',
+      phone: '+94 77 000 0000',
+    });
+
+    await loadBackendStudents();
     triggerSuccess(`Student ${newStudent.name || 'New Student'} added successfully!`);
     setNewStudent({ name: '', id: '', email: '', fee: '3000' });
   };
 
   // Filter students based on category and search
-  const filteredStudents = mockStudents.filter(s => {
+  const filteredStudents = studentsList.filter(s => {
     const matchesSearch = s.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           s.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           s.contact.toLowerCase().includes(searchQuery.toLowerCase());
