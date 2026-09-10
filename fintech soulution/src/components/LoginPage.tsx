@@ -83,11 +83,21 @@ export default function LoginPage({ onBackToHome, onLoginSuccess, initialRole = 
     <div className="min-h-screen w-full bg-slate-100 flex items-center justify-center p-0 md:p-6 lg:p-10 font-sans">
       <div className="w-full max-w-6xl bg-white md:rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row min-h-[680px]">
         
-        {/* Left Side - Blue Hero Panel */}
-        <div className="lg:w-1/2 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-900 p-8 lg:p-12 text-white relative flex flex-col justify-between overflow-hidden">
+        {/* Left Side - Blue Hero Panel with Full Background Image */}
+        <div className="lg:w-1/2 relative p-8 lg:p-12 text-white flex flex-col justify-between overflow-hidden min-h-[400px] lg:min-h-full">
+          {/* Full Cover Background Image */}
+          <img 
+            src={logoImg} 
+            alt="RIA Background" 
+            className="absolute inset-0 w-full h-full object-cover z-0" 
+          />
+
+          {/* Glassmorphism & Gradient Overlay for Contrast & Aesthetics */}
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-900/80 via-blue-800/70 to-indigo-950/85 backdrop-blur-[3px] z-0" />
+
           {/* Blueprint Grid Background Pattern */}
           <div 
-            className="absolute inset-0 opacity-10 pointer-events-none"
+            className="absolute inset-0 opacity-15 pointer-events-none z-0"
             style={{
               backgroundImage: `linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)`,
               backgroundSize: '32px 32px'
@@ -101,32 +111,33 @@ export default function LoginPage({ onBackToHome, onLoginSuccess, initialRole = 
               className="flex items-center gap-3 group text-left cursor-pointer focus:outline-none"
             >
               <img src={logoImg} alt="RIA Logo" className="w-10 h-10 rounded-xl object-cover shadow-lg shadow-teal-500/30 group-hover:scale-105 transition-transform" />
-              <span className="font-display font-bold text-2xl tracking-tight text-white">RIA</span>
+              <span className="font-display font-bold text-2xl tracking-tight text-white drop-shadow-md">RIA</span>
             </button>
 
             {onBackToHome && (
               <button 
                 onClick={onBackToHome}
-                className="text-xs font-medium bg-white/10 hover:bg-white/20 text-white px-3.5 py-1.5 rounded-full border border-white/20 transition-all flex items-center gap-1.5 cursor-pointer"
+                className="text-xs font-medium bg-white/15 hover:bg-white/25 text-white px-3.5 py-1.5 rounded-full border border-white/30 backdrop-blur-md transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
               >
                 ← Back to Home
               </button>
             )}
-          </div>          {/* Center Showcase: Institute Name Badge Card */}
-          <div className="relative z-10 my-10 flex justify-center items-center">
-            <div className="w-full max-w-sm bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-2xl relative text-center">
+          </div>
+
+          {/* Center Showcase: Glassmorphism Card */}
+          <div className="relative z-10 my-auto py-8 flex justify-center items-center">
+            <div className="w-full max-w-sm bg-white/15 backdrop-blur-md rounded-3xl p-6 border border-white/25 shadow-2xl relative text-center">
               <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <img src={logoImg} alt="RIA Logo" className="w-12 h-12 rounded-xl object-cover" />
               </div>
-              <h2 className="text-2xl font-black text-white tracking-wide mb-1">
+              <h2 className="text-2xl font-black text-white tracking-wide mb-1 drop-shadow-sm">
                 RIA Educational Institute
               </h2>
-              <p className="text-xs text-blue-100/80 font-medium">
+              <p className="text-xs text-blue-100 font-medium drop-shadow-sm">
                 Premier Higher Tuition & Educational Management Platform
               </p>
             </div>
           </div>
-
         </div>
 
         {/* Right Side - Form Container */}
