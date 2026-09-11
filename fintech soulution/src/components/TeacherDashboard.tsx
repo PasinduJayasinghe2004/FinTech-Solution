@@ -18,6 +18,7 @@ export default function TeacherDashboard({
 }: TeacherDashboardProps) {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'students' | 'payments' | 'analytics' | 'notifications' | 'settings'>('dashboard');
   const [teacherMetrics, setTeacherMetrics] = useState<any>(null);
+  const [analyticsData, setAnalyticsData] = useState<any>(null);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   
   // Modals
@@ -32,10 +33,15 @@ export default function TeacherDashboard({
 
   const fetchTeacherData = async () => {
     try {
-      const [dashRes, studentsRes] = await Promise.all([
+      const [dashRes, studentsRes, analyticsRes] = await Promise.all([
         apiService.getTeacherDashboard(),
-        apiService.fetchStudents()
+        apiService.fetchStudents(),
+        apiService.fetchAnalytics()
       ]);
+
+      if (analyticsRes && analyticsRes.success) {
+        setAnalyticsData(analyticsRes);
+      }
 
       if (dashRes && dashRes.success) {
         const total = studentsRes && studentsRes.length > 0 ? studentsRes.length : dashRes.metrics?.totalStudents || 0;
@@ -487,45 +493,72 @@ export default function TeacherDashboard({
                 </div>
               </div>
 
-              {/* SVG Custom Bar Chart matching user image 2 */}
+              {/* SVG Custom Bar Chart connected live to backend database from August 2026 */}
               <div className="pt-2">
-                <svg viewBox="0 0 500 180" className="w-full h-48">
-                  {/* Grid lines */}
-                  {[0, 45, 90, 135].map((y) => (
-                    <line key={y} x1="0" y1={y} x2="500" y2={y} stroke="#f1f5f9" strokeWidth="1.5" />
-                  ))}
-                  
-                  {/* Bars grouped by month */}
-                  {[
-                    { label: 'Apr', exp: 110, tot: 95 },
-                    { label: 'May', exp: 115, tot: 105 },
-                    { label: 'Jun', exp: 118, tot: 100 },
-                    { label: 'Jul', exp: 125, tot: 118 },
-                    { label: 'Aug', exp: 122, tot: 110 },
-                    { label: 'Sep', exp: 145, tot: 130 },
-                  ].map((d, i) => {
-                    const groupX = i * 80 + 20;
-                    const expH = d.exp;
-                    const totH = d.tot;
-                    return (
-                      <g key={d.label}>
-                        {/* Expected Revenue (Light blue bar on left) */}
-                        <rect
-                          x={groupX} y={150 - expH} width={28} height={expH} rx={6}
-                          fill="#dbeafe"
-                        />
-                        {/* Total Revenue (Dark blue bar on right) */}
-                        <rect
-                          x={groupX + 32} y={150 - totH} width={28} height={totH} rx={6}
-                          fill="#2563eb"
-                        />
-                        <text x={groupX + 30} y={170} textAnchor="middle" fontSize="11" fontWeight="600" fill="#64748b">
-                          {d.label}
-                        </text>
-                      </g>
-                    );
-                  })}
-                </svg>
+                {(() => {
+                  const defaultBreakdown = [
+                    { month: 'August 2026', revenue: 9000, expected: 9000 },
+                    { month: 'September 2026', revenue: 3000, expected: 9000 },
+                  ];
+
+                  const breakdown: Array<{month: string; revenue: number; expected?: number}> = 
+                    analyticsData?.monthlyBreakdown?.length
+                      ? analyticsData.monthlyBreakdown
+                      : defaultBreakdown;
+
+                  const chartItems = breakdown.map(item => {
+                    const parts = item.month.split(' ');
+                    const shortName = parts[0].slice(0, 3);
+                    const totalStudents = analyticsData?.kpi?.totalStudents || 3;
+                    const expected = item.expected || totalStudents * 3000;
+                    const actual = item.revenue;
+                    return { label: shortName, fullName: item.month, exp: expected, tot: actual };
+                  });
+
+                  const maxVal = Math.max(...chartItems.map(c => Math.max(c.exp, c.tot)), 1);
+
+                  return (
+                    <svg viewBox="0 0 500 180" className="w-full h-48">
+                      {/* Grid lines */}
+                      {[0, 45, 90, 135].map((y) => (
+                        <line key={y} x1="0" y1={y} x2="500" y2={y} stroke="#f1f5f9" strokeWidth="1.5" />
+                      ))}
+                      
+                      {/* Bars grouped by month */}
+                      {chartItems.map((d, i) => {
+                        const groupWidth = 500 / Math.max(chartItems.length, 1);
+                        const groupX = i * groupWidth + (groupWidth / 2) - 35;
+                        const expH = Math.round((d.exp / maxVal) * 120);
+                        const totH = Math.round((d.tot / maxVal) * 120);
+
+                        return (
+                          <g key={d.fullName}>
+                            {/* Expected Revenue (Light blue bar on left) */}
+                            <rect
+                              x={groupX} y={150 - expH} width={30} height={expH} rx={6}
+                              fill="#dbeafe"
+                            />
+                            {/* Total Revenue (Dark blue bar on right) */}
+                            <rect
+                              x={groupX + 34} y={150 - totH} width={30} height={totH} rx={6}
+                              fill="#2563eb"
+                            />
+                            <text x={groupX + 32} y={170} textAnchor="middle" fontSize="11" fontWeight="700" fill="#64748b">
+                              {d.label}
+                            </text>
+                            {/* Hover tooltip values */}
+                            <text x={groupX + 15} y={145 - expH} textAnchor="middle" fontSize="8" fontWeight="600" fill="#93c5fd">
+                              Rs.{d.exp >= 1000 ? `${Math.round(d.exp/1000)}k` : d.exp}
+                            </text>
+                            <text x={groupX + 49} y={145 - totH} textAnchor="middle" fontSize="8" fontWeight="700" fill="#1d4ed8">
+                              Rs.{d.tot >= 1000 ? `${Math.round(d.tot/1000)}k` : d.tot}
+                            </text>
+                          </g>
+                        );
+                      })}
+                    </svg>
+                  );
+                })()}
               </div>
             </div>
 
