@@ -570,7 +570,19 @@ export default function AnalyticsDashboard({
                           </td>
                           <td className="py-3.5 px-4 text-right">
                             <button
-                              onClick={() => triggerSuccess(`Reminder sent to ${s.name}`)}
+                              onClick={async () => {
+                                const res = await apiService.sendMessage(
+                                  s.studentId,
+                                  'Tuition Payment Reminder',
+                                  `Dear ${s.name},\n\nThis is an urgent reminder from your tutor regarding your outstanding tuition payment of Rs. ${s.outstanding?.toLocaleString()}. Please complete the payment via card or bank transfer at your earliest convenience.`,
+                                  'In-App & Email & SMS'
+                                );
+                                if (res.success) {
+                                  triggerSuccess(`Reminder sent to ${s.name} (In-App + Email & SMS)!`);
+                                } else {
+                                  triggerSuccess(`Failed to send reminder: ${res.message || 'Error'}`);
+                                }
+                              }}
                               className="bg-blue-50 text-blue-600 font-bold px-3 py-1.5 rounded-xl hover:bg-blue-100 cursor-pointer"
                             >Send Reminder</button>
                           </td>

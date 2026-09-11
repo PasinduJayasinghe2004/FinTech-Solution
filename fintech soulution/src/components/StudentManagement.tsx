@@ -52,6 +52,12 @@ export default function StudentManagement({
 
   // Modals
   const [showAddStudentModal, setShowAddStudentModal] = useState(false);
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [selectedStudentForMsg, setSelectedStudentForMsg] = useState<StudentItem | null>(null);
+  const [messageTitle, setMessageTitle] = useState('');
+  const [messageContent, setMessageContent] = useState('');
+  const [messageChannel, setMessageChannel] = useState('In-App & Email & SMS');
+  const [sendingMsg, setSendingMsg] = useState(false);
   const [actionSuccessMsg, setActionSuccessMsg] = useState<string | null>(null);
   const [newStudent, setNewStudent] = useState({ name: '', id: '', email: '', fee: '3000' });
 
@@ -114,6 +120,41 @@ export default function StudentManagement({
     await loadBackendStudents();
     triggerSuccess(`Student ${newStudent.name || 'New Student'} added successfully!`);
     setNewStudent({ name: '', id: '', email: '', fee: '3000' });
+  };
+
+  const handleOpenMessageModal = (student: StudentItem, defaultTitle: string = '', defaultMsg: string = '') => {
+    setSelectedStudentForMsg(student);
+    setMessageTitle(defaultTitle || `Notice regarding tuition payment`);
+    setMessageContent(defaultMsg || `Dear ${student.name},\n\nThis is a notification regarding your tuition classes and payment status (${student.fee}). Please contact us if you have any questions.`);
+    setShowMessageModal(true);
+  };
+
+  const handleSendMessageSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedStudentForMsg) return;
+    setSendingMsg(true);
+
+    try {
+      const res = await apiService.sendMessage(
+        selectedStudentForMsg.id,
+        messageTitle,
+        messageContent,
+        messageChannel
+      );
+
+      if (res.success) {
+        triggerSuccess(`Message sent to ${selectedStudentForMsg.name} (${messageChannel})!`);
+        setShowMessageModal(false);
+        setMessageTitle('');
+        setMessageContent('');
+      } else {
+        triggerSuccess(res.message || 'Failed to dispatch message');
+      }
+    } catch (err) {
+      triggerSuccess('Failed to send message');
+    } finally {
+      setSendingMsg(false);
+    }
   };
 
   // Filter students based on category and search
@@ -395,18 +436,19 @@ export default function StudentManagement({
                       <td className="py-4 px-6 text-right">
                         <div className="flex items-center justify-end gap-2">
                           <button 
-                            onClick={() => triggerSuccess(`Sent reminder to ${s.name}`)}
-                            className="p-1.5 text-slate-400 hover:text-blue-600 rounded-lg hover:bg-slate-100 transition-colors"
-                            title="Send Reminder"
+                            onClick={() => handleOpenMessageModal(s, 'Tuition Fee Payment Reminder', `Dear ${s.name},\n\nThis is a friendly reminder that your monthly tuition fee (${s.fee}) for the current session is ${s.status === 'OVERDUE' ? 'overdue' : 'due'}. Kindly settle your payment to continue seamless access to classes.\n\nThank you!`)}
+                            className="p-2 text-slate-500 hover:text-blue-600 rounded-xl hover:bg-blue-50 border border-slate-200 hover:border-blue-200 transition-all flex items-center gap-1.5 cursor-pointer text-xs font-semibold"
+                            title="Send Message / Reminder"
                           >
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            <svg className="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                             </svg>
+                            <span>Message</span>
                           </button>
                           <button 
-                            onClick={() => triggerSuccess(`Viewing details for ${s.name}`)}
-                            className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors"
-                            title="More Options"
+                            onClick={() => handleOpenMessageModal(s)}
+                            className="p-2 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-100 transition-colors"
+                            title="Options"
                           >
                             •••
                           </button>
@@ -532,6 +574,134 @@ export default function StudentManagement({
               >
                 Add Student
               </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Send Message / Reminder Modal */}
+      {showMessageModal && selectedStudentForMsg && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl relative">
+            <button 
+              onClick={() => setShowMessageModal(false)}
+              className="absolute top-5 right-5 text-slate-400 hover:text-slate-600 font-bold"
+            >
+              ✕
+            </button>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-display font-extrabold text-xl text-slate-900">Send Message to Student</h3>
+                <p className="text-xs text-slate-500">Recipient: <strong className="text-slate-800">{selectedStudentForMsg.name} ({selectedStudentForMsg.id})</strong></p>
+              </div>
+            </div>
+
+            <form onSubmit={handleSendMessageSubmit} className="space-y-4 text-xs mt-4">
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Send Via Channel</label>
+                <select
+                  value={messageChannel}
+                  onChange={(e) => setMessageChannel(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 font-semibold outline-none"
+                >
+                  <option value="In-App & Email & SMS">⚡ In-App Notification + Simulated Email & SMS</option>
+                  <option value="Email Only">📧 Email Only ({selectedStudentForMsg.contact})</option>
+                  <option value="SMS Only">📱 SMS Only</option>
+                  <option value="In-App Only">🔔 In-App Notification Only</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Subject / Title</label>
+                <input 
+                  type="text" 
+                  required
+                  placeholder="e.g. Tuition Fee Reminder for September" 
+                  value={messageTitle}
+                  onChange={(e) => setMessageTitle(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-medium outline-none focus:border-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Message Content</label>
+                <textarea 
+                  required
+                  rows={4}
+                  placeholder="Type your message to the student here..." 
+                  value={messageContent}
+                  onChange={(e) => setMessageContent(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-medium outline-none focus:border-blue-500 resize-none"
+                />
+              </div>
+
+              {/* Quick Template Buttons */}
+              <div>
+                <p className="text-[11px] font-bold text-slate-400 mb-1.5">Quick Templates:</p>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMessageTitle('Payment Reminder');
+                      setMessageContent(`Dear ${selectedStudentForMsg.name}, this is a friendly reminder regarding your pending tuition fee for the current month (${selectedStudentForMsg.fee}). Please settle it at your earliest convenience. Thank you!`);
+                    }}
+                    className="px-2.5 py-1 bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-600 rounded-lg text-[11px] font-semibold transition-all cursor-pointer"
+                  >
+                    💳 Fee Reminder
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMessageTitle('Upcoming Class Notice');
+                      setMessageContent(`Dear ${selectedStudentForMsg.name}, please be informed that our next lecture is scheduled as usual. Ensure your homework is completed beforehand.`);
+                    }}
+                    className="px-2.5 py-1 bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-600 rounded-lg text-[11px] font-semibold transition-all cursor-pointer"
+                  >
+                    📚 Class Notice
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMessageTitle('Payment Received Thank You');
+                      setMessageContent(`Dear ${selectedStudentForMsg.name}, thank you for your payment! Your tuition status has been updated to PAID.`);
+                    }}
+                    className="px-2.5 py-1 bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-600 rounded-lg text-[11px] font-semibold transition-all cursor-pointer"
+                  >
+                    ✅ Receipt Confirmation
+                  </button>
+                </div>
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowMessageModal(false)}
+                  className="px-4 py-2.5 text-slate-500 hover:text-slate-700 font-bold rounded-xl"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={sendingMsg}
+                  className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-xl shadow-lg shadow-blue-600/30 transition-all cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                >
+                  {sendingMsg ? (
+                    <span>Sending...</span>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                      </svg>
+                      <span>Send Message</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </form>
           </div>
         </div>

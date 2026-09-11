@@ -206,5 +206,22 @@ export const apiService = {
       return { success: false, message: 'Failed to fetch analytics data' };
     }
   },
+
+  async sendMessage(studentId: string, title: string, message: string, channel: string = 'Email & SMS'): Promise<any> {
+    try {
+      const token = localStorage.getItem('ria_token');
+      const res = await fetch(`${API_BASE_URL}/messages/send`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ studentId, title, message, channel }),
+      });
+      return await res.json();
+    } catch (err) {
+      return { success: false, message: 'Failed to send message' };
+    }
+  },
 };
 

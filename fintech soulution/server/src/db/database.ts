@@ -306,6 +306,20 @@ class Database {
     return this.notifications.filter((n) => n.userId.toUpperCase() === userId.toUpperCase());
   }
 
+  addNotification(userId: string, title: string, message: string, type: NotificationRecord['type'] = 'SYSTEM'): NotificationRecord {
+    const newNotif: NotificationRecord = {
+      id: `notif_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+      userId: userId.toUpperCase(),
+      title,
+      message,
+      type,
+      isRead: false,
+      createdAt: new Date().toISOString().split('T')[0],
+    };
+    this.notifications.unshift(newNotif);
+    return newNotif;
+  }
+
   // Teacher Profile
   getTeacherProfile(teacherId: string = 'usr_tch_1'): TeacherProfile {
     let profile = this.teacherProfiles.find(p => p.id === teacherId || p.email.toLowerCase() === teacherId.toLowerCase());
