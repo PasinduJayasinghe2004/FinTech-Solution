@@ -128,6 +128,12 @@ export default function StudentManagement({
     return matchesSearch;
   });
 
+  // Summary card dynamic calculations
+  const totalStudentsCount = studentsList.length;
+  const activeStudentsCount = studentsList.filter(s => s.activeStatus).length;
+  const pendingPaymentsCount = studentsList.filter(s => s.status === 'PENDING').length;
+  const overduePaymentsCount = studentsList.filter(s => s.status === 'OVERDUE').length;
+
   return (
     <div className="space-y-6">
       
@@ -160,7 +166,10 @@ export default function StudentManagement({
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             
             {/* Card 1: Total Students */}
-            <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden flex flex-col justify-between">
+            <div 
+              onClick={() => setFilterCategory('all')}
+              className={`bg-white p-5 rounded-3xl border ${filterCategory === 'all' ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-slate-100'} shadow-sm relative overflow-hidden flex flex-col justify-between cursor-pointer hover:border-blue-300 transition-all`}
+            >
               <div>
                 <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-4">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -168,15 +177,18 @@ export default function StudentManagement({
                   </svg>
                 </div>
                 <p className="text-xs font-semibold text-slate-400">Total Students</p>
-                <h3 className="text-3xl font-extrabold text-slate-900 mt-1">12</h3>
+                <h3 className="text-3xl font-extrabold text-slate-900 mt-1">{totalStudentsCount}</h3>
               </div>
               <p className="text-xs font-semibold text-slate-400 mt-3">
-                12 new this month
+                {totalStudentsCount} total registered
               </p>
             </div>
 
             {/* Card 2: Active Students */}
-            <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden flex flex-col justify-between">
+            <div 
+              onClick={() => setFilterCategory('active')}
+              className={`bg-white p-5 rounded-3xl border ${filterCategory === 'active' ? 'border-emerald-500 ring-2 ring-emerald-500/20' : 'border-slate-100'} shadow-sm relative overflow-hidden flex flex-col justify-between cursor-pointer hover:border-emerald-300 transition-all`}
+            >
               <div>
                 <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -184,7 +196,7 @@ export default function StudentManagement({
                   </svg>
                 </div>
                 <p className="text-xs font-semibold text-slate-400">Active Students</p>
-                <h3 className="text-3xl font-extrabold text-slate-900 mt-1">10</h3>
+                <h3 className="text-3xl font-extrabold text-slate-900 mt-1">{activeStudentsCount}</h3>
               </div>
               <p className="text-xs font-semibold text-slate-400 mt-3">
                 Currently enrolled
@@ -192,7 +204,10 @@ export default function StudentManagement({
             </div>
 
             {/* Card 3: Pending Payments */}
-            <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden flex flex-col justify-between">
+            <div 
+              onClick={() => setFilterCategory('pending')}
+              className={`bg-white p-5 rounded-3xl border ${filterCategory === 'pending' ? 'border-amber-500 ring-2 ring-amber-500/20' : 'border-slate-100'} shadow-sm relative overflow-hidden flex flex-col justify-between cursor-pointer hover:border-amber-300 transition-all`}
+            >
               <div>
                 <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mb-4">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -200,7 +215,7 @@ export default function StudentManagement({
                   </svg>
                 </div>
                 <p className="text-xs font-semibold text-slate-400">Pending Payments</p>
-                <h3 className="text-3xl font-extrabold text-amber-600 mt-1">2</h3>
+                <h3 className="text-3xl font-extrabold text-amber-600 mt-1">{pendingPaymentsCount}</h3>
               </div>
               <p className="text-xs font-semibold text-slate-400 mt-3">
                 Students haven't paid yet
@@ -208,7 +223,10 @@ export default function StudentManagement({
             </div>
 
             {/* Card 4: Overdue Payments */}
-            <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden flex flex-col justify-between">
+            <div 
+              onClick={() => setFilterCategory('overdue')}
+              className={`bg-white p-5 rounded-3xl border ${filterCategory === 'overdue' ? 'border-red-500 ring-2 ring-red-500/20' : 'border-slate-100'} shadow-sm relative overflow-hidden flex flex-col justify-between cursor-pointer hover:border-red-300 transition-all`}
+            >
               <div>
                 <div className="w-10 h-10 rounded-2xl bg-red-50 text-red-500 flex items-center justify-center mb-4">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -216,7 +234,7 @@ export default function StudentManagement({
                   </svg>
                 </div>
                 <p className="text-xs font-semibold text-slate-400">Overdue Payments</p>
-                <h3 className="text-3xl font-extrabold text-red-600 mt-1">5</h3>
+                <h3 className="text-3xl font-extrabold text-red-600 mt-1">{overduePaymentsCount}</h3>
               </div>
               <p className="text-xs font-semibold text-slate-400 mt-3">
                 Require immediate attention
