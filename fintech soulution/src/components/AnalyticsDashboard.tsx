@@ -222,69 +222,113 @@ export default function AnalyticsDashboard({
           </div>
         </div>
 
-        {/* Custom SVG Line Chart with Gradient Fill */}
-        <div className="pt-4">
-          <svg viewBox="0 0 600 200" className="w-full h-56">
-            <defs>
-              <linearGradient id="blueGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.2" />
-                <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.0" />
-              </linearGradient>
-            </defs>
+        {/* Dynamic SVG Line Chart with Gradient Fill */}
+        {(() => {
+          const W = 600, H = 180, padL = 20, padR = 20, padT = 10, padB = 0;
+          const chartW = W - padL - padR;
+          const chartH = H - padT - padB;
 
-            {/* Horizontal Grid lines */}
-            {[20, 60, 100, 140, 180].map((y) => (
-              <line key={y} x1="0" y1={y} x2="600" y2={y} stroke="#f1f5f9" strokeWidth="1.5" />
-            ))}
+          // Use live monthly breakdown revenue if available, else static fallback
+          const chartMonths: Array<{month: string; revenue: number}> = analyticsData?.monthlyBreakdown?.length
+            ? analyticsData.monthlyBreakdown.map((m: any) => ({ month: m.month, revenue: m.revenue }))
+            : [
+                { month: 'April 2026',     revenue: 220000 },
+                { month: 'May 2026',       revenue: 240000 },
+                { month: 'June 2026',      revenue: 255000 },
+                { month: 'July 2026',      revenue: 280000 },
+                { month: 'August 2026',    revenue: 295000 },
+                { month: 'September 2026', revenue: 270000 },
+              ];
 
-            {/* Expected Line (Dashed Slate) */}
-            <path
-              d="M 20 150 L 120 135 L 220 120 L 320 100 L 420 80 L 580 40"
-              fill="none"
-              stroke="#94a3b8"
-              strokeWidth="2"
-              strokeDasharray="5,5"
-            />
+          const revenues = chartMonths.map(m => m.revenue);
+          const maxRev = Math.max(...revenues, 1);
+          const minRev = Math.min(...revenues, 0);
+          const range = maxRev - minRev || 1;
 
-            {/* Gradient Area under Actual curve */}
-            <path
-              d="M 20 160 L 120 140 L 220 130 L 320 110 L 420 90 L 580 95 L 580 180 L 20 180 Z"
-              fill="url(#blueGradient)"
-            />
+          const n = chartMonths.length;
+          const xOf = (i: number) => padL + (i / Math.max(n - 1, 1)) * chartW;
+          const yOf = (v: number) => padT + chartH - ((v - minRev) / range) * chartH * 0.85;
 
-            {/* Actual Line (Solid Vibrant Blue) */}
-            <path
-              d="M 20 160 L 120 140 L 220 130 L 320 110 L 420 90 L 580 95"
-              fill="none"
-              stroke="#2563eb"
-              strokeWidth="3.5"
-              strokeLinecap="round"
-            />
+          const pts = chartMonths.map((m, i) => ({ x: xOf(i), y: yOf(m.revenue), ...m }));
 
-            {/* Data Point Circles on Actual Line */}
-            {[
-              { x: 20, y: 160 },
-              { x: 120, y: 140 },
-              { x: 220, y: 130 },
-              { x: 320, y: 110 },
-              { x: 420, y: 90 },
-              { x: 580, y: 95 },
-            ].map((pt, i) => (
-              <circle key={i} cx={pt.x} cy={pt.y} r="5" fill="#ffffff" stroke="#2563eb" strokeWidth="3" />
-            ))}
+          // Expected: linear trend from min to max
+          const expPts = pts.map((_, i) => ({
+            x: xOf(i),
+            y: padT + chartH - (i / Math.max(n - 1, 1)) * chartH * 0.82,
+          }));
 
-            {/* X Axis Labels */}
-            {['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'].map((month, i) => {
-              const xCoords = [20, 120, 220, 320, 420, 580];
-              return (
-                <text key={month} x={xCoords[i]} y="198" textAnchor="middle" fontSize="11" fontWeight="600" fill="#94a3b8">
-                  {month}
-                </text>
-              );
-            })}
-          </svg>
-        </div>
+          const linePath = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+          const areaPath = linePath + ` L ${pts[pts.length-1].x.toFixed(1)} ${(H+padB).toFixed(1)} L ${pts[0].x.toFixed(1)} ${(H+padB).toFixed(1)} Z`;
+          const expPath  = expPts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+
+          return (
+            <div className="pt-4 relative">
+              <svg viewBox={`0 0 ${W} ${H + 20}`} className="w-full h-56">
+                <defs>
+                  <linearGradient id="blueGradient2" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.18" />
+                    <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
+                  </linearGradient>
+                </defs>
+
+                {/* Grid lines */}
+                {[0.2, 0.4, 0.6, 0.8, 1.0].map(t => {
+                  const y = padT + chartH * (1 - t * 0.85);
+                  return <line key={t} x1={padL} y1={y} x2={W - padR} y2={y} stroke="#f1f5f9" strokeWidth="1.5" />;
+                })}
+
+                {/* Y-axis revenue labels */}
+                {[0.25, 0.5, 0.75, 1.0].map(t => {
+                  const val = minRev + range * t;
+                  const y   = yOf(val);
+                  return (
+                    <text key={t} x={padL - 4} y={y + 3} textAnchor="end" fontSize="8" fill="#cbd5e1" fontWeight="600">
+                      {val >= 1000 ? `${Math.round(val/1000)}k` : Math.round(val)}
+                    </text>
+                  );
+                })}
+
+                {/* Expected dashed line */}
+                <path d={expPath} fill="none" stroke="#94a3b8" strokeWidth="2" strokeDasharray="5,5" />
+
+                {/* Gradient fill area */}
+                <path d={areaPath} fill="url(#blueGradient2)" />
+
+                {/* Actual line */}
+                <path d={linePath} fill="none" stroke="#2563eb" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+
+                {/* Data points + value tooltips */}
+                {pts.map((p, i) => (
+                  <g key={i}>
+                    {/* Hover tooltip label */}
+                    <text x={p.x} y={p.y - 10} textAnchor="middle" fontSize="8.5" fontWeight="700" fill="#2563eb">
+                      {p.revenue >= 1000 ? `Rs.${Math.round(p.revenue/1000)}k` : `Rs.${p.revenue}`}
+                    </text>
+                    {/* White circle with blue border */}
+                    <circle cx={p.x} cy={p.y} r="5" fill="#ffffff" stroke="#2563eb" strokeWidth="3" />
+                  </g>
+                ))}
+
+                {/* X-axis month labels */}
+                {pts.map((p, i) => (
+                  <text
+                    key={i}
+                    x={p.x}
+                    y={H + 17}
+                    textAnchor="middle"
+                    fontSize="11"
+                    fontWeight="600"
+                    fill={i === pts.length - 1 ? '#2563eb' : '#94a3b8'}
+                  >
+                    {shortMonth(p.month)}
+                  </text>
+                ))}
+              </svg>
+            </div>
+          );
+        })()}
       </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             
             {/* Card 1: Total Revenue */}
@@ -375,68 +419,98 @@ export default function AnalyticsDashboard({
               </div>
             </div>
 
-            {/* Custom SVG Line Chart with Gradient Fill */}
-            <div className="pt-4">
-              <svg viewBox="0 0 600 200" className="w-full h-56">
-                <defs>
-                  <linearGradient id="blueGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.2" />
-                    <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.0" />
-                  </linearGradient>
-                </defs>
+            {/* Dynamic SVG Line Chart with Gradient Fill */}
+            {(() => {
+              const W = 600, H = 180, padL = 20, padR = 20, padT = 10, padB = 0;
+              const chartW = W - padL - padR;
+              const chartH = H - padT - padB;
 
-                {/* Horizontal Grid lines */}
-                {[20, 60, 100, 140, 180].map((y) => (
-                  <line key={y} x1="0" y1={y} x2="600" y2={y} stroke="#f1f5f9" strokeWidth="1.5" />
-                ))}
+              const chartMonths: Array<{month: string; revenue: number}> = analyticsData?.monthlyBreakdown?.length
+                ? analyticsData.monthlyBreakdown.map((m: any) => ({ month: m.month, revenue: m.revenue }))
+                : [
+                    { month: 'April 2026',     revenue: 220000 },
+                    { month: 'May 2026',       revenue: 240000 },
+                    { month: 'June 2026',      revenue: 255000 },
+                    { month: 'July 2026',      revenue: 280000 },
+                    { month: 'August 2026',    revenue: 295000 },
+                    { month: 'September 2026', revenue: 270000 },
+                  ];
 
-                {/* Expected Line (Dashed Slate) */}
-                <path
-                  d="M 20 150 L 120 135 L 220 120 L 320 100 L 420 80 L 580 40"
-                  fill="none"
-                  stroke="#94a3b8"
-                  strokeWidth="2"
-                  strokeDasharray="5,5"
-                />
+              const revenues = chartMonths.map(m => m.revenue);
+              const maxRev = Math.max(...revenues, 1);
+              const minRev = Math.min(...revenues, 0);
+              const range = maxRev - minRev || 1;
 
-                {/* Gradient Area under Actual curve */}
-                <path
-                  d="M 20 160 L 120 140 L 220 130 L 320 110 L 420 90 L 580 95 L 580 180 L 20 180 Z"
-                  fill="url(#blueGradient)"
-                />
+              const n = chartMonths.length;
+              const xOf = (i: number) => padL + (i / Math.max(n - 1, 1)) * chartW;
+              const yOf = (v: number) => padT + chartH - ((v - minRev) / range) * chartH * 0.85;
 
-                {/* Actual Line (Solid Vibrant Blue) */}
-                <path
-                  d="M 20 160 L 120 140 L 220 130 L 320 110 L 420 90 L 580 95"
-                  fill="none"
-                  stroke="#2563eb"
-                  strokeWidth="3.5"
-                  strokeLinecap="round"
-                />
+              const pts = chartMonths.map((m, i) => ({ x: xOf(i), y: yOf(m.revenue), ...m }));
 
-                {/* Data Point Circles on Actual Line */}
-                {[
-                  { x: 20, y: 160 },
-                  { x: 120, y: 140 },
-                  { x: 220, y: 130 },
-                  { x: 320, y: 110 },
-                  { x: 420, y: 90 },
-                  { x: 580, y: 95 },
-                ].map((pt, i) => (
-                  <circle key={i} cx={pt.x} cy={pt.y} r="5" fill="#ffffff" stroke="#2563eb" strokeWidth="3" />
-                ))}
+              const expPts = pts.map((_, i) => ({
+                x: xOf(i),
+                y: padT + chartH - (i / Math.max(n - 1, 1)) * chartH * 0.82,
+              }));
 
-                {/* X Axis Labels */}
-                {['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'].map((month, i) => {
-                  const xCoords = [20, 120, 220, 320, 420, 580];
-                  return (
-                    <text key={month} x={xCoords[i]} y="198" textAnchor="middle" fontSize="11" fontWeight="600" fill="#94a3b8">
-                      {month}
-                    </text>
-                  );
-                })}
-              </svg>
-            </div>
+              const linePath = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+              const areaPath = linePath + ` L ${pts[pts.length-1].x.toFixed(1)} ${(H+padB).toFixed(1)} L ${pts[0].x.toFixed(1)} ${(H+padB).toFixed(1)} Z`;
+              const expPath  = expPts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+
+              return (
+                <div className="pt-4">
+                  <svg viewBox={`0 0 ${W} ${H + 20}`} className="w-full h-56">
+                    <defs>
+                      <linearGradient id="blueGradient3" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.18" />
+                        <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
+                      </linearGradient>
+                    </defs>
+
+                    {[0.2, 0.4, 0.6, 0.8, 1.0].map(t => {
+                      const y = padT + chartH * (1 - t * 0.85);
+                      return <line key={t} x1={padL} y1={y} x2={W - padR} y2={y} stroke="#f1f5f9" strokeWidth="1.5" />;
+                    })}
+
+                    {[0.25, 0.5, 0.75, 1.0].map(t => {
+                      const val = minRev + range * t;
+                      const y   = yOf(val);
+                      return (
+                        <text key={t} x={padL - 4} y={y + 3} textAnchor="end" fontSize="8" fill="#cbd5e1" fontWeight="600">
+                          {val >= 1000 ? `${Math.round(val/1000)}k` : Math.round(val)}
+                        </text>
+                      );
+                    })}
+
+                    <path d={expPath} fill="none" stroke="#94a3b8" strokeWidth="2" strokeDasharray="5,5" />
+                    <path d={areaPath} fill="url(#blueGradient3)" />
+                    <path d={linePath} fill="none" stroke="#2563eb" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+
+                    {pts.map((p, i) => (
+                      <g key={i}>
+                        <text x={p.x} y={p.y - 10} textAnchor="middle" fontSize="8.5" fontWeight="700" fill="#2563eb">
+                          {p.revenue >= 1000 ? `Rs.${Math.round(p.revenue/1000)}k` : `Rs.${p.revenue}`}
+                        </text>
+                        <circle cx={p.x} cy={p.y} r="5" fill="#ffffff" stroke="#2563eb" strokeWidth="3" />
+                      </g>
+                    ))}
+
+                    {pts.map((p, i) => (
+                      <text
+                        key={i}
+                        x={p.x}
+                        y={H + 17}
+                        textAnchor="middle"
+                        fontSize="11"
+                        fontWeight="600"
+                        fill={i === pts.length - 1 ? '#2563eb' : '#94a3b8'}
+                      >
+                        {shortMonth(p.month)}
+                      </text>
+                    ))}
+                  </svg>
+                </div>
+              );
+            })()}
           </div>
 
           {/* Section 3: Donut Distribution, Collection Rate & Activity Trend (Exact matching Image 2) */}
@@ -566,7 +640,7 @@ export default function AnalyticsDashboard({
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                   </svg>
                 </div>
-                <p className="text-xs text-slate-600 font-medium">16 students still have pending or overdue payments.</p>
+                <p className="text-xs text-slate-600 font-medium">{kpi ? kpi.pendingCount + kpi.overdueCount : 16} students still have pending or overdue payments.</p>
               </div>
 
               <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3.5">
@@ -575,7 +649,7 @@ export default function AnalyticsDashboard({
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <p className="text-xs text-slate-600 font-medium">July had your highest payment collection rate at 98%.</p>
+                <p className="text-xs text-slate-600 font-medium">{bestMonth ? `${bestMonth.month} had your highest payment collection rate at ${bestMonth.collectionRate}%.` : 'July had your highest payment collection rate at 98%.'}</p>
               </div>
 
               <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3.5">
