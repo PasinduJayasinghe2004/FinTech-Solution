@@ -1,5 +1,6 @@
 import { logoImg } from '@/assets/logo';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { apiService } from '../services/api';
 
 interface AnalyticsDashboardProps {
   teacherName?: string;
@@ -22,6 +23,59 @@ export default function AnalyticsDashboard({
   const [timeRange, setTimeRange] = useState('Last 6 Months');
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [actionSuccessMsg, setActionSuccessMsg] = useState<string | null>(null);
+  const [analyticsData, setAnalyticsData] = useState<any>(null);
+  const [analyticsLoading, setAnalyticsLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      setAnalyticsLoading(true);
+      const data = await apiService.fetchAnalytics();
+      if (data && data.success) setAnalyticsData(data);
+      setAnalyticsLoading(false);
+    };
+    load();
+  }, []);
+
+  // Helper to format rupees
+  const fmtRs = (n: number) => `Rs. ${n.toLocaleString()}`;
+
+  // KPI values — live if available, else static fallbacks
+  const kpi = analyticsData?.kpi;
+  const totalRevenue   = kpi ? fmtRs(kpi.totalRevenue)          : 'Rs. 1,560,000';
+  const avgMonthly     = kpi ? fmtRs(Math.round(kpi.totalRevenue / Math.max(1, (analyticsData?.monthlyBreakdown?.length || 1)))) : 'Rs. 260,000';
+  const collectionRate = kpi ? `${kpi.collectionRate}%`          : '87.5%';
+  const paidStudents   = kpi ? kpi.paidCount                     : 112;
+  const totalStudents  = kpi ? kpi.totalStudents                 : 128;
+  const outstanding    = kpi ? fmtRs(kpi.outstandingRevenue)     : 'Rs. 48,000';
+  const paidPct        = kpi ? kpi.paidPercent                   : 87;
+  const pendingPct     = kpi ? kpi.pendingPercent                : 9;
+  const overduePct     = kpi ? kpi.overduePercent                : 4;
+
+  // Monthly breakdown from API or static default
+  const defaultMonthly = [
+    { month: 'April 2026', collectionRate: 89 },
+    { month: 'May 2026',   collectionRate: 93 },
+    { month: 'June 2026',  collectionRate: 94 },
+    { month: 'July 2026',  collectionRate: 98 },
+    { month: 'August 2026',collectionRate: 96 },
+    { month: 'September 2026', collectionRate: 85 },
+  ];
+  const rawMonthly: Array<{month:string; collectionRate:number}> = analyticsData?.monthlyBreakdown?.length
+    ? analyticsData.monthlyBreakdown
+    : defaultMonthly;
+  const shortMonth = (m: string) => m.split(' ')[0].slice(0, 3);
+  const bestMonth  = [...rawMonthly].sort((a,b) => b.collectionRate - a.collectionRate)[0];
+  const worstMonth = [...rawMonthly].sort((a,b) => a.collectionRate - b.collectionRate)[0];
+
+  // Students requiring attention from API or static fallback
+  const defaultAttention = [
+    { studentId: 'STU-024', name: 'Kasun Perera',    status: 'OVERDUE', outstanding: 3000, overdueCount: 1 },
+    { studentId: 'STU-052', name: 'Nimal Silva',      status: 'OVERDUE', outstanding: 6000, overdueCount: 2 },
+    { studentId: 'STU-078', name: 'Amal Fernando',   status: 'PENDING', outstanding: 3000, overdueCount: 0 },
+  ];
+  const attentionStudents: any[] = analyticsData?.studentsRequiringAttention?.length
+    ? analyticsData.studentsRequiringAttention
+    : defaultAttention;
 
   const triggerSuccess = (msg: string) => {
     setActionSuccessMsg(msg);
@@ -94,7 +148,7 @@ export default function AnalyticsDashboard({
               </span>
             </div>
             <p className="text-xs font-semibold text-slate-400">Total Revenue</p>
-            <h3 className="text-3xl font-extrabold text-slate-900 mt-1">Rs. 1,560,000</h3>
+            <h3 className="text-3xl font-extrabold text-slate-900 mt-1">{totalRevenue}</h3>
           </div>
           <p className="text-xs text-slate-400 mt-3">+18.5% compared to previous period</p>
         </div>
@@ -108,7 +162,7 @@ export default function AnalyticsDashboard({
               </svg>
             </div>
             <p className="text-xs font-semibold text-slate-400">Average Monthly Revenue</p>
-            <h3 className="text-3xl font-extrabold text-slate-900 mt-1">Rs. 260,000</h3>
+            <h3 className="text-3xl font-extrabold text-slate-900 mt-1">{avgMonthly}</h3>
           </div>
           <p className="text-xs text-slate-400 mt-3">Based on the last 6 months</p>
         </div>
@@ -118,12 +172,12 @@ export default function AnalyticsDashboard({
           <div className="flex justify-between items-start">
             <div>
               <p className="text-xs font-semibold text-slate-400">Payment Collection Rate</p>
-              <h3 className="text-3xl font-extrabold text-slate-900 mt-1">87.5%</h3>
-              <p className="text-xs text-slate-400 mt-3">112 of 128 students paid</p>
+              <h3 className="text-3xl font-extrabold text-slate-900 mt-1">{collectionRate}</h3>
+              <p className="text-xs text-slate-400 mt-3">{paidStudents} of {totalStudents} students paid</p>
             </div>
             {/* Mini Donut Badge */}
             <div className="w-11 h-11 rounded-full border-4 border-emerald-500 border-t-emerald-200 flex items-center justify-center shrink-0">
-              <span className="text-[10px] font-black text-emerald-700">88%</span>
+              <span className="text-[10px] font-black text-emerald-700">{collectionRate}</span>
             </div>
           </div>
         </div>
@@ -142,9 +196,9 @@ export default function AnalyticsDashboard({
               </span>
             </div>
             <p className="text-xs font-semibold text-slate-400">Outstanding Revenue</p>
-            <h3 className="text-3xl font-extrabold text-red-600 mt-1">Rs. 48,000</h3>
+            <h3 className="text-3xl font-extrabold text-red-600 mt-1">{outstanding}</h3>
           </div>
-          <p className="text-xs text-slate-400 mt-3">16 payments require attention</p>
+          <p className="text-xs text-slate-400 mt-3">{kpi ? kpi.pendingCount + kpi.overdueCount : 16} payments require attention</p>
         </div>
 
       </div>
@@ -413,7 +467,7 @@ export default function AnalyticsDashboard({
                   <circle cx="12" cy="50" r="4.5" fill="#ef4444" />
                 </svg>
                 <div className="absolute text-center">
-                  <span className="text-3xl font-black text-slate-900 block leading-none">128</span>
+                  <span className="text-3xl font-black text-slate-900 block leading-none">{totalStudents}</span>
                   <span className="text-xs text-slate-400 font-semibold mt-1 block">Students</span>
                 </div>
               </div>
@@ -425,21 +479,21 @@ export default function AnalyticsDashboard({
                     <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
                     <span className="text-slate-600">Paid</span>
                   </div>
-                  <span className="text-slate-900 font-extrabold">87%</span>
+                  <span className="text-slate-900 font-extrabold">{paidPct}%</span>
                 </div>
                 <div className="flex items-center justify-between text-xs font-bold">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
                     <span className="text-slate-600">Pending</span>
                   </div>
-                  <span className="text-slate-900 font-extrabold">9%</span>
+                  <span className="text-slate-900 font-extrabold">{pendingPct}%</span>
                 </div>
                 <div className="flex items-center justify-between text-xs font-bold">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
                     <span className="text-slate-600">Overdue</span>
                   </div>
-                  <span className="text-slate-900 font-extrabold">4%</span>
+                  <span className="text-slate-900 font-extrabold">{overduePct}%</span>
                 </div>
               </div>
             </div>
@@ -451,18 +505,11 @@ export default function AnalyticsDashboard({
                 <p className="text-xs text-slate-400 mt-0.5">Percentage of expected payments successfully collected.</p>
               </div>
 
-              <div className="grid grid-cols-6 gap-2 text-center pt-2">
-                {[
-                  { month: 'Apr', rate: '89%' },
-                  { month: 'May', rate: '93%' },
-                  { month: 'Jun', rate: '94%' },
-                  { month: 'Jul', rate: '98%' },
-                  { month: 'Aug', rate: '96%' },
-                  { month: 'Sep', rate: '85%', active: true },
-                ].map((item) => (
+              <div className={`grid gap-2 text-center pt-2`} style={{gridTemplateColumns: `repeat(${Math.min(rawMonthly.length, 6)}, 1fr)`}}>
+                {rawMonthly.map((item, i) => (
                   <div key={item.month} className="space-y-1">
-                    <p className={`text-xs font-black ${item.active ? 'text-blue-600' : 'text-slate-800'}`}>{item.rate}</p>
-                    <p className={`text-[11px] font-semibold ${item.active ? 'text-blue-600' : 'text-slate-400'}`}>{item.month}</p>
+                    <p className={`text-xs font-black ${i === rawMonthly.length - 1 ? 'text-blue-600' : 'text-slate-800'}`}>{item.collectionRate}%</p>
+                    <p className={`text-[11px] font-semibold ${i === rawMonthly.length - 1 ? 'text-blue-600' : 'text-slate-400'}`}>{shortMonth(item.month)}</p>
                   </div>
                 ))}
               </div>
@@ -551,13 +598,13 @@ export default function AnalyticsDashboard({
                   <span>🏆 Best Performing Month</span>
                 </div>
                 <div>
-                  <h4 className="font-display font-extrabold text-3xl">July 2026</h4>
+                  <h4 className="font-display font-extrabold text-3xl">{bestMonth?.month || 'July 2026'}</h4>
                   <div className="flex items-center justify-between text-xs mt-3">
                     <span>Collection Rate</span>
-                    <span className="font-bold text-base">98%</span>
+                    <span className="font-bold text-base">{bestMonth?.collectionRate ?? 98}%</span>
                   </div>
                   <div className="w-full bg-white/20 rounded-full h-2 mt-1.5 overflow-hidden">
-                    <div className="bg-white h-full rounded-full" style={{ width: '98%' }} />
+                    <div className="bg-white h-full rounded-full" style={{ width: `${bestMonth?.collectionRate ?? 98}%` }} />
                   </div>
                 </div>
               </div>
@@ -568,13 +615,13 @@ export default function AnalyticsDashboard({
                   <span>⚠️ Lowest Performing Month</span>
                 </div>
                 <div>
-                  <h4 className="font-display font-extrabold text-3xl text-slate-900">September 2026</h4>
+                  <h4 className="font-display font-extrabold text-3xl text-slate-900">{worstMonth?.month || 'September 2026'}</h4>
                   <div className="flex items-center justify-between text-xs mt-3 text-slate-500 font-medium">
                     <span>Collection Rate</span>
-                    <span className="font-bold text-slate-900 text-base">85%</span>
+                    <span className="font-bold text-slate-900 text-base">{worstMonth?.collectionRate ?? 85}%</span>
                   </div>
                   <div className="w-full bg-slate-100 rounded-full h-2 mt-1.5 overflow-hidden">
-                    <div className="bg-red-500 h-full rounded-full" style={{ width: '85%' }} />
+                    <div className="bg-red-500 h-full rounded-full" style={{ width: `${worstMonth?.collectionRate ?? 85}%` }} />
                   </div>
                 </div>
               </div>
@@ -606,91 +653,39 @@ export default function AnalyticsDashboard({
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-xs">
-                    
-                    {/* Row 1 */}
-                    <tr className="hover:bg-slate-50/60">
-                      <td className="py-3.5 px-4 font-bold text-slate-900">
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-7 h-7 rounded-full bg-cyan-500 text-white font-bold text-xs flex items-center justify-center">
-                            KP
-                          </div>
-                          <span>Kasun Perera</span>
-                        </div>
-                      </td>
-                      <td className="py-3.5 px-4 font-mono text-slate-400">STU-024</td>
-                      <td className="py-3.5 px-4 font-extrabold text-slate-900">Rs. 3,000</td>
-                      <td className="py-3.5 px-4">
-                        <span className="bg-red-50 text-red-600 font-extrabold px-2.5 py-0.5 rounded-full text-[10px]">
-                          OVERDUE
-                        </span>
-                      </td>
-                      <td className="py-3.5 px-4 text-slate-500 font-medium">5 Days</td>
-                      <td className="py-3.5 px-4 text-right">
-                        <button 
-                          onClick={() => triggerSuccess('Reminder sent to Kasun Perera')}
-                          className="bg-blue-50 text-blue-600 font-bold px-3 py-1.5 rounded-xl hover:bg-blue-100 cursor-pointer"
-                        >
-                          Send Reminder
-                        </button>
-                      </td>
-                    </tr>
-
-                    {/* Row 2 */}
-                    <tr className="hover:bg-slate-50/60">
-                      <td className="py-3.5 px-4 font-bold text-slate-900">
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-7 h-7 rounded-full bg-cyan-500 text-white font-bold text-xs flex items-center justify-center">
-                            NS
-                          </div>
-                          <span>Nimal Silva</span>
-                        </div>
-                      </td>
-                      <td className="py-3.5 px-4 font-mono text-slate-400">STU-052</td>
-                      <td className="py-3.5 px-4 font-extrabold text-slate-900">Rs. 6,000</td>
-                      <td className="py-3.5 px-4">
-                        <span className="bg-red-50 text-red-600 font-extrabold px-2.5 py-0.5 rounded-full text-[10px]">
-                          OVERDUE
-                        </span>
-                      </td>
-                      <td className="py-3.5 px-4 text-slate-500 font-medium">12 Days</td>
-                      <td className="py-3.5 px-4 text-right">
-                        <button 
-                          onClick={() => triggerSuccess('Reminder sent to Nimal Silva')}
-                          className="bg-blue-50 text-blue-600 font-bold px-3 py-1.5 rounded-xl hover:bg-blue-100 cursor-pointer"
-                        >
-                          Send Reminder
-                        </button>
-                      </td>
-                    </tr>
-
-                    {/* Row 3 */}
-                    <tr className="hover:bg-slate-50/60">
-                      <td className="py-3.5 px-4 font-bold text-slate-900">
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-7 h-7 rounded-full bg-cyan-500 text-white font-bold text-xs flex items-center justify-center">
-                            AF
-                          </div>
-                          <span>Amal Fernando</span>
-                        </div>
-                      </td>
-                      <td className="py-3.5 px-4 font-mono text-slate-400">STU-078</td>
-                      <td className="py-3.5 px-4 font-extrabold text-slate-900">Rs. 3,000</td>
-                      <td className="py-3.5 px-4">
-                        <span className="bg-amber-50 text-amber-700 font-extrabold px-2.5 py-0.5 rounded-full text-[10px]">
-                          PENDING
-                        </span>
-                      </td>
-                      <td className="py-3.5 px-4 text-slate-500 font-medium">Due in 2 Days</td>
-                      <td className="py-3.5 px-4 text-right">
-                        <button 
-                          onClick={() => triggerSuccess('Reminder sent to Amal Fernando')}
-                          className="bg-blue-50 text-blue-600 font-bold px-3 py-1.5 rounded-xl hover:bg-blue-100 cursor-pointer"
-                        >
-                          Send Reminder
-                        </button>
-                      </td>
-                    </tr>
-
+                    {analyticsLoading ? (
+                      <tr><td colSpan={6} className="py-6 text-center text-slate-400 text-xs">Loading analytics data...</td></tr>
+                    ) : attentionStudents.length === 0 ? (
+                      <tr><td colSpan={6} className="py-6 text-center text-emerald-600 font-semibold text-xs">🎉 All students are up to date!</td></tr>
+                    ) : attentionStudents.map((s: any) => {
+                      const initials = s.name.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2);
+                      return (
+                        <tr key={s.studentId} className="hover:bg-slate-50/60">
+                          <td className="py-3.5 px-4 font-bold text-slate-900">
+                            <div className="flex items-center gap-2.5">
+                              <div className="w-7 h-7 rounded-full bg-cyan-500 text-white font-bold text-xs flex items-center justify-center">{initials}</div>
+                              <span>{s.name}</span>
+                            </div>
+                          </td>
+                          <td className="py-3.5 px-4 font-mono text-slate-400">{s.studentId}</td>
+                          <td className="py-3.5 px-4 font-extrabold text-slate-900">Rs. {s.outstanding?.toLocaleString()}</td>
+                          <td className="py-3.5 px-4">
+                            <span className={`font-extrabold px-2.5 py-0.5 rounded-full text-[10px] ${
+                              s.status === 'OVERDUE' ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-700'
+                            }`}>{s.status}</span>
+                          </td>
+                          <td className="py-3.5 px-4 text-slate-500 font-medium">
+                            {s.status === 'OVERDUE' ? `${s.overdueCount} month(s)` : 'Due soon'}
+                          </td>
+                          <td className="py-3.5 px-4 text-right">
+                            <button
+                              onClick={() => triggerSuccess(`Reminder sent to ${s.name}`)}
+                              className="bg-blue-50 text-blue-600 font-bold px-3 py-1.5 rounded-xl hover:bg-blue-100 cursor-pointer"
+                            >Send Reminder</button>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

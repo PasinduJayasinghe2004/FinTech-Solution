@@ -5,6 +5,7 @@ import studentRoutes from './routes/student.js';
 import teacherRoutes from './routes/teacher.js';
 import studentsCrudRoutes from './routes/studentsCRUD.js';
 import paymentsCrudRoutes from './routes/paymentsCRUD.js';
+import analyticsRoutes from './routes/analytics.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -19,6 +20,7 @@ app.use('/api/student', studentRoutes);
 app.use('/api/teacher', teacherRoutes);
 app.use('/api/students', studentsCrudRoutes);
 app.use('/api/payments', paymentsCrudRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 // Root endpoint
 app.get('/', (_req, res) => {
