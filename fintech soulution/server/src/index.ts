@@ -20,6 +20,15 @@ app.use('/api/teacher', teacherRoutes);
 app.use('/api/students', studentsCrudRoutes);
 app.use('/api/payments', paymentsCrudRoutes);
 
+// Root endpoint
+app.get('/', (_req, res) => {
+  res.json({
+    message: 'RIA Fintech API is running 🚀',
+    health: '/api/health',
+    endpoints: ['/api/auth', '/api/student', '/api/teacher', '/api/students', '/api/payments']
+  });
+});
+
 // Health check
 app.get('/api/health', (_req, res) => {
   res.json({
