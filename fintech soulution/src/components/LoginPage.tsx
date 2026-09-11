@@ -176,15 +176,17 @@ export default function LoginPage({ onBackToHome, onLoginSuccess, initialRole = 
               >
                 Log In
               </button>
-              <button
-                type="button"
-                onClick={() => setMode('register')}
-                className={`flex-1 py-2 text-xs font-extrabold rounded-xl transition-all cursor-pointer ${
-                  mode === 'register' ? 'bg-white text-blue-600 shadow-md' : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                Create Account
-              </button>
+              {role === 'student' && (
+                <button
+                  type="button"
+                  onClick={() => setMode('register')}
+                  className={`flex-1 py-2 text-xs font-extrabold rounded-xl transition-all cursor-pointer ${
+                    mode === 'register' ? 'bg-white text-blue-600 shadow-md' : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  Create Account
+                </button>
+              )}
             </div>
 
             {/* Role Switcher Pill */}
@@ -240,7 +242,10 @@ export default function LoginPage({ onBackToHome, onLoginSuccess, initialRole = 
             </button>
             <button
               type="button"
-              onClick={() => setRole('teacher')}
+              onClick={() => {
+                setRole('teacher');
+                setMode('login');
+              }}
               className={`py-2 px-3 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
                 role === 'teacher' 
                   ? 'border-blue-600 bg-blue-50 text-blue-700 shadow-sm' 
@@ -436,7 +441,11 @@ export default function LoginPage({ onBackToHome, onLoginSuccess, initialRole = 
 
           {/* Footer toggle */}
           <div className="mt-6 text-center text-xs text-slate-500">
-            {mode === 'login' ? (
+            {role === 'teacher' ? (
+              <span className="text-slate-400 font-medium">
+                🔒 Teacher accounts are pre-configured by Institute Admin. Contact administration if you need access.
+              </span>
+            ) : mode === 'login' ? (
               <span>
                 Don't have an account?{' '}
                 <button
