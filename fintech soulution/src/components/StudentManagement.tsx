@@ -63,21 +63,50 @@ export default function StudentManagement({
 
   const loadBackendStudents = async () => {
     try {
-      const backendStudents = await apiService.fetchStudents();
+      const [backendStudents, allPayments] = await Promise.all([
+        apiService.fetchStudents(),
+        apiService.fetchPayments()
+      ]);
+
       if (backendStudents && backendStudents.length > 0) {
         const bgColors = ['bg-blue-600', 'bg-emerald-600', 'bg-purple-600', 'bg-indigo-600', 'bg-pink-600', 'bg-orange-500'];
 
-        const mapped: StudentItem[] = backendStudents.map((s: any, idx: number) => ({
-          id: s.studentUniqueId || s.id || `STU-${idx + 100}`,
-          name: s.name || 'New Student',
-          initials: (s.name || 'S').charAt(0).toUpperCase(),
-          avatarBg: bgColors[idx % bgColors.length],
-          contact: s.email || s.phone || 'student@email.com',
-          fee: `Rs. ${s.fee || 3000}`,
-          status: 'PAID',
-          lastPayment: s.registeredDate || 'Recently',
-          activeStatus: s.status === 'ACTIVE' || true,
-        }));
+        const mapped: StudentItem[] = backendStudents.map((s: any, idx: number) => {
+          const studentId = s.studentUniqueId || s.id || `STU-${idx + 100}`;
+          
+          // Find student payments from backend
+          const studentPayments = (allPayments || []).filter(
+            (p: any) => p.studentId?.toUpperCase() === studentId.toUpperCase()
+          );
+
+          // Latest payment date or registration date
+          const latestPaymentObj = studentPayments.length > 0 ? studentPayments[0] : null;
+          const lastPayment = latestPaymentObj
+            ? (latestPaymentObj.paymentDate !== '—' ? `${latestPaymentObj.month} (${latestPaymentObj.paymentDate})` : latestPaymentObj.month)
+            : (s.registeredDate || 'Recently Registered');
+
+          // Compute live payment status based on latest payment record
+          let status: 'PAID' | 'PENDING' | 'OVERDUE' = 'PAID';
+          if (latestPaymentObj) {
+            if (latestPaymentObj.status === 'Paid') status = 'PAID';
+            else if (latestPaymentObj.status === 'Pending') status = 'PENDING';
+            else if (latestPaymentObj.status === 'Overdue') status = 'OVERDUE';
+          } else {
+            status = 'PAID';
+          }
+
+          return {
+            id: studentId,
+            name: s.name || 'New Student',
+            initials: (s.name || 'S').charAt(0).toUpperCase(),
+            avatarBg: bgColors[idx % bgColors.length],
+            contact: s.email || s.phone || 'student@email.com',
+            fee: `Rs. ${s.fee || 3000}`,
+            status,
+            lastPayment,
+            activeStatus: s.status === 'ACTIVE' || true,
+          };
+        });
 
         // Merge with mockStudents ensuring no duplicate IDs
         const combined = [...mapped];
@@ -462,7 +491,7 @@ export default function StudentManagement({
 
             {/* Pagination Footer */}
             <div className="p-4 bg-slate-50/50 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-semibold text-slate-500">
-              <span>Showing 1-8 of 128 students</span>
+              <span>Showing 1-{filteredStudents.length} of {totalStudentsCount} students</span>
               
               <div className="flex items-center gap-1.5">
                 <button
