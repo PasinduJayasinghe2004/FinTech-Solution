@@ -1,13 +1,42 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { logoImg } from '@/assets/logo';
 import { heroVideo } from '@/assets/heroVideo';
 import LoginPage from './components/LoginPage';
 import StudentDashboard from './components/StudentDashboard';
 import TeacherDashboard from './components/TeacherDashboard';
 
+const SESSION_KEY = 'ria_view';
+
+// Restore the last view from localStorage if a valid auth token exists
+function getInitialView(): 'home' | 'login' | 'student_dashboard' | 'teacher_dashboard' {
+  const token = localStorage.getItem('ria_token');
+  const saved  = localStorage.getItem(SESSION_KEY) as 'student_dashboard' | 'teacher_dashboard' | null;
+  if (token && (saved === 'student_dashboard' || saved === 'teacher_dashboard')) {
+    return saved;
+  }
+  return 'home';
+}
+
 export default function App() {
-  const [view, setView] = useState<'home' | 'login' | 'student_dashboard' | 'teacher_dashboard'>('home');
+  const [view, setView] = useState<'home' | 'login' | 'student_dashboard' | 'teacher_dashboard'>(getInitialView);
   const [initialRole, setInitialRole] = useState<'student' | 'teacher'>('student');
+
+  // Persist the current dashboard view so refresh works
+  useEffect(() => {
+    if (view === 'student_dashboard' || view === 'teacher_dashboard') {
+      localStorage.setItem(SESSION_KEY, view);
+    } else {
+      localStorage.removeItem(SESSION_KEY);
+    }
+  }, [view]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('ria_token');
+    localStorage.removeItem(SESSION_KEY);
+    setView('home');
+  };
+
+
 
   if (view === 'login') {
     return (
@@ -26,11 +55,11 @@ export default function App() {
   }
 
   if (view === 'student_dashboard') {
-    return <StudentDashboard onLogout={() => setView('home')} />;
+    return <StudentDashboard onLogout={handleLogout} />;
   }
 
   if (view === 'teacher_dashboard') {
-    return <TeacherDashboard onLogout={() => setView('home')} />;
+    return <TeacherDashboard onLogout={handleLogout} />;
   }
 
   const handleOpenLogin = (role: 'student' | 'teacher') => {
