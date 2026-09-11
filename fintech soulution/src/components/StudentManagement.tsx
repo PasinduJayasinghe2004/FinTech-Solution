@@ -86,13 +86,13 @@ export default function StudentManagement({
             : (s.registeredDate || 'Recently Registered');
 
           // Compute live payment status based on latest payment record
-          let status: 'PAID' | 'PENDING' | 'OVERDUE' = 'PAID';
+          let status: 'PAID' | 'PENDING' | 'OVERDUE' = 'PENDING';
           if (latestPaymentObj) {
             if (latestPaymentObj.status === 'Paid') status = 'PAID';
             else if (latestPaymentObj.status === 'Pending') status = 'PENDING';
             else if (latestPaymentObj.status === 'Overdue') status = 'OVERDUE';
           } else {
-            status = 'PAID';
+            status = 'PENDING';
           }
 
           return {

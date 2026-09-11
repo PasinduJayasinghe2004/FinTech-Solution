@@ -337,11 +337,12 @@ class Database {
   addStudent(student: Omit<StudentRecord, 'id' | 'studentUniqueId' | 'registeredDate'>): StudentRecord {
     const nextNum = this.students.length + 1;
     const studentUniqueId = `STU-${String(nextNum).padStart(3, '0')}`;
+    const todayStr = new Date().toISOString().split('T')[0];
     const newStudent: StudentRecord = {
       ...student,
       id: `stu_${Date.now()}`,
       studentUniqueId,
-      registeredDate: new Date().toISOString().split('T')[0],
+      registeredDate: todayStr,
     };
     this.students.push(newStudent);
 
@@ -352,6 +353,17 @@ class Database {
       email: newStudent.email,
       role: 'ROLE_STUDENT',
       studentId: studentUniqueId,
+    });
+
+    // Automatically create initial Pending payment record upon registration by teacher
+    this.payments.unshift({
+      id: `pay_${Date.now()}`,
+      studentId: studentUniqueId,
+      month: 'September 2026',
+      paymentDate: '—',
+      amount: 3000,
+      method: '—',
+      status: 'Pending',
     });
 
     return newStudent;
