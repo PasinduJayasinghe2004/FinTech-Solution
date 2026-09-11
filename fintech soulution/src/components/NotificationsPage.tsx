@@ -1,5 +1,6 @@
 import { logoImg } from '@/assets/logo';
 import React, { useState } from 'react';
+import { apiService } from '../services/api';
 
 interface NotificationsPageProps {
   teacherName?: string;
@@ -117,6 +118,12 @@ export default function NotificationsPage({
   // Action Modals & Toasts
   const [showIndividualReminderModal, setShowIndividualReminderModal] = useState(false);
   const [showBulkReminderModal, setShowBulkReminderModal] = useState(false);
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [selectedStudentForMsg, setSelectedStudentForMsg] = useState<{ id: string; name: string } | null>(null);
+  const [msgTitle, setMsgTitle] = useState('');
+  const [msgContent, setMsgContent] = useState('');
+  const [msgChannel, setMsgChannel] = useState('In-App & Email & SMS');
+  const [sendingMsg, setSendingMsg] = useState(false);
   const [actionSuccessMsg, setActionSuccessMsg] = useState<string | null>(null);
 
   const triggerSuccess = (msg: string) => {
@@ -135,6 +142,45 @@ export default function NotificationsPage({
     setNotificationsList(prev => prev.map(n => n.id === id ? { ...n, unread: false } : n));
     triggerSuccess('Notification marked as read!');
   };
+
+  const handleOpenSendReminder = (studentName: string, studentId: string) => {
+    setSelectedStudentForMsg({ id: studentId, name: studentName });
+    setMsgTitle('Payment Overdue Reminder');
+    setMsgContent(`Dear ${studentName},\n\nThis is a notice regarding your overdue payment of Rs. 3,000. Please complete your payment as soon as possible via card or bank transfer.`);
+    setShowMessageModal(true);
+  };
+
+  const handleSendMessageSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedStudentForMsg) return;
+    setSendingMsg(true);
+
+    try {
+      const res = await apiService.sendMessage(
+        selectedStudentForMsg.id,
+        msgTitle,
+        msgContent,
+        msgChannel
+      );
+
+      if (res.success) {
+        triggerSuccess(`Reminder sent to ${selectedStudentForMsg.name} (${msgChannel})!`);
+        setShowMessageModal(false);
+      } else {
+        triggerSuccess(res.message || 'Failed to send message');
+      }
+    } catch (err) {
+      triggerSuccess('Failed to send message');
+    } finally {
+      setSendingMsg(false);
+    }
+  };
+
+  // Dynamic counts
+  const unreadCount = notificationsList.filter(n => n.unread).length;
+  const paymentsCount = notificationsList.filter(n => n.type === 'received' || n.type === 'overdue' || n.type === 'due_soon').length;
+  const remindersCount = notificationsList.filter(n => n.type === 'reminder_delivered' || n.type === 'overdue').length;
+  const systemCount = notificationsList.filter(n => n.type === 'student_added' || n.type === 'report_ready').length;
 
   // Filter list
   const filteredNotifications = notificationsList.filter(n => {
@@ -185,21 +231,27 @@ export default function NotificationsPage({
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             
             {/* Card 1: Unread Notifications */}
-            <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden flex flex-col justify-between">
+            <div 
+              onClick={() => setFilterCategory('unread')}
+              className={`bg-white p-5 rounded-3xl border ${filterCategory === 'unread' ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-slate-100'} shadow-sm relative overflow-hidden flex flex-col justify-between cursor-pointer hover:border-blue-300 transition-all`}
+            >
               <div>
                 <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-4">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                   </svg>
                 </div>
-                <h3 className="text-3xl font-extrabold text-slate-900">5</h3>
+                <h3 className="text-3xl font-extrabold text-slate-900">{unreadCount}</h3>
                 <p className="text-xs font-bold text-slate-800 mt-1">Unread Notifications</p>
               </div>
               <p className="text-xs text-slate-400 mt-2">Requires your attention</p>
             </div>
 
             {/* Card 2: Payments Received */}
-            <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden flex flex-col justify-between">
+            <div 
+              onClick={() => setFilterCategory('payments')}
+              className={`bg-white p-5 rounded-3xl border ${filterCategory === 'payments' ? 'border-emerald-500 ring-2 ring-emerald-500/20' : 'border-slate-100'} shadow-sm relative overflow-hidden flex flex-col justify-between cursor-pointer hover:border-emerald-300 transition-all`}
+            >
               <div>
                 <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -213,28 +265,34 @@ export default function NotificationsPage({
             </div>
 
             {/* Card 3: Pending Payments */}
-            <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden flex flex-col justify-between">
+            <div 
+              onClick={() => setFilterCategory('reminders')}
+              className={`bg-white p-5 rounded-3xl border ${filterCategory === 'reminders' ? 'border-amber-500 ring-2 ring-amber-500/20' : 'border-slate-100'} shadow-sm relative overflow-hidden flex flex-col justify-between cursor-pointer hover:border-amber-300 transition-all`}
+            >
               <div>
                 <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mb-4">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <h3 className="text-3xl font-extrabold text-slate-900">12</h3>
-                <p className="text-xs font-bold text-slate-800 mt-1">Pending Payments</p>
+                <h3 className="text-3xl font-extrabold text-slate-900">{remindersCount}</h3>
+                <p className="text-xs font-bold text-slate-800 mt-1">Reminders & Pending</p>
               </div>
-              <p className="text-xs text-slate-400 mt-2">Students haven't paid yet</p>
+              <p className="text-xs text-slate-400 mt-2">Reminders sent & pending</p>
             </div>
 
             {/* Card 4: Overdue Payments */}
-            <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden flex flex-col justify-between">
+            <div 
+              onClick={() => setFilterCategory('payments')}
+              className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden flex flex-col justify-between cursor-pointer hover:border-red-300 transition-all"
+            >
               <div>
                 <div className="w-10 h-10 rounded-2xl bg-red-50 text-red-500 flex items-center justify-center mb-4">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                   </svg>
                 </div>
-                <h3 className="text-3xl font-extrabold text-slate-900">5</h3>
+                <h3 className="text-3xl font-extrabold text-slate-900">2</h3>
                 <p className="text-xs font-bold text-slate-800 mt-1">Overdue Payments</p>
               </div>
               <p className="text-xs text-slate-400 mt-2">Require immediate attention</p>
@@ -270,7 +328,7 @@ export default function NotificationsPage({
             </button>
 
             <button
-              onClick={() => triggerSuccess('Notification Settings Panel active')}
+              onClick={() => triggerSuccess('Notification Preferences updated')}
               className="bg-white hover:bg-slate-50 border border-slate-200/80 text-slate-700 font-extrabold px-4 py-3 rounded-2xl shadow-sm transition-all flex items-center justify-center gap-2 text-xs cursor-pointer"
             >
               <span>⚙</span>
@@ -289,7 +347,7 @@ export default function NotificationsPage({
                   : 'bg-white text-slate-600 border border-slate-200/80 hover:bg-slate-50'
               }`}
             >
-              All <span className="ml-1 opacity-80">8</span>
+              All <span className="ml-1 opacity-80">{notificationsList.length}</span>
             </button>
 
             <button
@@ -300,7 +358,7 @@ export default function NotificationsPage({
                   : 'bg-white text-slate-600 border border-slate-200/80 hover:bg-slate-50'
               }`}
             >
-              Unread <span className="ml-1 opacity-80">5</span>
+              Unread <span className="ml-1 opacity-80">{unreadCount}</span>
             </button>
 
             <button
@@ -311,7 +369,7 @@ export default function NotificationsPage({
                   : 'bg-white text-slate-600 border border-slate-200/80 hover:bg-slate-50'
               }`}
             >
-              Payments <span className="ml-1 opacity-80">2</span>
+              Payments <span className="ml-1 opacity-80">{paymentsCount}</span>
             </button>
 
             <button
@@ -322,7 +380,7 @@ export default function NotificationsPage({
                   : 'bg-white text-slate-600 border border-slate-200/80 hover:bg-slate-50'
               }`}
             >
-              Reminders <span className="ml-1 opacity-80">4</span>
+              Reminders <span className="ml-1 opacity-80">{remindersCount}</span>
             </button>
 
             <button
@@ -333,7 +391,7 @@ export default function NotificationsPage({
                   : 'bg-white text-slate-600 border border-slate-200/80 hover:bg-slate-50'
               }`}
             >
-              System <span className="ml-1 opacity-80">2</span>
+              System <span className="ml-1 opacity-80">{systemCount}</span>
             </button>
           </div>
 
@@ -408,7 +466,7 @@ export default function NotificationsPage({
                       <div className="flex items-center gap-3 mt-3 text-xs font-bold">
                         {n.actionType === 'send_reminder' && (
                           <button
-                            onClick={() => triggerSuccess(`Reminder sent for ${n.title}`)}
+                            onClick={() => handleOpenSendReminder(n.title.includes('Amal') ? 'Amal Fernando' : 'Nimal Silva', n.title.includes('Amal') ? 'STU-024' : 'STU-052')}
                             className="bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-1.5 rounded-xl shadow-sm cursor-pointer"
                           >
                             Send Reminder
@@ -616,19 +674,35 @@ export default function NotificationsPage({
             <p className="text-xs text-slate-500 mb-4">Notify a specific student via Email & SMS</p>
 
             <form 
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault();
+                const form = e.target as HTMLFormElement;
+                const studentSelect = form.querySelector('select') as HTMLSelectElement;
+                const val = studentSelect?.value || 'Amal Fernando (STU-024)';
+                const studentId = val.includes('STU-001') ? 'STU-001' : val.includes('STU-052') ? 'STU-052' : 'STU-024';
+                
+                const res = await apiService.sendMessage(
+                  studentId,
+                  'Tuition Fee Reminder',
+                  `Dear student, this is a reminder regarding your tuition payment for RIA Institute. Please settle your fee at your earliest convenience.`,
+                  'In-App & Email & SMS'
+                );
+
                 setShowIndividualReminderModal(false);
-                triggerSuccess('Individual reminder delivered!');
+                if (res.success) {
+                  triggerSuccess(`Individual reminder delivered to ${val}!`);
+                } else {
+                  triggerSuccess(`Failed to deliver reminder: ${res.message || 'Error'}`);
+                }
               }} 
               className="space-y-3 text-xs"
             >
               <div>
                 <label className="block font-bold text-slate-700 mb-1">Select Student</label>
                 <select className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium">
-                  <option>Amal Fernando (STU-024)</option>
-                  <option>Nimal Silva (STU-052)</option>
-                  <option>Kasun Perera (STU-001)</option>
+                  <option value="STU-024">Amal Fernando (STU-024)</option>
+                  <option value="STU-052">Nimal Silva (STU-052)</option>
+                  <option value="STU-001">Kasun Perera (STU-001)</option>
                 </select>
               </div>
               <button
@@ -653,13 +727,18 @@ export default function NotificationsPage({
               ✕
             </button>
             <h3 className="font-display font-extrabold text-xl text-slate-900 mb-1">Send Bulk Payment Reminder</h3>
-            <p className="text-xs text-slate-500 mb-4">Send notices to all 12 pending/overdue students</p>
+            <p className="text-xs text-slate-500 mb-4">Send notices to all pending/overdue students</p>
 
             <form 
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault();
                 setShowBulkReminderModal(false);
-                triggerSuccess('Bulk reminders dispatched to 12 students!');
+                await Promise.all([
+                  apiService.sendMessage('STU-001', 'Tuition Fee Reminder', 'RIA: Your tuition fee payment is due. Please log in to complete your payment.', 'In-App & Email & SMS'),
+                  apiService.sendMessage('STU-002', 'Tuition Fee Reminder', 'RIA: Your tuition fee payment is due. Please log in to complete your payment.', 'In-App & Email & SMS'),
+                  apiService.sendMessage('STU-003', 'Tuition Fee Reminder', 'RIA: Your tuition fee payment is due. Please log in to complete your payment.', 'In-App & Email & SMS')
+                ]);
+                triggerSuccess('Bulk reminders dispatched to all pending students!');
               }} 
               className="space-y-3 text-xs"
             >
@@ -675,6 +754,88 @@ export default function NotificationsPage({
               >
                 Send Reminders Now
               </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 3: Send Message Modal */}
+      {showMessageModal && selectedStudentForMsg && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl relative">
+            <button 
+              onClick={() => setShowMessageModal(false)}
+              className="absolute top-5 right-5 text-slate-400 hover:text-slate-600 font-bold"
+            >
+              ✕
+            </button>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-display font-extrabold text-xl text-slate-900">Send Message / Reminder</h3>
+                <p className="text-xs text-slate-500">Recipient: <strong className="text-slate-800">{selectedStudentForMsg.name} ({selectedStudentForMsg.id})</strong></p>
+              </div>
+            </div>
+
+            <form onSubmit={handleSendMessageSubmit} className="space-y-4 text-xs mt-4">
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Send Via Channel</label>
+                <select
+                  value={msgChannel}
+                  onChange={(e) => setMsgChannel(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 font-semibold outline-none"
+                >
+                  <option value="In-App & Email & SMS">⚡ In-App Notification + Simulated Email & SMS</option>
+                  <option value="Email Only">📧 Email Only</option>
+                  <option value="SMS Only">📱 SMS Only</option>
+                  <option value="In-App Only">🔔 In-App Notification Only</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Subject / Title</label>
+                <input 
+                  type="text" 
+                  required
+                  placeholder="Subject" 
+                  value={msgTitle}
+                  onChange={(e) => setMsgTitle(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-medium outline-none focus:border-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Message Content</label>
+                <textarea 
+                  required
+                  rows={4}
+                  placeholder="Type message..." 
+                  value={msgContent}
+                  onChange={(e) => setMsgContent(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-medium outline-none focus:border-blue-500 resize-none"
+                />
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowMessageModal(false)}
+                  className="px-4 py-2.5 text-slate-500 hover:text-slate-700 font-bold rounded-xl"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={sendingMsg}
+                  className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-xl shadow-lg shadow-blue-600/30 transition-all cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                >
+                  {sendingMsg ? <span>Sending...</span> : <span>Send Message</span>}
+                </button>
+              </div>
             </form>
           </div>
         </div>
