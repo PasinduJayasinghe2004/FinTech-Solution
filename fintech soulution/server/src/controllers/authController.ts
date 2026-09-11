@@ -10,6 +10,10 @@ export const login = (req: Request, res: Response) => {
     return res.status(400).json({ success: false, message: 'ID/Email and password are required' });
   }
 
+  // Password validation: Default passwords are 'admin123' or 'teacher123' for teachers, 'student123' for students
+  const DEFAULT_TEACHER_PASSWORDS = ['admin123', 'teacher123', 'ria2026', 'password'];
+  const DEFAULT_STUDENT_PASSWORDS = ['student123', 'ria2026', 'password', '123456'];
+
   if (role === 'student') {
     let student = db.getStudentById(idOrEmail);
     if (!student) {
@@ -61,19 +65,12 @@ export const login = (req: Request, res: Response) => {
   } else {
     // Teacher login
     let user = db.findUserByEmail(idOrEmail);
+    
     if (!user) {
-      const teacherProfile = db.addTeacher({
-        name: idOrEmail.includes('@') ? idOrEmail.split('@')[0].replace('.', ' ') : 'Teacher',
-        email: idOrEmail,
-        subject: 'General Tuition',
-        phone: '+94 77 000 0000',
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid teacher email. Please check your credentials or contact Institute Admin.',
       });
-      user = {
-        id: teacherProfile.id,
-        name: teacherProfile.name,
-        email: teacherProfile.email,
-        role: 'ROLE_TEACHER',
-      };
     }
 
     const token = jwt.sign(
