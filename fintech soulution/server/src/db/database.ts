@@ -338,7 +338,7 @@ class Database {
       studentId: studentUniqueId,
     });
 
-    // Automatically create initial Pending payment record upon registration by teacher
+    // Automatically create initial Pending payment record upon registration
     this.payments.unshift({
       id: `pay_${Date.now()}`,
       studentId: studentUniqueId,

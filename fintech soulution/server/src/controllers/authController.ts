@@ -35,7 +35,12 @@ export const login = (req: Request, res: Response) => {
       });
       // Override unique ID to match requested generated ID if format is STU-xxx
       if (idOrEmail.toUpperCase().startsWith('STU-')) {
+        const oldId = student.studentUniqueId;
         student.studentUniqueId = idOrEmail.toUpperCase();
+        const existingPay = db.getPaymentsByStudent(oldId);
+        existingPay.forEach(p => p.studentId = student.studentUniqueId);
+        const usr = db.findUserByStudentId(oldId);
+        if (usr) usr.studentId = student.studentUniqueId;
       }
     }
 

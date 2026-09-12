@@ -44,7 +44,7 @@ export default function StudentPaymentHistory({
 
   useEffect(() => {
     apiService.getPaymentHistory().then((res) => {
-      if (res.success && res.payments && res.payments.length > 0) {
+      if (res.success && Array.isArray(res.payments)) {
         const mapped: PaymentRecord[] = res.payments.map((p: { id: string; month: string; paymentDate?: string; amount: number; method: string; status: string; transactionId?: string }) => ({
           id: p.id,
           month: p.month,

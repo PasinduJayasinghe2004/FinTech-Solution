@@ -42,17 +42,12 @@ export default function StudentDashboard({
   const currentStudentId = dbData?.student?.studentUniqueId || storedUser?.studentId || 'STU-001';
   const summary = dbData?.summary || {
     currentPayment: 3000,
-    outstandingBalance: 6000,
+    outstandingBalance: 3000,
     paymentStatus: 'Pending',
-    overdueCount: 2,
+    overdueCount: 1,
     dueDate: 'September 15, 2026'
   };
-  const recentPayments = dbData?.recentPayments || [
-    { id: 'pay_1', month: 'August 2026', paymentDate: 'Aug 10', amount: 3000, method: 'Card', status: 'Paid' },
-    { id: 'pay_2', month: 'July 2026', paymentDate: 'Jul 12', amount: 3000, method: 'Bank Transfer', status: 'Paid' },
-    { id: 'pay_3', month: 'June 2026', paymentDate: 'Jun 15', amount: 3000, method: 'QR Payment', status: 'Paid' },
-    { id: 'pay_4', month: 'May 2026', paymentDate: '—', amount: 3000, method: '—', status: 'Overdue' }
-  ];
+  const recentPayments = dbData?.recentPayments ?? [];
   const userNotifications = dbData?.notifications || [];
 
   if (activeTab === 'payments') {
