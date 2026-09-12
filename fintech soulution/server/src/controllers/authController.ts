@@ -34,13 +34,14 @@ export const login = (req: Request, res: Response) => {
         status: 'ACTIVE',
       });
       // Override unique ID to match requested generated ID if format is STU-xxx
-      if (idOrEmail.toUpperCase().startsWith('STU-')) {
+      if (idOrEmail.toUpperCase().startsWith('STU-') && student) {
         const oldId = student.studentUniqueId;
-        student.studentUniqueId = idOrEmail.toUpperCase();
+        const newId = idOrEmail.toUpperCase();
+        student.studentUniqueId = newId;
         const existingPay = db.getPaymentsByStudent(oldId);
-        existingPay.forEach(p => p.studentId = student.studentUniqueId);
+        existingPay.forEach(p => p.studentId = newId);
         const usr = db.findUserByStudentId(oldId);
-        if (usr) usr.studentId = student.studentUniqueId;
+        if (usr) usr.studentId = newId;
       }
     }
 
