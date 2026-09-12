@@ -59,9 +59,9 @@ export default function StudentDashboard({
 
   const getValidName = () => {
     if (storedUser?.name && storedUser.name !== 'New Student') return storedUser.name;
-    if (dbData?.student?.name && dbData.student.name !== 'New Student') return dbData.student.name;
-    if (studentName && studentName !== 'New Student') return studentName;
-    return 'Pasindu Jayasinghe';
+    if (dbData?.student?.name && dbData.student.name !== 'New Student' && dbData.student.name !== 'Pasindu Jayasinghe') return dbData.student.name;
+    if (studentName && studentName !== 'New Student' && studentName !== 'Pasindu') return studentName;
+    return storedUser?.name || dbData?.student?.name || studentName || 'Student User';
   };
 
   const currentStudentName = getValidName();

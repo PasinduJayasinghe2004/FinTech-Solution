@@ -26,7 +26,7 @@ async function hashOtpCode(code: string): Promise<string> {
 }
 
 export default function StudentPaymentPage({
-  studentName = "Pasindu",
+  studentName = "Student",
   onLogout,
   onNavigateToDashboard,
   onNavigateToHistory,

@@ -55,7 +55,7 @@ const mockNotifications: NotificationItem[] = [
 ];
 
 export default function StudentNotificationsPage({
-  studentName = "Pasindu",
+  studentName = "Student User",
   onLogout,
   onNavigateToDashboard,
   onNavigateToPayments,

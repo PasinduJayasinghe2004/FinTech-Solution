@@ -31,7 +31,7 @@ const mockHistory: PaymentRecord[] = [
 ];
 
 export default function StudentPaymentHistory({
-  studentName = "Pasindu",
+  studentName = "Student User",
   onLogout,
   onNavigateToDashboard,
   onNavigateToPayments,

@@ -24,11 +24,15 @@ export const login = (req: Request, res: Response) => {
 
     // Auto-create student record if it's a newly registered/generated ID
     if (!student) {
+      const derivedName = idOrEmail.includes('@')
+        ? idOrEmail.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())
+        : `Student ${idOrEmail.toUpperCase()}`;
+
       student = db.addStudent({
         userId: `usr_${Date.now()}`,
         teacherId: 'usr_tch_1',
-        name: 'Pasindu Jayasinghe',
-        email: `${idOrEmail.toLowerCase()}@ria.com`,
+        name: derivedName,
+        email: idOrEmail.includes('@') ? idOrEmail.toLowerCase() : `${idOrEmail.toLowerCase()}@ria.com`,
         subject: 'Combined Mathematics',
         phone: '+94 77 123 4567',
         status: 'ACTIVE',

@@ -21,7 +21,7 @@ export const RIA_TEACHERS = [
 ];
 
 export default function StudentProfilePage({
-  studentName = "Pasindu Jayasinghe",
+  studentName = "Student User",
   onLogout,
   onNavigateToDashboard,
   onNavigateToPayments,
@@ -38,8 +38,8 @@ export default function StudentProfilePage({
   });
 
   const [isEditing, setIsEditing] = useState(false);
-  const [profileName, setProfileName] = useState(storedUser?.name || studentName);
-  const [profileEmail, setProfileEmail] = useState(storedUser?.email || 'pasindu@example.com');
+  const [profileName, setProfileName] = useState(storedUser?.name || (studentName !== 'Pasindu Jayasinghe' ? studentName : 'Student User'));
+  const [profileEmail, setProfileEmail] = useState(storedUser?.email || 'student@ria.com');
   const [profilePhone, setProfilePhone] = useState(storedUser?.phone || '+94 77 123 4567');
   const [profileStudentId, setProfileStudentId] = useState(storedUser?.studentId || 'STU-001');
   const [selectedTeacherId, setSelectedTeacherId] = useState(storedUser?.teacherId || 'usr_tch_lahiru');
