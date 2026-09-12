@@ -18,15 +18,54 @@ export default function StudentPaymentPage({
   onNavigateToNotifications,
   onNavigateToProfile,
 }: StudentPaymentPageProps) {
-  const [step, setStep] = useState<'summary' | 'gateway' | 'success'>('summary');
+  const [step, setStep] = useState<'summary' | 'gateway' | 'otp' | 'success'>('summary');
   const [selectedMethod, setSelectedMethod] = useState<'card' | 'qr'>('card');
   const [amount, setAmount] = useState('3000');
   const [month, setMonth] = useState('September 2026');
+  
+  // Card details state for 3DS summary
+  const [cardNumber, setCardNumber] = useState('');
+  const [expiryDate, setExpiryDate] = useState('');
+  const [cvc, setCvc] = useState('');
 
-  const handlePayNow = (e: React.FormEvent) => {
+  // OTP state
+  const [otpCode, setOtpCode] = useState('');
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const [otpError, setOtpError] = useState('');
+  const [resendCountdown, setResendCountdown] = useState(45);
+
+  const handleGatewaySubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setStep('success');
+    setOtpError('');
+    setOtpCode('');
+    setStep('otp');
   };
+
+  const handleVerifyOtp = (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanOtp = otpCode.replace(/\D/g, '');
+    if (cleanOtp.length !== 6) {
+      setOtpError('Please enter a valid 6-digit OTP code.');
+      return;
+    }
+
+    setIsVerifyingOtp(true);
+    setOtpError('');
+
+    // Simulate 3D Secure Bank Verification delay
+    setTimeout(() => {
+      setIsVerifyingOtp(false);
+      setStep('success');
+    }, 1200);
+  };
+
+  const handleResendOtp = () => {
+    setResendCountdown(45);
+    setOtpError('');
+    alert('A new 6-digit OTP code has been dispatched to your mobile device (+94 77 *** *892).');
+  };
+
+  const maskedCardLast4 = cardNumber ? cardNumber.replace(/\s/g, '').slice(-4) || '4242' : '4242';
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans antialiased text-slate-900 pb-12">
@@ -67,7 +106,13 @@ export default function StudentPaymentPage({
               <span className="text-blue-600 font-bold">Class Fee Payment</span>
             </div>
             <h2 className="text-2xl font-black tracking-tight text-slate-900">
-              {step === 'summary' ? 'Payment Summary & Details' : step === 'gateway' ? 'Payment Gateway' : 'Payment Receipt'}
+              {step === 'summary' 
+                ? 'Payment Summary & Details' 
+                : step === 'gateway' 
+                ? 'Payment Gateway' 
+                : step === 'otp'
+                ? '3D Secure OTP Verification'
+                : 'Payment Receipt'}
             </h2>
           </div>
 
@@ -77,14 +122,21 @@ export default function StudentPaymentPage({
               <span className={`w-5 h-5 rounded-full text-[10px] flex items-center justify-center font-black ${step === 'summary' ? 'bg-blue-600 text-white' : 'bg-emerald-100 text-emerald-700'}`}>
                 {step === 'summary' ? '1' : '✓'}
               </span>
-              <span>Details Summary</span>
+              <span>Summary</span>
             </div>
             <span className="text-slate-300">→</span>
-            <div className={`flex items-center gap-1.5 text-xs font-bold ${step === 'gateway' ? 'text-blue-600' : step === 'success' ? 'text-emerald-600' : 'text-slate-400'}`}>
-              <span className={`w-5 h-5 rounded-full text-[10px] flex items-center justify-center font-black ${step === 'gateway' ? 'bg-blue-600 text-white' : step === 'success' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'}`}>
-                2
+            <div className={`flex items-center gap-1.5 text-xs font-bold ${step === 'gateway' ? 'text-blue-600' : step === 'otp' || step === 'success' ? 'text-emerald-600' : 'text-slate-400'}`}>
+              <span className={`w-5 h-5 rounded-full text-[10px] flex items-center justify-center font-black ${step === 'gateway' ? 'bg-blue-600 text-white' : step === 'otp' || step === 'success' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'}`}>
+                {step === 'otp' || step === 'success' ? '✓' : '2'}
               </span>
-              <span>PayHere Gateway</span>
+              <span>Gateway</span>
+            </div>
+            <span className="text-slate-300">→</span>
+            <div className={`flex items-center gap-1.5 text-xs font-bold ${step === 'otp' ? 'text-blue-600' : step === 'success' ? 'text-emerald-600' : 'text-slate-400'}`}>
+              <span className={`w-5 h-5 rounded-full text-[10px] flex items-center justify-center font-black ${step === 'otp' ? 'bg-blue-600 text-white' : step === 'success' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'}`}>
+                {step === 'success' ? '✓' : '3'}
+              </span>
+              <span>OTP Auth</span>
             </div>
           </div>
         </div>
@@ -357,7 +409,7 @@ export default function StudentPaymentPage({
                 </div>
 
                 {/* Payment Form */}
-                <form onSubmit={handlePayNow} className="space-y-4">
+                <form onSubmit={handleGatewaySubmit} className="space-y-4">
                   {selectedMethod === 'card' && (
                     <div className="space-y-3">
                       <div>
@@ -365,6 +417,8 @@ export default function StudentPaymentPage({
                         <input
                           type="text"
                           placeholder="4242 •••• •••• 4242"
+                          value={cardNumber}
+                          onChange={(e) => setCardNumber(e.target.value)}
                           required
                           className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:border-[#1b5bf7] focus:bg-white outline-none transition-colors"
                         />
@@ -375,6 +429,8 @@ export default function StudentPaymentPage({
                           <input
                             type="text"
                             placeholder="MM / YY"
+                            value={expiryDate}
+                            onChange={(e) => setExpiryDate(e.target.value)}
                             required
                             className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:border-[#1b5bf7] focus:bg-white outline-none transition-colors"
                           />
@@ -384,6 +440,8 @@ export default function StudentPaymentPage({
                           <input
                             type="text"
                             placeholder="123"
+                            value={cvc}
+                            onChange={(e) => setCvc(e.target.value)}
                             required
                             className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:border-[#1b5bf7] focus:bg-white outline-none transition-colors"
                           />
@@ -403,9 +461,12 @@ export default function StudentPaymentPage({
 
                   <button
                     type="submit"
-                    className="w-full py-3.5 bg-[#1b5bf7] hover:bg-blue-700 text-white font-extrabold text-sm rounded-2xl shadow-lg shadow-blue-600/30 transition-all cursor-pointer mt-2"
+                    className="w-full py-3.5 bg-[#1b5bf7] hover:bg-blue-700 text-white font-extrabold text-sm rounded-2xl shadow-lg shadow-blue-600/30 transition-all cursor-pointer mt-2 flex items-center justify-center gap-2"
                   >
-                    Pay Rs. {Number(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    <span>Proceed to 3DS Verification</span>
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
                   </button>
                 </form>
 
@@ -421,7 +482,133 @@ export default function StudentPaymentPage({
           </div>
         )}
 
-        {/* STEP 3: SUCCESSFUL PAYMENT CONFIRMATION */}
+        {/* STEP 3: REALISTIC 3D SECURE OTP VERIFICATION MODAL */}
+        {step === 'otp' && (
+          <div className="max-w-md mx-auto py-4">
+            <div className="bg-white w-full rounded-3xl shadow-2xl overflow-hidden border border-slate-200/90 relative">
+              
+              {/* Bank 3DS Header */}
+              <div className="bg-slate-900 text-white p-5 border-b border-slate-800 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-black text-xs text-white">
+                    3DS
+                  </div>
+                  <div>
+                    <h3 className="font-extrabold text-sm tracking-tight">3D Secure Authentication</h3>
+                    <p className="text-[10px] text-slate-400">Bank Identity Verification</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1.5 text-[10px] text-emerald-400 font-semibold bg-emerald-950/60 border border-emerald-800/60 px-2.5 py-1 rounded-full">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  Verified by VISA
+                </div>
+              </div>
+
+              {/* OTP Form Content */}
+              <div className="p-6 space-y-6">
+                
+                {/* Transaction details card */}
+                <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Merchant:</span>
+                    <span className="font-bold text-slate-800">RIA Tuition Portal</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Amount:</span>
+                    <span className="font-bold text-blue-600 text-sm">Rs. {Number(amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Card Number:</span>
+                    <span className="font-mono font-bold text-slate-700">•••• •••• •••• {maskedCardLast4}</span>
+                  </div>
+                </div>
+
+                {/* SMS Prompt Instructions */}
+                <div className="text-center space-y-1.5">
+                  <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-2">
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <h4 className="text-base font-extrabold text-slate-900">Enter Security OTP Code</h4>
+                  <p className="text-xs text-slate-500 leading-relaxed max-w-xs mx-auto">
+                    A 6-digit One-Time Password (OTP) has been sent to your registered mobile number <strong className="text-slate-700">+94 77 *** *892</strong>.
+                  </p>
+                </div>
+
+                {/* OTP Input Form */}
+                <form onSubmit={handleVerifyOtp} className="space-y-4">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-600 mb-1.5 text-center uppercase tracking-wider">
+                      6-Digit Security OTP Code
+                    </label>
+                    <input
+                      type="text"
+                      maxLength={6}
+                      value={otpCode}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '');
+                        setOtpCode(val);
+                        if (otpError) setOtpError('');
+                      }}
+                      placeholder="e.g. 1 2 3 4 5 6"
+                      autoFocus
+                      required
+                      className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 focus:border-[#1b5bf7] focus:bg-white rounded-2xl text-center text-xl font-mono tracking-[0.35em] font-extrabold outline-none transition-all shadow-inner"
+                    />
+                    <p className="text-[10px] text-slate-400 text-center mt-1.5 font-medium">
+                      💡 Quick Test Hint: Enter <strong className="text-slate-600">ANY 6-digit number</strong> to authorize successfully!
+                    </p>
+                  </div>
+
+                  {otpError && (
+                    <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-center text-xs font-bold text-red-600">
+                      {otpError}
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={isVerifyingOtp}
+                    className="w-full py-3.5 bg-[#1b5bf7] hover:bg-blue-700 text-white font-extrabold text-sm rounded-2xl shadow-lg shadow-blue-600/30 transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-75"
+                  >
+                    {isVerifyingOtp ? (
+                      <>
+                        <svg className="w-4 h-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        </svg>
+                        <span>Verifying OTP with Bank...</span>
+                      </>
+                    ) : (
+                      <span>Submit & Complete Payment</span>
+                    )}
+                  </button>
+                </form>
+
+                {/* Resend & Cancel Controls */}
+                <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-slate-500">
+                  <button
+                    onClick={handleResendOtp}
+                    className="hover:text-blue-600 transition-colors cursor-pointer"
+                  >
+                    Resend OTP Code
+                  </button>
+                  <button
+                    onClick={() => setStep('gateway')}
+                    className="text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
+                  >
+                    ← Back to Gateway
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 4: SUCCESSFUL PAYMENT CONFIRMATION */}
         {step === 'success' && (
           <div className="max-w-md mx-auto py-8">
             <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl text-center space-y-5">
@@ -431,7 +618,7 @@ export default function StudentPaymentPage({
               <div>
                 <h3 className="text-2xl font-black text-slate-900">Payment Successful!</h3>
                 <p className="text-xs text-slate-500 mt-1 max-w-xs mx-auto">
-                  Your payment of <strong className="text-slate-800">Rs. {Number(amount).toLocaleString()}</strong> for Combined Mathematics ({month}) has been processed successfully.
+                  Your payment of <strong className="text-slate-800">Rs. {Number(amount).toLocaleString()}</strong> for Combined Mathematics ({month}) has been processed successfully via 3DS OTP verification.
                 </p>
               </div>
 
@@ -442,7 +629,7 @@ export default function StudentPaymentPage({
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Payment Method:</span>
-                  <span className="font-bold text-slate-800">{selectedMethod === 'card' ? 'Card Payment' : 'LankaQR'}</span>
+                  <span className="font-bold text-slate-800">{selectedMethod === 'card' ? 'Card Payment (3DS Verified)' : 'LankaQR'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Status:</span>
@@ -472,4 +659,5 @@ export default function StudentPaymentPage({
     </div>
   );
 }
+
 
