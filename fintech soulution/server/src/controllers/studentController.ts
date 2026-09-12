@@ -13,10 +13,13 @@ export const getStudentDashboard = (req: AuthRequest, res: Response) => {
   }
 
   // Calculate metrics
-  const currentFee = 3000;
+  const currentFee = 3000; // default monthly tuition fee
   const overduePayments = payments.filter((p) => p.status === 'Overdue');
-  const outstandingBalance = overduePayments.reduce((acc, curr) => acc + curr.amount, 3000);
+  const overdueTotal = overduePayments.reduce((acc, curr) => acc + curr.amount, 0);
   const hasPaidThisMonth = payments.some((p) => p.month.includes('September') && p.status === 'Paid');
+
+  // Outstanding = overdue amounts + current month fee if not yet paid
+  const outstandingBalance = hasPaidThisMonth ? overdueTotal : overdueTotal + currentFee;
 
   return res.json({
     success: true,
@@ -28,10 +31,10 @@ export const getStudentDashboard = (req: AuthRequest, res: Response) => {
         email: student.email,
       },
       summary: {
-        currentPayment: currentFee,
+        currentPayment: hasPaidThisMonth ? 0 : currentFee,
         outstandingBalance,
-        paymentStatus: hasPaidThisMonth ? 'Paid This Month' : 'Pending',
-        overdueCount: overduePayments.length + (hasPaidThisMonth ? 0 : 1),
+        paymentStatus: hasPaidThisMonth ? 'Paid' : 'Pending',
+        overdueCount: overduePayments.length,
         dueDate: 'September 15, 2026',
       },
       recentPayments: payments,

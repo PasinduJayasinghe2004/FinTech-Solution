@@ -55,7 +55,17 @@ export default function StudentDashboard({
     }
   });
 
-  const hasPaidSep = localPayments.some(p => p.month === 'September 2026' || p.status === 'PAID');
+  const currentStudentId = storedUser?.studentId || dbData?.student?.studentUniqueId || 'STU-001';
+
+  // Filter local payments to only this student's payments
+  const userLocalPayments = localPayments.filter(p =>
+    !p.studentId || p.studentId === currentStudentId || p.studentName === currentStudentName
+  );
+
+  // hasPaidSep: trust backend first (dbData), then fall back to local payments scoped to this student
+  const backendPaid = dbData?.summary?.paymentStatus === 'Paid';
+  const localPaidSep = userLocalPayments.some(p => p.month === 'September 2026' || p.status === 'PAID');
+  const hasPaidSep = backendPaid || localPaidSep;
 
   const getValidName = () => {
     if (storedUser?.name && storedUser.name !== 'New Student') return storedUser.name;
@@ -65,16 +75,13 @@ export default function StudentDashboard({
   };
 
   const currentStudentName = getValidName();
-  const currentStudentId = storedUser?.studentId || dbData?.student?.studentUniqueId || 'STU-001';
   const summary = {
     currentPayment: hasPaidSep ? 0 : (dbData?.summary?.currentPayment ?? 3000),
     outstandingBalance: hasPaidSep ? 0 : (dbData?.summary?.outstandingBalance ?? 3000),
     paymentStatus: hasPaidSep ? 'Paid' : (dbData?.summary?.paymentStatus ?? 'Pending'),
-    overdueCount: hasPaidSep ? 0 : (dbData?.summary?.overdueCount ?? 1),
+    overdueCount: hasPaidSep ? 0 : (dbData?.summary?.overdueCount ?? 0),
     dueDate: dbData?.summary?.dueDate || 'September 15, 2026'
   };
-
-  const userLocalPayments = localPayments.filter(p => !p.studentId || p.studentId === currentStudentId || p.studentName === currentStudentName);
 
   const mappedLocal = userLocalPayments.map(p => ({
     id: p.id,
