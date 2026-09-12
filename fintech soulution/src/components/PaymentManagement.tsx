@@ -40,6 +40,28 @@ export default function PaymentManagement({
   });
 
   const loadBackendPayments = async () => {
+    let localMapped: PaymentRecord[] = [];
+    try {
+      const stored = localStorage.getItem('ria_local_payments');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        localMapped = parsed.map((p: any) => ({
+          id: p.receiptNo || p.id,
+          studentName: p.studentName || 'Pasindu Jayasinghe',
+          studentId: p.studentId || 'STU-001',
+          initials: (p.studentName || 'P').charAt(0).toUpperCase(),
+          avatarBg: 'bg-blue-600',
+          month: p.month || 'September 2026',
+          amount: p.amount || 'Rs. 3,000',
+          method: p.method || 'Card Payment',
+          date: p.date || 'Today',
+          status: 'PAID' as const,
+        }));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
     try {
       const [backendPayments, students] = await Promise.all([
         apiService.fetchPayments(),
@@ -70,19 +92,27 @@ export default function PaymentManagement({
           };
         });
 
-        // Merge live payments with mockPayments170 (avoid duplicates by ID)
-        const combined = [...mapped];
+        const combined = [...localMapped, ...mapped];
         mockPayments170.forEach(m => {
-          if (!combined.some(c => c.id === m.id || c.studentId === m.studentId && c.month === m.month)) {
+          if (!combined.some(c => c.id === m.id || (c.studentId === m.studentId && c.month === m.month))) {
             combined.push(m);
           }
         });
 
         setPaymentsList(combined);
+        return;
       }
     } catch (err) {
       console.error('Failed to load live backend payments:', err);
     }
+
+    const combined = [...localMapped];
+    mockPayments170.forEach(m => {
+      if (!combined.some(c => c.id === m.id || (c.studentId === m.studentId && c.month === m.month))) {
+        combined.push(m);
+      }
+    });
+    setPaymentsList(combined);
   };
 
   useEffect(() => {

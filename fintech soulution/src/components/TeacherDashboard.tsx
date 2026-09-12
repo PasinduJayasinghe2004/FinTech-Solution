@@ -32,6 +32,19 @@ export default function TeacherDashboard({
   const [newPayment, setNewPayment] = useState({ studentName: 'Kasun Perera', amount: '3000', method: 'Card', note: 'Monthly tuition fee' });
 
   const fetchTeacherData = async () => {
+    let localPaidSum = 0;
+    let localPaidCount = 0;
+    try {
+      const stored = localStorage.getItem('ria_local_payments');
+      if (stored) {
+        const list = JSON.parse(stored);
+        localPaidCount = list.length;
+        localPaidSum = list.reduce((acc: number, item: any) => acc + (item.numAmount || 3000), 0);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
     try {
       const [dashRes, studentsRes, analyticsRes] = await Promise.all([
         apiService.getTeacherDashboard(),
@@ -45,30 +58,31 @@ export default function TeacherDashboard({
 
       if (dashRes && dashRes.success) {
         const total = studentsRes && studentsRes.length > 0 ? studentsRes.length : (dashRes.metrics?.totalStudents || 170);
-        const paidAmount = dashRes.metrics?.paidThisMonth || 330000;
-        const outstanding = dashRes.metrics?.outstandingBalance || 180000;
+        const paidAmount = (dashRes.metrics?.paidThisMonth || 330000) + localPaidSum;
+        const outstanding = Math.max(0, (dashRes.metrics?.outstandingBalance || 180000) - localPaidSum);
+        const pendingCount = Math.max(0, (dashRes.metrics?.pendingPayments || 60) - localPaidCount);
         setTeacherMetrics({
           ...dashRes.metrics,
           totalStudents: total,
           paidThisMonth: paidAmount,
           outstandingBalance: outstanding,
-          pendingPayments: dashRes.metrics?.pendingPayments || 60
+          pendingPayments: pendingCount
         });
       } else {
         setTeacherMetrics({
           totalStudents: 170,
-          paidThisMonth: 330000,
-          outstandingBalance: 180000,
-          pendingPayments: 60
+          paidThisMonth: 330000 + localPaidSum,
+          outstandingBalance: Math.max(0, 180000 - localPaidSum),
+          pendingPayments: Math.max(0, 60 - localPaidCount)
         });
       }
     } catch (err) {
       console.error('Failed to fetch teacher dashboard data:', err);
       setTeacherMetrics({
         totalStudents: 170,
-        paidThisMonth: 330000,
-        outstandingBalance: 180000,
-        pendingPayments: 60
+        paidThisMonth: 330000 + localPaidSum,
+        outstandingBalance: Math.max(0, 180000 - localPaidSum),
+        pendingPayments: Math.max(0, 60 - localPaidCount)
       });
     }
   };

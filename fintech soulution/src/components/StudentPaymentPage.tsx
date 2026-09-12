@@ -1,5 +1,6 @@
 import { logoImg } from '@/assets/logo';
 import React, { useState } from 'react';
+import { apiService } from '../services/api';
 
 interface StudentPaymentPageProps {
   studentName?: string;
@@ -41,7 +42,7 @@ export default function StudentPaymentPage({
     setStep('otp');
   };
 
-  const handleVerifyOtp = (e: React.FormEvent) => {
+  const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     const cleanOtp = otpCode.replace(/\D/g, '');
     if (cleanOtp.length !== 6) {
@@ -51,6 +52,36 @@ export default function StudentPaymentPage({
 
     setIsVerifyingOtp(true);
     setOtpError('');
+
+    try {
+      // Process payment on backend API
+      await apiService.processPayment(Number(amount), selectedMethod === 'card' ? 'Card' : 'LankaQR');
+    } catch (err) {
+      console.error('Backend payment error:', err);
+    }
+
+    // Persist completed payment into localStorage for client sync across Student & Teacher pages
+    try {
+      const newPayRecord = {
+        id: `pay_${Date.now()}`,
+        studentName: studentName || 'Pasindu',
+        studentId: 'STU-001',
+        month: month || 'September 2026',
+        date: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
+        amount: `Rs. ${Number(amount).toLocaleString()}`,
+        numAmount: Number(amount),
+        method: selectedMethod === 'card' ? 'Card' : 'LankaQR',
+        status: 'PAID',
+        receiptNo: `TP-${Math.floor(1000 + Math.random() * 9000)}`
+      };
+
+      const stored = localStorage.getItem('ria_local_payments');
+      const list = stored ? JSON.parse(stored) : [];
+      list.unshift(newPayRecord);
+      localStorage.setItem('ria_local_payments', JSON.stringify(list));
+    } catch (err) {
+      console.error('Local storage error:', err);
+    }
 
     // Simulate 3D Secure Bank Verification delay
     setTimeout(() => {

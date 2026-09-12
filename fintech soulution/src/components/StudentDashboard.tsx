@@ -38,16 +38,42 @@ export default function StudentDashboard({
     });
   }, []);
 
+  const [localPayments, setLocalPayments] = useState<any[]>(() => {
+    try {
+      const saved = localStorage.getItem('ria_local_payments');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+
+  const hasPaidSep = localPayments.some(p => p.month === 'September 2026' || p.status === 'PAID');
+
   const currentStudentName = dbData?.student?.name || storedUser?.name || studentName;
   const currentStudentId = dbData?.student?.studentUniqueId || storedUser?.studentId || 'STU-001';
-  const summary = dbData?.summary || {
-    currentPayment: 3000,
-    outstandingBalance: 3000,
-    paymentStatus: 'Pending',
-    overdueCount: 1,
-    dueDate: 'September 15, 2026'
+  const summary = {
+    currentPayment: hasPaidSep ? 0 : (dbData?.summary?.currentPayment ?? 3000),
+    outstandingBalance: hasPaidSep ? 0 : (dbData?.summary?.outstandingBalance ?? 3000),
+    paymentStatus: hasPaidSep ? 'Paid' : (dbData?.summary?.paymentStatus ?? 'Pending'),
+    overdueCount: hasPaidSep ? 0 : (dbData?.summary?.overdueCount ?? 1),
+    dueDate: dbData?.summary?.dueDate || 'September 15, 2026'
   };
-  const recentPayments = dbData?.recentPayments ?? [];
+
+  const rawRecent = dbData?.recentPayments ?? [
+    { id: '1', date: 'Aug 10, 2026', month: 'August 2026', amount: 3000, status: 'Paid', method: 'Card' },
+    { id: '2', date: 'Jul 12, 2026', month: 'July 2026', amount: 3000, status: 'Paid', method: 'Bank Transfer' },
+  ];
+
+  const mappedLocal = localPayments.map(p => ({
+    id: p.id,
+    date: p.date,
+    month: p.month,
+    amount: p.numAmount || 3000,
+    status: 'Paid',
+    method: p.method
+  }));
+
+  const recentPayments = [...mappedLocal, ...rawRecent];
   const userNotifications = dbData?.notifications || [];
 
   if (activeTab === 'payments') {

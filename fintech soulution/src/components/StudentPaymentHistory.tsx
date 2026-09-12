@@ -43,20 +43,63 @@ export default function StudentPaymentHistory({
   const [historyList, setHistoryList] = useState<PaymentRecord[]>(mockHistory);
 
   useEffect(() => {
-    apiService.getPaymentHistory().then((res) => {
-      if (res.success && Array.isArray(res.payments)) {
-        const mapped: PaymentRecord[] = res.payments.map((p: { id: string; month: string; paymentDate?: string; amount: number; method: string; status: string; transactionId?: string }) => ({
-          id: p.id,
-          month: p.month,
-          date: p.paymentDate || '—',
-          amount: `Rs. ${p.amount.toLocaleString()}`,
-          method: p.method,
-          status: p.status.toUpperCase() === 'PAID' ? 'PAID' : 'OVERDUE',
-          receiptNo: p.transactionId || '—',
-        }));
-        setHistoryList(mapped);
+    const fetchHistory = async () => {
+      let localRecords: PaymentRecord[] = [];
+      try {
+        const stored = localStorage.getItem('ria_local_payments');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          localRecords = parsed.map((p: any) => ({
+            id: p.id,
+            month: p.month,
+            date: p.date || 'Today',
+            amount: p.amount,
+            method: p.method,
+            status: 'PAID',
+            receiptNo: p.receiptNo || 'TP-8841',
+          }));
+        }
+      } catch (e) {
+        console.error(e);
       }
-    });
+
+      try {
+        const res = await apiService.getPaymentHistory();
+        if (res && res.success && Array.isArray(res.payments) && res.payments.length > 0) {
+          const mapped: PaymentRecord[] = res.payments.map((p: any) => ({
+            id: p.id,
+            month: p.month,
+            date: p.paymentDate || '—',
+            amount: `Rs. ${p.amount.toLocaleString()}`,
+            method: p.method,
+            status: p.status.toUpperCase() === 'PAID' ? 'PAID' : 'OVERDUE',
+            receiptNo: p.transactionId || '—',
+          }));
+
+          const combined = [...localRecords];
+          mapped.forEach((m) => {
+            if (!combined.some((c) => c.id === m.id || (c.month === m.month && c.status === m.status))) {
+              combined.push(m);
+            }
+          });
+          setHistoryList(combined);
+          return;
+        }
+      } catch (err) {
+        console.error(err);
+      }
+
+      // Fallback
+      const combinedMock = [...localRecords];
+      mockHistory.forEach((m) => {
+        if (!combinedMock.some((c) => c.id === m.id || (c.month === m.month && c.status === m.status))) {
+          combinedMock.push(m);
+        }
+      });
+      setHistoryList(combinedMock);
+    };
+
+    fetchHistory();
   }, []);
 
   const filteredHistory = historyList.filter((item) => {
