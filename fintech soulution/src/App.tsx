@@ -4,7 +4,6 @@ import { heroVideo } from '@/assets/heroVideo';
 import LoginPage from './components/LoginPage';
 import StudentDashboard from './components/StudentDashboard';
 import TeacherDashboard from './components/TeacherDashboard';
-import StudentFeedbackBanner from './components/StudentFeedbackBanner';
 
 const SESSION_KEY = 'ria_view';
 
@@ -145,9 +144,6 @@ export default function App() {
             </svg>
           </button>
         </div>
-
-        {/* Dynamic Student Feedback Showcase Banner */}
-        <StudentFeedbackBanner />
       </main>
 
       {/* Clean Footer */}
