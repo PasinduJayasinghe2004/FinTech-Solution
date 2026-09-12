@@ -195,6 +195,23 @@ export const apiService = {
     }
   },
 
+  async updateStudentProfile(profileData: any): Promise<any> {
+    try {
+      const token = localStorage.getItem('ria_token');
+      const res = await fetch(`${API_BASE_URL}/student/profile`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(profileData),
+      });
+      return await res.json();
+    } catch (err) {
+      return { success: false, message: 'Failed to update student profile' };
+    }
+  },
+
   async fetchAnalytics(): Promise<any> {
     try {
       const token = localStorage.getItem('ria_token');

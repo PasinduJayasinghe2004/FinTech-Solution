@@ -50,9 +50,21 @@ export default function TeacherProfilePage({
   const [newSubjectTag, setNewSubjectTag] = useState('');
 
   useEffect(() => {
+    try {
+      const localProfile = localStorage.getItem('ria_teacher_profile');
+      if (localProfile) {
+        setProfile(JSON.parse(localProfile));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
     apiService.getTeacherProfile().then((res) => {
       if (res.success && res.profile) {
         setProfile(res.profile);
+        try {
+          localStorage.setItem('ria_teacher_profile', JSON.stringify(res.profile));
+        } catch (e) {}
       }
       setLoading(false);
     });
@@ -68,6 +80,22 @@ export default function TeacherProfilePage({
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
+    
+    // Always persist to local storage for immediate offline/local reliability
+    try {
+      localStorage.setItem('ria_teacher_profile', JSON.stringify(profile));
+      const existingUser = localStorage.getItem('ria_user');
+      const parsedUser = existingUser ? JSON.parse(existingUser) : {};
+      localStorage.setItem('ria_user', JSON.stringify({
+        ...parsedUser,
+        name: profile.name,
+        email: profile.email,
+        phone: profile.phone,
+      }));
+    } catch (e) {
+      console.error(e);
+    }
+
     const res = await apiService.updateTeacherProfile(profile);
     setSaving(false);
     if (res.success) {

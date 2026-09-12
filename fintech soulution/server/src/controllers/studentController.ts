@@ -66,3 +66,19 @@ export const getPaymentHistory = (req: AuthRequest, res: Response) => {
     payments,
   });
 };
+
+export const updateStudentProfile = (req: AuthRequest, res: Response) => {
+  const studentId = req.user?.studentId || 'STU-001';
+  const updates = req.body;
+
+  const updatedStudent = db.updateStudent(studentId, updates);
+  if (!updatedStudent) {
+    return res.status(404).json({ success: false, message: 'Student profile not found' });
+  }
+
+  return res.json({
+    success: true,
+    message: 'Student profile updated successfully',
+    student: updatedStudent,
+  });
+};

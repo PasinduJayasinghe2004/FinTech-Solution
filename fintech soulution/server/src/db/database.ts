@@ -393,6 +393,18 @@ class Database {
     const idx = this.students.findIndex(s => s.studentUniqueId.toUpperCase() === studentUniqueId.toUpperCase() || s.id === studentUniqueId);
     if (idx === -1) return null;
     this.students[idx] = { ...this.students[idx], ...updates };
+
+    // Also update corresponding user record if name or email changed
+    const student = this.students[idx];
+    const uIdx = this.users.findIndex(u => u.studentId?.toUpperCase() === student.studentUniqueId.toUpperCase() || u.id === student.id || u.email.toLowerCase() === student.email.toLowerCase());
+    if (uIdx !== -1) {
+      this.users[uIdx] = {
+        ...this.users[uIdx],
+        name: student.name,
+        email: student.email,
+      };
+    }
+
     return this.students[idx];
   }
 
@@ -444,13 +456,23 @@ class Database {
   }
 
   updateTeacherProfile(teacherId: string, updates: Partial<TeacherProfile>): TeacherProfile {
-    const idx = this.teacherProfiles.findIndex(p => p.id === teacherId || p.email.toLowerCase() === teacherId.toLowerCase());
-    if (idx !== -1) {
-      this.teacherProfiles[idx] = { ...this.teacherProfiles[idx], ...updates };
-      return this.teacherProfiles[idx];
+    let targetIndex = this.teacherProfiles.findIndex(p => p.id === teacherId || p.email.toLowerCase() === teacherId.toLowerCase());
+    if (targetIndex === -1) {
+      targetIndex = 0;
     }
-    this.teacherProfiles[0] = { ...this.teacherProfiles[0], ...updates };
-    return this.teacherProfiles[0];
+    this.teacherProfiles[targetIndex] = { ...this.teacherProfiles[targetIndex], ...updates };
+    const updated = this.teacherProfiles[targetIndex];
+
+    // Sync with users collection
+    const uIdx = this.users.findIndex(u => u.id === updated.id || u.email.toLowerCase() === updated.email.toLowerCase());
+    if (uIdx !== -1) {
+      this.users[uIdx] = {
+        ...this.users[uIdx],
+        name: updated.name,
+        email: updated.email,
+      };
+    }
+    return updated;
   }
 
   addTeacher(teacher: { name: string; email: string; subject: string; phone: string }): TeacherProfile {

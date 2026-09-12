@@ -49,14 +49,14 @@ export default function StudentProfilePage({
     apiService.getStudentDashboard().then((res) => {
       if (res && res.success && res.data?.student) {
         const s = res.data.student;
-        if (s.name) setProfileName(s.name);
-        if (s.email) setProfileEmail(s.email);
-        if (s.studentUniqueId) setProfileStudentId(s.studentUniqueId);
+        if (!storedUser?.name && s.name) setProfileName(s.name);
+        if (!storedUser?.email && s.email) setProfileEmail(s.email);
+        if (!storedUser?.studentId && s.studentUniqueId) setProfileStudentId(s.studentUniqueId);
       }
     });
   }, []);
 
-  const handleSaveProfile = (e: React.FormEvent) => {
+  const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     const updatedUser = {
       ...storedUser,
@@ -72,6 +72,18 @@ export default function StudentProfilePage({
       setStoredUser(updatedUser);
     } catch (e) {
       console.error(e);
+    }
+
+    try {
+      await apiService.updateStudentProfile({
+        name: profileName,
+        email: profileEmail,
+        phone: profilePhone,
+        studentUniqueId: profileStudentId,
+        teacherId: selectedTeacherId,
+      });
+    } catch (err) {
+      console.error('Failed to update student profile via API:', err);
     }
 
     setIsEditing(false);
