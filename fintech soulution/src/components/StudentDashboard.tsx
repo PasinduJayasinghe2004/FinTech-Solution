@@ -760,23 +760,48 @@ export default function StudentDashboard({
                   <span className="text-[10px] text-teal-600 font-bold bg-teal-50 px-2 py-0.5 rounded-full">English & සිංහල</span>
                 </div>
                 
-                {/* Sinhala Quick Feedback Suggestion Pills */}
-                <div className="flex flex-wrap gap-1.5 mb-2">
-                  {[
-                    'පන්තිය ඉතා පැහැදිලියි 🌟',
-                    'Online ගෙවීම් පද්ධතිය ඉතා වේගවත් ⚡',
-                    'Past Paper පැහැදිලි කිරීම් නියමයි 📚',
-                    'LMS Video Access තත්පර වලින් ලැබෙනවා 🎬'
-                  ].map((phrase, idx) => (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => setFbComment(prev => prev ? `${prev} ${phrase}` : phrase)}
-                      className="px-2.5 py-1 bg-slate-100 hover:bg-teal-50 hover:text-teal-700 hover:border-teal-200 border border-slate-200 rounded-lg text-[11px] font-medium text-slate-600 transition-colors cursor-pointer"
-                    >
-                      + {phrase}
-                    </button>
-                  ))}
+                {/* English Payment Suggestions (Separate) */}
+                <div className="space-y-1 mb-2">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">🇬🇧 English Payment Suggestions:</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {[
+                      '3D Secure 6-digit OTP card verification is super secure! 🔒',
+                      'LankaQR mobile scan pay makes fee payment effortless! ⚡',
+                      'Bank transfer deposit slip upload works seamlessly! 🏦',
+                      'Downloading PDF payment receipts is very convenient! 🧾'
+                    ].map((phrase, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setFbComment(prev => prev ? `${prev}\n${phrase}` : phrase)}
+                        className="px-2 py-0.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-md text-[11px] font-medium transition-colors cursor-pointer"
+                      >
+                        + {phrase}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Sinhala Payment Suggestions (Separate) */}
+                <div className="space-y-1 mb-2">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">🇱🇰 සිංහල ගෙවීම් අදහස්:</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {[
+                      '3D Secure OTP කාඩ් ගෙවීම් ක්‍රමය ඉතාම ආරක්ෂිතයි 🔒',
+                      'LankaQR Scan Pay මගින් Class Fee ගෙවීම ඉතා පහසුයි ⚡',
+                      'Bank Deposit Slip එක Upload කළ පසු Status එක එකවරම Update වෙනවා 🏦',
+                      'Payment History එකෙන් Download Receipt ලබාගත හැකිවීම ඉතා වටිනවා 🧾'
+                    ].map((phrase, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setFbComment(prev => prev ? `${prev}\n${phrase}` : phrase)}
+                        className="px-2 py-0.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-md text-[11px] font-medium transition-colors cursor-pointer"
+                      >
+                        + {phrase}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 <textarea
@@ -784,7 +809,7 @@ export default function StudentDashboard({
                   rows={4}
                   value={fbComment}
                   onChange={(e) => setFbComment(e.target.value)}
-                  placeholder="ඔබගේ අදහස් සිංහලෙන් හෝ ඉංග්‍රීසියෙන් මෙහි සටහන් කරන්න... (Write your feedback in Sinhala or English)"
+                  placeholder="ගෙවීම් ක්‍රම පිළිබඳ ඔබගේ අදහස් දක්වන්න (Card OTP 3DS, LankaQR, Bank Deposit, Download Receipt)..."
                   className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-blue-500"
                 />
               </div>

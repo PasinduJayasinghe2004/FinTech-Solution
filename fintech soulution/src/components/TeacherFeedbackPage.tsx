@@ -11,80 +11,91 @@ export interface FeedbackItem {
   rating: number; // 1-5
   comment: string;
   date: string;
+  lang?: 'en' | 'si';
   reply?: string;
 }
 
 export const MOCK_FEEDBACKS: FeedbackItem[] = [
+  // --- English Feedbacks (Separate) ---
   {
-    id: 'fb_1',
+    id: 'fb_en_1',
     studentName: 'Pasindu Jayasinghe',
     studentId: 'STU-001',
     teacherId: 'usr_tch_lahiru',
     teacherName: 'Lahiru Dombawalage',
-    subject: 'Combined Mathematics & Physics',
+    subject: '3DS Card Payment & OTP Security',
     rating: 5,
-    comment: 'ලහිරු සර්ගේ Combined Maths සහ Physics පන්තිය ඉතා පැහැදිලියි. Online ගෙවීම් පද්ධතිය මගින් තත්පර කිහිපයකින් LMS Video Access සක්‍රිය වීම ඉතා පහසුයි!',
+    lang: 'en',
+    comment: 'The 3D Secure 6-digit OTP verification process is fast and super secure. Entering card details and receiving instant payment receipt confirmation gives total confidence.',
     date: 'Sep 12, 2026',
-    reply: 'බොහොම ස්තූතියි පසිඳු! Revision පන්ති වල වැඩත් හොඳින් කරගෙන යමු.'
+    reply: 'Thank you Pasindu! Security and 3DS verification are top priorities for our payment system.'
   },
   {
-    id: 'fb_2',
+    id: 'fb_en_2',
     studentName: 'Kavindu Perera',
     studentId: 'STU-012',
     teacherId: 'usr_tch_ranil',
     teacherName: 'Ranil Fernando',
-    subject: 'Combined Mathematics',
+    subject: 'LankaQR Mobile Payment',
     rating: 5,
-    comment: 'රනිල් සර්ගේ Combined Maths පාඩම් සහ Past Papers විසඳන ආකාරය ගොඩක් හොදට තේරෙනවා. Online Card Payment එකත් ඉතාම ආරක්ෂිතයි.',
+    lang: 'en',
+    comment: 'Paying monthly tuition fees via LankaQR mobile scan is effortless! Getting an instant automated payment receipt right after scanning is awesome.',
     date: 'Sep 10, 2026',
-    reply: 'ස්තූතියි කවිඳු! Paper class එකටත් දිගටම සම්බන්ධ වෙන්න.'
+    reply: 'Appreciate your feedback Kavindu! Mobile LankaQR pay is designed for speed.'
   },
   {
-    id: 'fb_3',
+    id: 'fb_en_3',
     studentName: 'Amaya Silva',
     studentId: 'STU-024',
     teacherId: 'usr_tch_lakshan',
     teacherName: 'Lakshan Fernando',
-    subject: 'ICT & Software Technology',
+    subject: 'Bank Transfer & Slip Verification',
     rating: 5,
-    comment: 'ලක්ෂාන් සර්ගේ ICT පන්තිය සිරාමයි! Practical කොටස් සහ Coding පැහැදිලිව කියලා දෙනවා. Fintech portal එක නිසා Class Fee ගෙවන එක හරිම ලේසියි.',
+    lang: 'en',
+    comment: 'Uploading Commercial Bank deposit slip receipts is very smooth. Payment status updates from Pending to Paid almost immediately.',
     date: 'Sep 08, 2026',
-    reply: 'Great work Amaya! Keep coding!'
+    reply: 'Thank you Amaya! Direct bank transfer receipts are processed automatically.'
+  },
+
+  // --- Sinhala Feedbacks (Separate / වෙන් වෙන් වශයෙන්) ---
+  {
+    id: 'fb_si_1',
+    studentName: 'Pasindu Jayasinghe',
+    studentId: 'STU-001',
+    teacherId: 'usr_tch_lahiru',
+    teacherName: 'Lahiru Dombawalage',
+    subject: '3D Secure කාඩ් ගෙවීම් පද්ධතිය',
+    rating: 5,
+    lang: 'si',
+    comment: 'ක්‍රෙඩිට්/ඩෙබිට් කාඩ් 3D Secure OTP ගෙවීම් ක්‍රමය ඉතාම ආරක්ෂිතයි. Card details ඇතුළත් කර 6-digit OTP ගෙවීම් කිරීමෙන් පසු instant receipt එකක් ලැබෙනවා.',
+    date: 'Sep 12, 2026',
+    reply: 'බොහොම ස්තූතියි පසිඳු! අපගේ ආරක්ෂිත Payment Gateway එක භාවිත කිරීම පිළිබඳව සතුටුයි.'
   },
   {
-    id: 'fb_4',
+    id: 'fb_si_2',
     studentName: 'Kasun Rathnayake',
     studentId: 'STU-038',
     teacherId: 'usr_tch_ishan',
     teacherName: 'Ishan Darshana',
-    subject: 'Chemistry & Science',
-    rating: 4,
-    comment: 'ඉෂාන් සර්ගේ Chemistry Class එක නියමයි. Physical Chemistry Equation පාඩම් සරලව තේරුම් ගන්න පුළුවන්. Past Paper explanations top notch!',
+    subject: 'ගෙවීම් විස්තර සවිස්තරාත්මක කොටස',
+    rating: 5,
+    lang: 'si',
+    comment: 'ගෙවීම කිරීමට පෙර Payment breakdown කොටසින් Tuition fee සහ Tax විස්තර පැහැදිලිව බලාගැනීමට හැකිවීම ඉතාම විශිෂ්ටයි.',
     date: 'Sep 05, 2026',
-    reply: 'Thanks Kasun! Keep practicing the past papers.'
+    reply: 'ස්තූතියි කසුන්! ගෙවීම් විනිවිදභාවය තහවුරු කිරීම අපගේ ප්‍රධාන අරමුණයි.'
   },
   {
-    id: 'fb_5',
+    id: 'fb_si_3',
     studentName: 'Dilani Gunawardena',
     studentId: 'STU-051',
     teacherId: 'usr_tch_suranga',
     teacherName: 'Suranga Hettiarachchi',
-    subject: 'Commerce & Finance',
+    subject: 'ගෙවීම් ඉතිහාසය සහ PDF Receipt',
     rating: 5,
-    comment: 'සුරංග සර්ගේ Business & Finance පන්තිය ඉතාමත් විශිෂ්ටයි. Accounting & Finance පාඩම් සරලව සහ පැහැදිලිව කියලා දෙනවා. ස්තූතියි සර්!',
+    lang: 'si',
+    comment: 'ගෙවීම් කළ වහාම Payment History එකෙහි PDF Download Receipt පහසුකම ලබාගත හැකිවීම ඉතාමත් වටිනවා. සුරක්ෂිත පද්ධතියට ස්තූතියි!',
     date: 'Sep 02, 2026',
-    reply: 'ස්තූතියි දිලානි! විභාගයට හොඳින් සූදානම් වෙන්න.'
-  },
-  {
-    id: 'fb_6',
-    studentName: 'Pasindu Jayasinghe',
-    studentId: 'STU-001',
-    teacherId: 'usr_tch_lakshan',
-    teacherName: 'Lakshan Fernando',
-    subject: 'ICT & Web Development',
-    rating: 5,
-    comment: 'Web Development & Fintech portal features are amazing. instant payment verification and OTP security features work flawlessly!',
-    date: 'Aug 28, 2026'
+    reply: 'ස්තූතියි දිලානි! Instant receipt generation සහ payment history සේවාව ඔබගේ පහසුව උදෙසා සාදා ඇත.'
   }
 ];
 
@@ -110,6 +121,7 @@ export default function TeacherFeedbackPage({
   const [feedbacks, setFeedbacks] = useState<FeedbackItem[]>([]);
   const [selectedTeacherFilter, setSelectedTeacherFilter] = useState<string>('all');
   const [selectedRatingFilter, setSelectedRatingFilter] = useState<number | 'all'>('all');
+  const [selectedLangFilter, setSelectedLangFilter] = useState<'all' | 'en' | 'si'>('all');
   const [replyingId, setReplyingId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
   const [toastMsg, setToastMsg] = useState<string | null>(null);
@@ -138,7 +150,7 @@ export default function TeacherFeedbackPage({
     if (!replyText.trim()) return;
     const updated = feedbacks.map(f => {
       if (f.id === id) {
-        return { ...f, reply: replyText.trim() };
+        return { ...f, reply: replyText };
       }
       return f;
     });
@@ -162,6 +174,12 @@ export default function TeacherFeedbackPage({
     }
     if (selectedRatingFilter !== 'all' && f.rating !== selectedRatingFilter) {
       return false;
+    }
+    if (selectedLangFilter === 'en') {
+      if (f.lang === 'si' || /[අ-ෆ]/.test(f.comment)) return false;
+    }
+    if (selectedLangFilter === 'si') {
+      if (f.lang === 'en' && !/[අ-ෆ]/.test(f.comment)) return false;
     }
     return true;
   });
@@ -235,8 +253,8 @@ export default function TeacherFeedbackPage({
           </div>
 
           {/* Filters Bar */}
-          <div className="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Filter Teacher:</span>
               <select
                 value={selectedTeacherFilter}
@@ -252,25 +270,48 @@ export default function TeacherFeedbackPage({
               </select>
             </div>
 
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Rating:</span>
-              {[
-                { label: 'All', value: 'all' },
-                { label: '5 ★', value: 5 },
-                { label: '4 ★', value: 4 },
-              ].map(r => (
-                <button
-                  key={r.label}
-                  onClick={() => setSelectedRatingFilter(r.value as any)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    selectedRatingFilter === r.value
-                      ? 'bg-blue-600 text-white shadow-xs'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
-                >
-                  {r.label}
-                </button>
-              ))}
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Language Filter */}
+              <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl">
+                {[
+                  { id: 'all', label: 'All Languages' },
+                  { id: 'en', label: '🇬🇧 English' },
+                  { id: 'si', label: '🇱🇰 සිංහල' },
+                ].map(lang => (
+                  <button
+                    key={lang.id}
+                    onClick={() => setSelectedLangFilter(lang.id as any)}
+                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      selectedLangFilter === lang.id
+                        ? 'bg-white text-slate-900 shadow-sm'
+                        : 'text-slate-500 hover:text-slate-800'
+                    }`}
+                  >
+                    {lang.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Rating Filter */}
+              <div className="flex items-center gap-1.5">
+                {[
+                  { label: 'All ★', value: 'all' },
+                  { label: '5 ★', value: 5 },
+                  { label: '4 ★', value: 4 },
+                ].map(r => (
+                  <button
+                    key={r.label}
+                    onClick={() => setSelectedRatingFilter(r.value as any)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      selectedRatingFilter === r.value
+                        ? 'bg-blue-600 text-white shadow-xs'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    }`}
+                  >
+                    {r.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
