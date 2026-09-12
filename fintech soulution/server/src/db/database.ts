@@ -150,13 +150,6 @@ class Database {
 
   private users: User[] = [
     {
-      id: 'usr_stu_1',
-      name: 'Pasindu Jayasinghe',
-      email: 'pasindu@example.com',
-      role: 'ROLE_STUDENT',
-      studentId: 'STU-001',
-    },
-    {
       id: 'usr_tch_ranil',
       name: 'Ranil Fernando',
       email: 'ranil@ria.com',
@@ -186,7 +179,6 @@ class Database {
       email: 'lahiru@ria.com',
       role: 'ROLE_TEACHER',
     },
-    // General fallback teacher account
     {
       id: 'usr_tch_1',
       name: 'Dr. Wickramasinghe',
@@ -195,105 +187,96 @@ class Database {
     },
   ];
 
-  private students: StudentRecord[] = [
-    {
-      id: 'stu_1',
-      userId: 'usr_stu_1',
-      teacherId: 'usr_tch_1',
-      studentUniqueId: 'STU-001',
-      name: 'Pasindu Jayasinghe',
-      email: 'pasindu@example.com',
-      subject: 'Combined Mathematics',
-      phone: '+94 77 123 4567',
-      status: 'ACTIVE',
-      registeredDate: '2026-01-15',
-    },
-    {
-      id: 'stu_2',
-      userId: 'usr_stu_2',
-      teacherId: 'usr_tch_1',
-      studentUniqueId: 'STU-002',
-      name: 'Kavindu Perera',
-      email: 'kavindu@example.com',
-      subject: 'Physics',
-      phone: '+94 71 987 6543',
-      status: 'ACTIVE',
-      registeredDate: '2026-02-01',
-    },
-    {
-      id: 'stu_3',
-      userId: 'usr_stu_3',
-      teacherId: 'usr_tch_1',
-      studentUniqueId: 'STU-003',
-      name: 'Amaya Fernando',
-      email: 'amaya@example.com',
-      subject: 'Chemistry',
-      phone: '+94 76 555 4321',
-      status: 'ACTIVE',
-      registeredDate: '2026-03-10',
-    },
-  ];
+  private students: StudentRecord[] = [];
+  private payments: PaymentRecord[] = [];
 
-  private payments: PaymentRecord[] = [
-    {
-      id: 'pay_1',
-      studentId: 'STU-001',
-      month: 'August 2026',
-      paymentDate: 'Aug 10',
-      amount: 3000,
-      method: 'Card',
-      status: 'Paid',
-      transactionId: 'TP-8241',
-    },
-    {
-      id: 'pay_2',
-      studentId: 'STU-002',
-      month: 'August 2026',
-      paymentDate: 'Aug 12',
-      amount: 3000,
-      method: 'Bank Transfer',
-      status: 'Paid',
-      transactionId: 'TP-8242',
-    },
-    {
-      id: 'pay_3',
-      studentId: 'STU-003',
-      month: 'August 2026',
-      paymentDate: 'Aug 15',
-      amount: 3000,
-      method: 'QR Payment',
-      status: 'Paid',
-      transactionId: 'TP-8243',
-    },
-    {
-      id: 'pay_4',
-      studentId: 'STU-001',
-      month: 'September 2026',
-      paymentDate: 'Sep 05',
-      amount: 3000,
-      method: 'Card',
-      status: 'Paid',
-      transactionId: 'TP-9001',
-    },
-    {
-      id: 'pay_5',
-      studentId: 'STU-002',
-      month: 'September 2026',
-      paymentDate: '—',
-      amount: 3000,
-      method: '—',
-      status: 'Pending',
-    },
-    {
-      id: 'pay_6',
-      studentId: 'STU-003',
-      month: 'September 2026',
-      paymentDate: '—',
-      amount: 3000,
-      method: '—',
-      status: 'Overdue',
-    },
-  ];
+  constructor() {
+    this.seed170Students();
+  }
+
+  private seed170Students() {
+    const firstNames = [
+      'Pasindu', 'Kavindu', 'Amaya', 'Kasun', 'Nimal', 'Amal', 'Dilani', 'Sanduni', 'Tharindu', 'Ishara',
+      'Hiruni', 'Kaveen', 'Shenali', 'Nethmi', 'Nuwan', 'Dinuka', 'Ruwan', 'Chamari', 'Ashan', 'Bhavanthi',
+      'Chathura', 'Dasun', 'Eranga', 'Gayan', 'Hashini', 'Imesha', 'Janith', 'Kusal', 'Lahiru', 'Mahesh',
+      'Nadeesha', 'Oshada', 'Pathum', 'Rashmi', 'Sachini', 'Thisara', 'Udesh', 'Vishwa', 'Yashodhara', 'Anuki'
+    ];
+
+    const lastNames = [
+      'Jayasinghe', 'Perera', 'Fernando', 'Silva', 'Jayasuriya', 'Rathnayake', 'Bandara', 'Gunawardena',
+      'Wickramasinghe', 'Abeyrathne', 'Herath', 'Dissanayake', 'Liyanage', 'Fonseka', 'Cooray', 'Rodrigo',
+      'Peiris', 'Alwis', 'Mendis', 'Wijesinghe', 'Senanayake', 'Karunaratne', 'Ranasinghe', 'Rajapaksha',
+      'De Silva', 'Gamage', 'Kulatunga', 'Amarasinghe', 'Tennekoon', 'Jayawardena'
+    ];
+
+    const subjects = [
+      'Combined Mathematics', 'Physics', 'Chemistry', 'IT', 'English',
+      'Accounting', 'Economics', 'Science', 'Sinhala', 'History'
+    ];
+
+    const methods: PaymentRecord['method'][] = ['Card', 'Bank Transfer', 'QR Payment', 'Cash'];
+
+    for (let i = 1; i <= 170; i++) {
+      const fn = firstNames[(i - 1) % firstNames.length];
+      const ln = lastNames[((i - 1) * 7 + 3) % lastNames.length];
+      const fullName = `${fn} ${ln}`;
+      const studentUniqueId = `STU-${String(i).padStart(3, '0')}`;
+      const email = `${fn.toLowerCase()}.${ln.toLowerCase().replace(/\s+/g, '')}@ria.com`;
+      const phone = `+94 7${(i % 4) === 0 ? '7' : (i % 4) === 1 ? '1' : (i % 4) === 2 ? '6' : '0'} ${String(100 + (i * 37) % 900)} ${String(1000 + (i * 53) % 9000)}`;
+      const subject = subjects[(i - 1) % subjects.length];
+      const feeAmount = i % 7 === 0 ? 3500 : i % 5 === 0 ? 2500 : 3000;
+      const registeredDate = `2026-0${(i % 8) + 1}-15`;
+
+      const studentRec: StudentRecord = {
+        id: `stu_${i}`,
+        userId: `usr_stu_${i}`,
+        teacherId: 'usr_tch_1',
+        studentUniqueId,
+        name: fullName,
+        email,
+        subject,
+        phone,
+        status: i <= 162 ? 'ACTIVE' : 'INACTIVE',
+        registeredDate,
+      };
+
+      this.students.push(studentRec);
+
+      this.users.push({
+        id: `usr_stu_${i}`,
+        name: fullName,
+        email,
+        role: 'ROLE_STUDENT',
+        studentId: studentUniqueId,
+      });
+
+      // Payments: 1..110 Paid, 111..153 Pending, 154..170 Overdue
+      let payStatus: PaymentRecord['status'] = 'Paid';
+      let payDate = `Sep 0${(i % 6) + 1}`;
+      let pMethod: PaymentRecord['method'] = methods[(i - 1) % methods.length];
+
+      if (i > 110 && i <= 153) {
+        payStatus = 'Pending';
+        payDate = '—';
+        pMethod = '—';
+      } else if (i > 153) {
+        payStatus = 'Overdue';
+        payDate = '—';
+        pMethod = '—';
+      }
+
+      this.payments.push({
+        id: `pay_${i}`,
+        studentId: studentUniqueId,
+        month: 'September 2026',
+        paymentDate: payDate,
+        amount: feeAmount,
+        method: pMethod,
+        status: payStatus,
+        transactionId: payStatus === 'Paid' ? `TP-${9000 + i}` : undefined,
+      });
+    }
+  }
 
   private notifications: NotificationRecord[] = [
     {

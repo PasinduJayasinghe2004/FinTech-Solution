@@ -93,3 +93,4 @@ ON CONFLICT DO NOTHING;
 INSERT INTO payments (id, student_id, monthly_fee_id, amount, payment_method, status, transaction_id) VALUES
 ('pay_aug', 'stu_1', 'fee_aug', 3000.00, 'Card', 'PAID', 'TP-8241')
 ON CONFLICT (transaction_id) DO NOTHING;
+

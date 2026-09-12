@@ -1,6 +1,7 @@
 import { logoImg } from '@/assets/logo';
 import React, { useState, useEffect } from 'react';
 import { apiService } from '../services/api';
+import { mockPayments170, PaymentRecordItem as PaymentRecord } from '../data/studentsData';
 
 interface PaymentManagementProps {
   teacherName?: string;
@@ -10,29 +11,6 @@ interface PaymentManagementProps {
   onNavigateToAnalytics?: () => void;
   onNavigateToNotifications?: () => void;
 }
-
-interface PaymentRecord {
-  id: string;
-  studentName: string;
-  studentId: string;
-  initials: string;
-  avatarBg: string;
-  month: string;
-  amount: string;
-  method: string;
-  date: string;
-  status: 'PAID' | 'PROCESSING' | 'PENDING' | 'OVERDUE';
-}
-
-const mockPayments: PaymentRecord[] = [
-  { id: 'TXN-901', studentName: 'Kasun Perera', studentId: 'STU-001', initials: 'K', avatarBg: 'bg-blue-600', month: 'September 2026', amount: 'Rs. 3,000', method: 'Card Payment', date: 'Sep 04, 2026', status: 'PAID' },
-  { id: 'TXN-902', studentName: 'Dilani Jayasuriya', studentId: 'STU-018', initials: 'D', avatarBg: 'bg-pink-600', month: 'September 2026', amount: 'Rs. 3,500', method: 'Bank Transfer', date: 'Sep 03, 2026', status: 'PAID' },
-  { id: 'TXN-903', studentName: 'Ishara Gunawardena', studentId: 'STU-041', initials: 'I', avatarBg: 'bg-indigo-600', month: 'September 2026', amount: 'Rs. 3,000', method: 'QR Payment', date: 'Sep 02, 2026', status: 'PROCESSING' },
-  { id: 'TXN-904', studentName: 'Nimal Silva', studentId: 'STU-002', initials: 'N', avatarBg: 'bg-emerald-600', month: 'September 2026', amount: 'Rs. 3,000', method: '—', date: '—', status: 'PENDING' },
-  { id: 'TXN-905', studentName: 'Sanduni Rathnayake', studentId: 'STU-024', initials: 'S', avatarBg: 'bg-orange-500', month: 'September 2026', amount: 'Rs. 3,000', method: '—', date: '—', status: 'PENDING' },
-  { id: 'TXN-906', studentName: 'Amal Fernando', studentId: 'STU-003', initials: 'A', avatarBg: 'bg-purple-600', month: 'August 2026', amount: 'Rs. 3,000', method: '—', date: '—', status: 'OVERDUE' },
-  { id: 'TXN-907', studentName: 'Tharindu Bandara', studentId: 'STU-037', initials: 'T', avatarBg: 'bg-cyan-600', month: 'August 2026', amount: 'Rs. 2,500', method: '—', date: '—', status: 'OVERDUE' },
-];
 
 export default function PaymentManagement({
   teacherName = "Mr. Anil",
@@ -47,7 +25,7 @@ export default function PaymentManagement({
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [paymentsList, setPaymentsList] = useState<PaymentRecord[]>(mockPayments);
+  const [paymentsList, setPaymentsList] = useState<PaymentRecord[]>(mockPayments170);
 
   // Modals & Action Toast
   const [showCreatePaymentModal, setShowCreatePaymentModal] = useState(false);
@@ -92,9 +70,9 @@ export default function PaymentManagement({
           };
         });
 
-        // Merge live payments with mockPayments (avoid duplicates by ID)
+        // Merge live payments with mockPayments170 (avoid duplicates by ID)
         const combined = [...mapped];
-        mockPayments.forEach(m => {
+        mockPayments170.forEach(m => {
           if (!combined.some(c => c.id === m.id || c.studentId === m.studentId && c.month === m.month)) {
             combined.push(m);
           }
@@ -146,6 +124,42 @@ export default function PaymentManagement({
     if (filterTab === 'overdue') return matchesSearch && p.status === 'OVERDUE';
     return matchesSearch;
   });
+
+  // Pagination calculations
+  const ITEMS_PER_PAGE = 10;
+  const totalPages = Math.max(1, Math.ceil(filteredPayments.length / ITEMS_PER_PAGE));
+  const validPage = Math.min(Math.max(currentPage, 1), totalPages);
+  const startIndex = (validPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, filteredPayments.length);
+  const paginatedPayments = filteredPayments.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (validPage > 3) pages.push('...');
+      const start = Math.max(2, validPage - 1);
+      const end = Math.min(totalPages - 1, validPage + 1);
+      for (let i = start; i <= end; i++) {
+        if (!pages.includes(i)) pages.push(i);
+      }
+      if (validPage < totalPages - 2) pages.push('...');
+      if (!pages.includes(totalPages)) pages.push(totalPages);
+    }
+    return pages;
+  };
+
+  const handleFilterTabChange = (tab: 'all' | 'paid' | 'pending' | 'overdue') => {
+    setFilterTab(tab);
+    setCurrentPage(1);
+  };
+
+  const handleSearchChange = (q: string) => {
+    setSearchQuery(q);
+    setCurrentPage(1);
+  };
 
   return (
     <div className="space-y-6">
@@ -430,7 +444,7 @@ export default function PaymentManagement({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-sm">
-                  {filteredPayments.map((p) => (
+                  {paginatedPayments.map((p) => (
                     <tr key={p.id} className="hover:bg-slate-50/60 transition-colors">
                       {/* Student */}
                       <td className="py-4 px-4 font-bold text-slate-900">
@@ -508,47 +522,41 @@ export default function PaymentManagement({
 
             {/* Pagination Footer */}
             <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-semibold text-slate-500">
-              <span>Showing 1-7 of 128 payments</span>
+              <span>
+                Showing {filteredPayments.length === 0 ? 0 : startIndex + 1}–{endIndex} of {filteredPayments.length} payments
+              </span>
               
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5 flex-wrap">
                 <button
-                  disabled={currentPage === 1}
+                  disabled={validPage === 1}
                   onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                  className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-50 cursor-pointer"
+                  className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-40 cursor-pointer"
                 >
                   Previous
                 </button>
 
-                {[1, 2, 3].map((page) => (
-                  <button
-                    key={page}
-                    onClick={() => setCurrentPage(page)}
-                    className={`w-7 h-7 rounded-xl font-bold transition-all cursor-pointer ${
-                      currentPage === page
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
-                    }`}
-                  >
-                    {page}
-                  </button>
+                {getPageNumbers().map((p, idx) => (
+                  typeof p === 'number' ? (
+                    <button
+                      key={idx}
+                      onClick={() => setCurrentPage(p)}
+                      className={`min-w-8 h-8 px-2 rounded-xl font-bold transition-all cursor-pointer ${
+                        validPage === p
+                          ? 'bg-blue-600 text-white shadow-sm'
+                          : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  ) : (
+                    <span key={idx} className="px-1 text-slate-400">...</span>
+                  )
                 ))}
 
-                <span className="px-1 text-slate-400">...</span>
-
                 <button
-                  onClick={() => setCurrentPage(13)}
-                  className={`w-7 h-7 rounded-xl font-bold transition-all cursor-pointer ${
-                    currentPage === 13
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
-                  }`}
-                >
-                  13
-                </button>
-
-                <button
-                  onClick={() => setCurrentPage(prev => prev + 1)}
-                  className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-blue-600 hover:bg-slate-50 cursor-pointer"
+                  disabled={validPage === totalPages}
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-blue-600 hover:bg-slate-50 disabled:opacity-40 cursor-pointer"
                 >
                   Next
                 </button>

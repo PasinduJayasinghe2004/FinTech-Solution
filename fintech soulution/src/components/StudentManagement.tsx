@@ -1,6 +1,7 @@
 import { logoImg } from '@/assets/logo';
 import React, { useState, useEffect } from 'react';
 import { apiService } from '../services/api';
+import { mockStudents170, StudentItem } from '../data/studentsData';
 
 interface StudentManagementProps {
   teacherName?: string;
@@ -10,29 +11,6 @@ interface StudentManagementProps {
   onNavigateToAnalytics?: () => void;
   onNavigateToNotifications?: () => void;
 }
-
-interface StudentItem {
-  id: string;
-  name: string;
-  initials: string;
-  avatarBg: string;
-  contact: string;
-  fee: string;
-  status: 'PAID' | 'PENDING' | 'OVERDUE';
-  lastPayment: string;
-  activeStatus: boolean;
-}
-
-const mockStudents: StudentItem[] = [
-  { id: 'STU-001', name: 'Kasun Perera', initials: 'K', avatarBg: 'bg-blue-600', contact: 'kasun@email.com', fee: 'Rs. 3,000', status: 'PAID', lastPayment: 'Sep 04, 2026', activeStatus: true },
-  { id: 'STU-002', name: 'Nimal Silva', initials: 'N', avatarBg: 'bg-emerald-600', contact: 'nimal@email.com', fee: 'Rs. 3,000', status: 'PENDING', lastPayment: 'Aug 10, 2026', activeStatus: true },
-  { id: 'STU-003', name: 'Amal Fernando', initials: 'A', avatarBg: 'bg-purple-600', contact: 'amal@email.com', fee: 'Rs. 3,000', status: 'OVERDUE', lastPayment: 'Jul 15, 2026', activeStatus: true },
-  { id: 'STU-018', name: 'Dilani Jayasuriya', initials: 'D', avatarBg: 'bg-pink-600', contact: 'dilani@email.com', fee: 'Rs. 3,500', status: 'PAID', lastPayment: 'Sep 01, 2026', activeStatus: true },
-  { id: 'STU-024', name: 'Sanduni Rathnayake', initials: 'S', avatarBg: 'bg-orange-500', contact: 'sanduni@email.com', fee: 'Rs. 3,000', status: 'PENDING', lastPayment: 'Aug 12, 2026', activeStatus: true },
-  { id: 'STU-037', name: 'Tharindu Bandara', initials: 'T', avatarBg: 'bg-cyan-600', contact: 'tharindu@email.com', fee: 'Rs. 2,500', status: 'OVERDUE', lastPayment: 'Jul 02, 2026', activeStatus: true },
-  { id: 'STU-041', name: 'Ishara Gunawardena', initials: 'I', avatarBg: 'bg-indigo-600', contact: 'ishara@email.com', fee: 'Rs. 3,000', status: 'PAID', lastPayment: 'Sep 03, 2026', activeStatus: true },
-  { id: 'STU-052', name: 'Hiruni Wickramasinghe', initials: 'H', avatarBg: 'bg-teal-600', contact: 'hiruni@email.com', fee: 'Rs. 3,500', status: 'PAID', lastPayment: 'Sep 02, 2026', activeStatus: true },
-];
 
 export default function StudentManagement({
   teacherName = "Mr. Anil",
@@ -48,7 +26,7 @@ export default function StudentManagement({
   const [sortOption, setSortOption] = useState('recently_added');
   const [currentPage, setCurrentPage] = useState(1);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [studentsList, setStudentsList] = useState<StudentItem[]>(mockStudents);
+  const [studentsList, setStudentsList] = useState<StudentItem[]>(mockStudents170);
 
   // Modals
   const [showAddStudentModal, setShowAddStudentModal] = useState(false);
@@ -108,9 +86,9 @@ export default function StudentManagement({
           };
         });
 
-        // Merge with mockStudents ensuring no duplicate IDs
+        // Merge with mockStudents170 ensuring no duplicate IDs
         const combined = [...mapped];
-        mockStudents.forEach(m => {
+        mockStudents170.forEach(m => {
           if (!combined.some(c => c.id.toUpperCase() === m.id.toUpperCase())) {
             combined.push(m);
           }
@@ -197,6 +175,54 @@ export default function StudentManagement({
     if (filterCategory === 'overdue') return matchesSearch && s.status === 'OVERDUE';
     return matchesSearch;
   });
+
+  // Sort students
+  const sortedStudents = [...filteredStudents].sort((a, b) => {
+    if (sortOption === 'name_asc') return a.name.localeCompare(b.name);
+    if (sortOption === 'fee_high') {
+      const feeA = parseInt(a.fee.replace(/[^0-9]/g, '')) || 0;
+      const feeB = parseInt(b.fee.replace(/[^0-9]/g, '')) || 0;
+      return feeB - feeA;
+    }
+    return a.id.localeCompare(b.id);
+  });
+
+  // Pagination calculations
+  const ITEMS_PER_PAGE = 10;
+  const totalPages = Math.max(1, Math.ceil(sortedStudents.length / ITEMS_PER_PAGE));
+  const validPage = Math.min(Math.max(currentPage, 1), totalPages);
+  const startIndex = (validPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, sortedStudents.length);
+  const paginatedStudents = sortedStudents.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (validPage > 3) pages.push('...');
+      const start = Math.max(2, validPage - 1);
+      const end = Math.min(totalPages - 1, validPage + 1);
+      for (let i = start; i <= end; i++) {
+        if (!pages.includes(i)) pages.push(i);
+      }
+      if (validPage < totalPages - 2) pages.push('...');
+      if (!pages.includes(totalPages)) pages.push(totalPages);
+    }
+    return pages;
+  };
+
+  // Reset pagination when category or search changes
+  const handleFilterChange = (cat: 'all' | 'active' | 'pending' | 'overdue') => {
+    setFilterCategory(cat);
+    setCurrentPage(1);
+  };
+
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
+  };
 
   // Summary card dynamic calculations
   const totalStudentsCount = studentsList.length;
@@ -326,7 +352,7 @@ export default function StudentManagement({
                 type="text"
                 placeholder="Search by student name or Student ID..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200/80 rounded-2xl text-xs font-medium text-slate-800 placeholder-slate-400 outline-none focus:border-blue-500 shadow-sm transition-all"
               />
             </div>
@@ -337,7 +363,7 @@ export default function StudentManagement({
               {/* Category Pills Filter */}
               <div className="flex items-center gap-1.5 bg-slate-100/70 p-1 rounded-2xl text-xs font-bold">
                 <button
-                  onClick={() => setFilterCategory('all')}
+                  onClick={() => handleFilterChange('all')}
                   className={`px-4 py-2 rounded-xl transition-all cursor-pointer ${
                     filterCategory === 'all' 
                       ? 'bg-white text-blue-600 shadow-sm' 
@@ -347,7 +373,7 @@ export default function StudentManagement({
                   All Students
                 </button>
                 <button
-                  onClick={() => setFilterCategory('active')}
+                  onClick={() => handleFilterChange('active')}
                   className={`px-4 py-2 rounded-xl transition-all cursor-pointer ${
                     filterCategory === 'active' 
                       ? 'bg-white text-blue-600 shadow-sm' 
@@ -357,7 +383,7 @@ export default function StudentManagement({
                   Active
                 </button>
                 <button
-                  onClick={() => setFilterCategory('pending')}
+                  onClick={() => handleFilterChange('pending')}
                   className={`px-4 py-2 rounded-xl transition-all cursor-pointer ${
                     filterCategory === 'pending' 
                       ? 'bg-white text-blue-600 shadow-sm' 
@@ -367,7 +393,7 @@ export default function StudentManagement({
                   Pending Payment
                 </button>
                 <button
-                  onClick={() => setFilterCategory('overdue')}
+                  onClick={() => handleFilterChange('overdue')}
                   className={`px-4 py-2 rounded-xl transition-all cursor-pointer ${
                     filterCategory === 'overdue' 
                       ? 'bg-white text-blue-600 shadow-sm' 
@@ -418,7 +444,7 @@ export default function StudentManagement({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-sm">
-                  {filteredStudents.map((s) => (
+                  {paginatedStudents.map((s) => (
                     <tr key={s.id} className="hover:bg-slate-50/60 transition-colors">
                       {/* Student Name & Avatar */}
                       <td className="py-4 px-6 font-bold text-slate-900">
@@ -491,47 +517,41 @@ export default function StudentManagement({
 
             {/* Pagination Footer */}
             <div className="p-4 bg-slate-50/50 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-semibold text-slate-500">
-              <span>Showing 1-{filteredStudents.length} of {totalStudentsCount} students</span>
+              <span>
+                Showing {sortedStudents.length === 0 ? 0 : startIndex + 1}–{endIndex} of {sortedStudents.length} students
+              </span>
               
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5 flex-wrap">
                 <button
-                  disabled={currentPage === 1}
+                  disabled={validPage === 1}
                   onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                  className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-50 cursor-pointer"
+                  className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-40 cursor-pointer"
                 >
                   Previous
                 </button>
 
-                {[1, 2, 3].map((page) => (
-                  <button
-                    key={page}
-                    onClick={() => setCurrentPage(page)}
-                    className={`w-7 h-7 rounded-xl font-bold transition-all cursor-pointer ${
-                      currentPage === page
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
-                    }`}
-                  >
-                    {page}
-                  </button>
+                {getPageNumbers().map((p, idx) => (
+                  typeof p === 'number' ? (
+                    <button
+                      key={idx}
+                      onClick={() => setCurrentPage(p)}
+                      className={`min-w-8 h-8 px-2 rounded-xl font-bold transition-all cursor-pointer ${
+                        validPage === p
+                          ? 'bg-blue-600 text-white shadow-sm'
+                          : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  ) : (
+                    <span key={idx} className="px-1 text-slate-400">...</span>
+                  )
                 ))}
 
-                <span className="px-1 text-slate-400">...</span>
-
                 <button
-                  onClick={() => setCurrentPage(13)}
-                  className={`w-7 h-7 rounded-xl font-bold transition-all cursor-pointer ${
-                    currentPage === 13
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
-                  }`}
-                >
-                  13
-                </button>
-
-                <button
-                  onClick={() => setCurrentPage(prev => prev + 1)}
-                  className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-blue-600 hover:bg-slate-50 cursor-pointer"
+                  disabled={validPage === totalPages}
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-blue-600 hover:bg-slate-50 disabled:opacity-40 cursor-pointer"
                 >
                   Next
                 </button>

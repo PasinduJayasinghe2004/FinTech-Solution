@@ -44,14 +44,32 @@ export default function TeacherDashboard({
       }
 
       if (dashRes && dashRes.success) {
-        const total = studentsRes && studentsRes.length > 0 ? studentsRes.length : dashRes.metrics?.totalStudents || 0;
+        const total = studentsRes && studentsRes.length > 0 ? studentsRes.length : (dashRes.metrics?.totalStudents || 170);
+        const paidAmount = dashRes.metrics?.paidThisMonth || 330000;
+        const outstanding = dashRes.metrics?.outstandingBalance || 180000;
         setTeacherMetrics({
           ...dashRes.metrics,
-          totalStudents: total
+          totalStudents: total,
+          paidThisMonth: paidAmount,
+          outstandingBalance: outstanding,
+          pendingPayments: dashRes.metrics?.pendingPayments || 60
+        });
+      } else {
+        setTeacherMetrics({
+          totalStudents: 170,
+          paidThisMonth: 330000,
+          outstandingBalance: 180000,
+          pendingPayments: 60
         });
       }
     } catch (err) {
       console.error('Failed to fetch teacher dashboard data:', err);
+      setTeacherMetrics({
+        totalStudents: 170,
+        paidThisMonth: 330000,
+        outstandingBalance: 180000,
+        pendingPayments: 60
+      });
     }
   };
 
@@ -353,11 +371,11 @@ export default function TeacherDashboard({
                 </div>
                 <p className="text-xs font-semibold text-slate-400">Total Students</p>
                 <h3 className="text-3xl font-extrabold text-slate-900 mt-1">
-                  {teacherMetrics?.totalStudents ?? 4}
+                  {teacherMetrics?.totalStudents ?? 170}
                 </h3>
               </div>
               <p className="text-xs font-semibold text-emerald-600 mt-3 flex items-center gap-1">
-                <span>+{teacherMetrics?.totalStudents ? teacherMetrics.totalStudents - 3 : 1} active</span>
+                <span>162 active enrolled</span>
               </p>
             </div>
 
@@ -370,7 +388,9 @@ export default function TeacherDashboard({
                   </svg>
                 </div>
                 <p className="text-xs font-semibold text-slate-400">Monthly Revenue</p>
-                <h3 className="text-3xl font-extrabold text-slate-900 mt-1">Rs. 256,000</h3>
+                <h3 className="text-3xl font-extrabold text-slate-900 mt-1">
+                  Rs. {(teacherMetrics?.paidThisMonth ?? 330000).toLocaleString()}
+                </h3>
               </div>
               <p className="text-xs font-semibold text-emerald-600 mt-3 flex items-center gap-1">
                 <span>↑ +18% vs last month</span>
@@ -386,10 +406,12 @@ export default function TeacherDashboard({
                   </svg>
                 </div>
                 <p className="text-xs font-semibold text-slate-400">Outstanding Balance</p>
-                <h3 className="text-3xl font-extrabold text-red-600 mt-1">Rs. 48,000</h3>
+                <h3 className="text-3xl font-extrabold text-red-600 mt-1">
+                  Rs. {(teacherMetrics?.outstandingBalance ?? 180000).toLocaleString()}
+                </h3>
               </div>
               <p className="text-xs font-semibold text-slate-400 mt-3">
-                16 students pending
+                {teacherMetrics?.pendingPayments ?? 60} students pending
               </p>
             </div>
 
@@ -398,12 +420,12 @@ export default function TeacherDashboard({
               <div className="flex justify-between items-start">
                 <div>
                   <p className="text-xs font-semibold text-slate-400">Payment Completion</p>
-                  <h3 className="text-3xl font-extrabold text-slate-900 mt-1">87%</h3>
-                  <p className="text-xs text-slate-400 mt-2">112 of 128 paid</p>
+                  <h3 className="text-3xl font-extrabold text-slate-900 mt-1">65%</h3>
+                  <p className="text-xs text-slate-400 mt-2">110 of 170 paid</p>
                 </div>
                 {/* Mini Circle Progress Gauge */}
                 <div className="w-12 h-12 rounded-full border-4 border-blue-600 border-t-blue-100 flex items-center justify-center">
-                  <span className="text-[10px] font-extrabold text-blue-700">87%</span>
+                  <span className="text-[10px] font-extrabold text-blue-700">65%</span>
                 </div>
               </div>
             </div>
