@@ -57,6 +57,15 @@ export default function StudentDashboard({
 
   const currentStudentId = storedUser?.studentId || dbData?.student?.studentUniqueId || 'STU-001';
 
+  const getValidName = () => {
+    if (storedUser?.name && storedUser.name !== 'New Student') return storedUser.name;
+    if (dbData?.student?.name && dbData.student.name !== 'New Student' && dbData.student.name !== 'Pasindu Jayasinghe') return dbData.student.name;
+    if (studentName && studentName !== 'New Student' && studentName !== 'Pasindu') return studentName;
+    return storedUser?.name || dbData?.student?.name || studentName || 'Student User';
+  };
+
+  const currentStudentName = getValidName();
+
   // Filter local payments to only this student's payments
   const userLocalPayments = localPayments.filter(p =>
     !p.studentId || p.studentId === currentStudentId || p.studentName === currentStudentName
@@ -67,14 +76,6 @@ export default function StudentDashboard({
   const localPaidSep = userLocalPayments.some(p => p.month === 'September 2026' || p.status === 'PAID');
   const hasPaidSep = backendPaid || localPaidSep;
 
-  const getValidName = () => {
-    if (storedUser?.name && storedUser.name !== 'New Student') return storedUser.name;
-    if (dbData?.student?.name && dbData.student.name !== 'New Student' && dbData.student.name !== 'Pasindu Jayasinghe') return dbData.student.name;
-    if (studentName && studentName !== 'New Student' && studentName !== 'Pasindu') return studentName;
-    return storedUser?.name || dbData?.student?.name || studentName || 'Student User';
-  };
-
-  const currentStudentName = getValidName();
   const summary = {
     currentPayment: hasPaidSep ? 0 : (dbData?.summary?.currentPayment ?? 3000),
     outstandingBalance: hasPaidSep ? 0 : (dbData?.summary?.outstandingBalance ?? 3000),
