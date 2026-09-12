@@ -21,6 +21,14 @@ export default function StudentDashboard({
   const [selectedMethod, setSelectedMethod] = useState<'card' | 'bank' | 'qr'>('card');
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [dbData, setDbData] = useState<any>(null);
+  
+  // Feedback Modal States
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [fbRating, setFbRating] = useState(5);
+  const [fbComment, setFbComment] = useState('');
+  const [fbTeacherId, setFbTeacherId] = useState('usr_tch_lahiru');
+  const [feedbackToast, setFeedbackToast] = useState<string | null>(null);
+
   const [storedUser, setStoredUser] = useState<any>(() => {
     try {
       const saved = localStorage.getItem('ria_user');
@@ -153,6 +161,35 @@ export default function StudentDashboard({
     }, 2000);
   };
 
+  const handleFeedbackSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!fbComment.trim()) return;
+
+    const newFeedback = {
+      id: 'fb_' + Date.now(),
+      studentName: currentStudentName,
+      studentId: currentStudentId,
+      teacherId: fbTeacherId,
+      rating: fbRating,
+      comment: fbComment,
+      date: new Date().toISOString().split('T')[0],
+      subject: 'Batch Fee System & Class Experience',
+      verified: true
+    };
+
+    try {
+      const existing = JSON.parse(localStorage.getItem('ria_student_feedbacks') || '[]');
+      localStorage.setItem('ria_student_feedbacks', JSON.stringify([newFeedback, ...existing]));
+    } catch (err) {
+      console.error('Failed to save feedback:', err);
+    }
+
+    setShowFeedbackModal(false);
+    setFbComment('');
+    setFeedbackToast('Thank you! Your feedback has been submitted successfully.');
+    setTimeout(() => setFeedbackToast(null), 4000);
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 flex font-sans antialiased text-slate-900">
       
@@ -281,6 +318,15 @@ export default function StudentDashboard({
           </div>
 
           <div className="flex items-center gap-3">
+            {/* Give Feedback Button */}
+            <button
+              onClick={() => setShowFeedbackModal(true)}
+              className="px-3.5 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-xs rounded-xl shadow-md shadow-amber-500/20 flex items-center gap-1.5 transition-all cursor-pointer"
+            >
+              <span>⭐</span>
+              <span>Give Feedback</span>
+            </button>
+
             {/* Notification Bell */}
             <div className="relative">
               <button 
@@ -647,6 +693,102 @@ export default function StudentDashboard({
                 </button>
               </form>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Feedback Toast Notification */}
+      {feedbackToast && (
+        <div className="fixed bottom-6 right-6 z-50 bg-emerald-600 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 animate-bounce">
+          <span className="text-xl">🌟</span>
+          <p className="text-xs font-bold">{feedbackToast}</p>
+        </div>
+      )}
+
+      {/* Feedback Submission Modal */}
+      {showFeedbackModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-slate-100 relative animate-fade-in">
+            <div className="flex justify-between items-center mb-4">
+              <div>
+                <h3 className="text-lg font-bold text-slate-900">Submit Teacher Feedback</h3>
+                <p className="text-xs text-slate-500">Share your class experience & system feedback</p>
+              </div>
+              <button 
+                onClick={() => setShowFeedbackModal(false)}
+                className="text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-sm font-bold cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleFeedbackSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Select Faculty Teacher</label>
+                <select 
+                  value={fbTeacherId}
+                  onChange={(e) => setFbTeacherId(e.target.value)}
+                  className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800"
+                >
+                  <option value="usr_tch_lahiru">Mr. Lahiru Dombawalage (Lead Fintech & AL Physics)</option>
+                  <option value="usr_tch_ranil">Mr. Ranil Fernando (Combined Mathematics)</option>
+                  <option value="usr_tch_lakshan">Mr. Lakshan Fernando (ICT & Tech Stack)</option>
+                  <option value="usr_tch_ishan">Mr. Ishan Darshana (Chemistry & Science)</option>
+                  <option value="usr_tch_suranga">Mr. Suranga Hettiarachchi (Business & Finance)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Your Rating</label>
+                <div className="flex gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setFbRating(star)}
+                      className={`text-2xl transition-transform hover:scale-110 cursor-pointer ${star <= fbRating ? 'text-amber-400' : 'text-slate-200'}`}
+                    >
+                      ★
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">Your Feedback / Review</label>
+                <textarea
+                  required
+                  rows={4}
+                  value={fbComment}
+                  onChange={(e) => setFbComment(e.target.value)}
+                  placeholder="Write your genuine feedback about the course, teacher, or payment portal experience..."
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-blue-500"
+                />
+              </div>
+
+              <div className="p-3 bg-blue-50 rounded-xl border border-blue-100 flex items-center gap-2">
+                <span className="text-blue-600 text-sm">💡</span>
+                <p className="text-[11px] text-blue-800 font-medium">
+                  Submitting as: <strong>{currentStudentName}</strong> ({currentStudentId})
+                </p>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowFeedbackModal(false)}
+                  className="flex-1 py-2.5 bg-slate-100 text-slate-700 font-semibold text-xs rounded-xl hover:bg-slate-200 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-xs rounded-xl shadow-lg shadow-blue-500/25 hover:from-blue-700 hover:to-indigo-700 cursor-pointer"
+                >
+                  Submit Feedback
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

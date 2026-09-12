@@ -5,6 +5,7 @@ import PaymentManagement from './PaymentManagement';
 import AnalyticsDashboard from './AnalyticsDashboard';
 import NotificationsPage from './NotificationsPage';
 import TeacherProfilePage from './TeacherProfilePage';
+import TeacherFeedbackPage from './TeacherFeedbackPage';
 import { apiService } from '../services/api';
 
 interface TeacherDashboardProps {
@@ -13,10 +14,10 @@ interface TeacherDashboardProps {
 }
 
 export default function TeacherDashboard({
-  teacherName = "Dr. Wickramasinghe",
+  teacherName = "Lahiru Dombawalage",
   onLogout
 }: TeacherDashboardProps) {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'students' | 'payments' | 'analytics' | 'notifications' | 'settings'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'students' | 'payments' | 'analytics' | 'notifications' | 'feedback' | 'settings'>('dashboard');
   const [teacherMetrics, setTeacherMetrics] = useState<any>(null);
   const [analyticsData, setAnalyticsData] = useState<any>(null);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -211,6 +212,15 @@ export default function TeacherDashboard({
                   </svg>
                 )
               },
+              {
+                id: 'feedback',
+                label: 'Student Feedback',
+                icon: (
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                )
+              },
             ].map((item) => {
               const isActive = activeTab === item.id;
               return (
@@ -368,7 +378,8 @@ export default function TeacherDashboard({
             />
           )}
           {activeTab === 'notifications' && <NotificationsPage />}
-          {activeTab === 'settings' && <TeacherProfilePage teacherName={teacherName} />}
+          {activeTab === 'feedback' && <TeacherFeedbackPage teacherName={currentTeacherName} />}
+          {activeTab === 'settings' && <TeacherProfilePage teacherName={currentTeacherName} />}
 
           {activeTab === 'dashboard' && (
             <>

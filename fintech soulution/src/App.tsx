@@ -4,6 +4,7 @@ import { heroVideo } from '@/assets/heroVideo';
 import LoginPage from './components/LoginPage';
 import StudentDashboard from './components/StudentDashboard';
 import TeacherDashboard from './components/TeacherDashboard';
+import StudentFeedbackBanner from './components/StudentFeedbackBanner';
 
 const SESSION_KEY = 'ria_view';
 
@@ -123,7 +124,7 @@ export default function App() {
           Streamlining private tuition management & fee payments with modern automated clarity.
         </p>
 
-        <div className="flex flex-col sm:flex-row items-center gap-5 w-full justify-center max-w-md">
+        <div className="flex flex-col sm:flex-row items-center gap-5 w-full justify-center max-w-md mb-4">
           <button
             onClick={() => handleOpenLogin('student')}
             className="w-full sm:w-auto px-8 py-4 rounded-2xl text-base font-bold text-white bg-blue-600 hover:bg-blue-500 shadow-xl shadow-blue-600/30 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-3"
@@ -144,6 +145,9 @@ export default function App() {
             </svg>
           </button>
         </div>
+
+        {/* Dynamic Student Feedback Showcase Banner */}
+        <StudentFeedbackBanner />
       </main>
 
       {/* Clean Footer */}
