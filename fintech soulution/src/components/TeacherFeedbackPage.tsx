@@ -21,11 +21,11 @@ export const MOCK_FEEDBACKS: FeedbackItem[] = [
     studentId: 'STU-001',
     teacherId: 'usr_tch_lahiru',
     teacherName: 'Lahiru Dombawalage',
-    subject: 'Combined Mathematics & Science',
+    subject: 'Combined Mathematics & Physics',
     rating: 5,
-    comment: 'The 3DS online fee payment and instant LMS lecture video access is super smooth! Prof. Lahiru explains complex calculus concepts very clearly.',
+    comment: 'ලහිරු සර්ගේ Combined Maths සහ Physics පන්තිය ඉතා පැහැදිලියි. Online ගෙවීම් පද්ධතිය මගින් තත්පර කිහිපයකින් LMS Video Access සක්‍රිය වීම ඉතා පහසුයි!',
     date: 'Sep 12, 2026',
-    reply: 'Thank you Pasindu! Keep up the great work in revision sessions.'
+    reply: 'බොහොම ස්තූතියි පසිඳු! Revision පන්ති වල වැඩත් හොඳින් කරගෙන යමු.'
   },
   {
     id: 'fb_2',
@@ -33,11 +33,11 @@ export const MOCK_FEEDBACKS: FeedbackItem[] = [
     studentId: 'STU-012',
     teacherId: 'usr_tch_ranil',
     teacherName: 'Ranil Fernando',
-    subject: 'English & TEFL Courses',
+    subject: 'Combined Mathematics',
     rating: 5,
-    comment: 'Great English grammar and speaking tutorials. PayHere card checkout makes monthly tuition payments effortless.',
+    comment: 'රනිල් සර්ගේ Combined Maths පාඩම් සහ Past Papers විසඳන ආකාරය ගොඩක් හොදට තේරෙනවා. Online Card Payment එකත් ඉතාම ආරක්ෂිතයි.',
     date: 'Sep 10, 2026',
-    reply: 'Appreciate your feedback Kavindu!'
+    reply: 'ස්තූතියි කවිඳු! Paper class එකටත් දිගටම සම්බන්ධ වෙන්න.'
   },
   {
     id: 'fb_3',
@@ -45,10 +45,11 @@ export const MOCK_FEEDBACKS: FeedbackItem[] = [
     studentId: 'STU-024',
     teacherId: 'usr_tch_lakshan',
     teacherName: 'Lakshan Fernando',
-    subject: 'IT & Software Education',
+    subject: 'ICT & Software Technology',
     rating: 5,
-    comment: 'Awesome practical coding tutorials. LMS instant unblocking right after LankaQR payment works seamlessly.',
-    date: 'Sep 08, 2026'
+    comment: 'ලක්ෂාන් සර්ගේ ICT පන්තිය සිරාමයි! Practical කොටස් සහ Coding පැහැදිලිව කියලා දෙනවා. Fintech portal එක නිසා Class Fee ගෙවන එක හරිම ලේසියි.',
+    date: 'Sep 08, 2026',
+    reply: 'Great work Amaya! Keep coding!'
   },
   {
     id: 'fb_4',
@@ -56,10 +57,11 @@ export const MOCK_FEEDBACKS: FeedbackItem[] = [
     studentId: 'STU-038',
     teacherId: 'usr_tch_ishan',
     teacherName: 'Ishan Darshana',
-    subject: 'Commerce & Accounting',
+    subject: 'Chemistry & Science',
     rating: 4,
-    comment: 'Accounting past paper explanations are top notch. Very clear breakdown of financial statements.',
-    date: 'Sep 05, 2026'
+    comment: 'ඉෂාන් සර්ගේ Chemistry Class එක නියමයි. Physical Chemistry Equation පාඩම් සරලව තේරුම් ගන්න පුළුවන්. Past Paper explanations top notch!',
+    date: 'Sep 05, 2026',
+    reply: 'Thanks Kasun! Keep practicing the past papers.'
   },
   {
     id: 'fb_5',
@@ -67,10 +69,22 @@ export const MOCK_FEEDBACKS: FeedbackItem[] = [
     studentId: 'STU-051',
     teacherId: 'usr_tch_suranga',
     teacherName: 'Suranga Hettiarachchi',
-    subject: 'Sinhala & Sri Lankan History',
+    subject: 'Commerce & Finance',
     rating: 5,
-    comment: 'Excellent essay writing guidelines for Sri Lankan History syllabus. Extremely helpful portal!',
-    date: 'Sep 02, 2026'
+    comment: 'සුරංග සර්ගේ Business & Finance පන්තිය ඉතාමත් විශිෂ්ටයි. Accounting & Finance පාඩම් සරලව සහ පැහැදිලිව කියලා දෙනවා. ස්තූතියි සර්!',
+    date: 'Sep 02, 2026',
+    reply: 'ස්තූතියි දිලානි! විභාගයට හොඳින් සූදානම් වෙන්න.'
+  },
+  {
+    id: 'fb_6',
+    studentName: 'Pasindu Jayasinghe',
+    studentId: 'STU-001',
+    teacherId: 'usr_tch_lakshan',
+    teacherName: 'Lakshan Fernando',
+    subject: 'ICT & Web Development',
+    rating: 5,
+    comment: 'Web Development & Fintech portal features are amazing. instant payment verification and OTP security features work flawlessly!',
+    date: 'Aug 28, 2026'
   }
 ];
 
