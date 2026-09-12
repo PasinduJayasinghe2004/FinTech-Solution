@@ -27,10 +27,10 @@ export const login = (req: Request, res: Response) => {
       student = db.addStudent({
         userId: `usr_${Date.now()}`,
         teacherId: 'usr_tch_1',
-        name: 'New Student',
+        name: 'Pasindu Jayasinghe',
         email: `${idOrEmail.toLowerCase()}@ria.com`,
         subject: 'Combined Mathematics',
-        phone: '+94 77 000 0000',
+        phone: '+94 77 123 4567',
         status: 'ACTIVE',
       });
       // Override unique ID to match requested generated ID if format is STU-xxx

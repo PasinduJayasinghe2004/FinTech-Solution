@@ -49,8 +49,15 @@ export default function StudentDashboard({
 
   const hasPaidSep = localPayments.some(p => p.month === 'September 2026' || p.status === 'PAID');
 
-  const currentStudentName = dbData?.student?.name || storedUser?.name || studentName;
-  const currentStudentId = dbData?.student?.studentUniqueId || storedUser?.studentId || 'STU-001';
+  const getValidName = () => {
+    if (storedUser?.name && storedUser.name !== 'New Student') return storedUser.name;
+    if (dbData?.student?.name && dbData.student.name !== 'New Student') return dbData.student.name;
+    if (studentName && studentName !== 'New Student') return studentName;
+    return 'Pasindu Jayasinghe';
+  };
+
+  const currentStudentName = getValidName();
+  const currentStudentId = storedUser?.studentId || dbData?.student?.studentUniqueId || 'STU-001';
   const summary = {
     currentPayment: hasPaidSep ? 0 : (dbData?.summary?.currentPayment ?? 3000),
     outstandingBalance: hasPaidSep ? 0 : (dbData?.summary?.outstandingBalance ?? 3000),

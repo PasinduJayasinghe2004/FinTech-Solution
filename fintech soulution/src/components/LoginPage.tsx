@@ -43,6 +43,17 @@ export default function LoginPage({ onBackToHome, onLoginSuccess, initialRole = 
         return;
       }
 
+      if (response.user) {
+        const u = response.user;
+        const validName = (u.name && u.name !== 'New Student') ? u.name : 'Pasindu Jayasinghe';
+        const updatedUser = {
+          ...u,
+          name: validName,
+          studentId: u.studentId || idOrEmail.toUpperCase()
+        };
+        localStorage.setItem('ria_user', JSON.stringify(updatedUser));
+      }
+
       if (onLoginSuccess) {
         onLoginSuccess(role);
       }
@@ -81,6 +92,13 @@ export default function LoginPage({ onBackToHome, onLoginSuccess, initialRole = 
 
     if (role === 'teacher') {
       const teacherEmail = result.teacher?.email || regEmail;
+      localStorage.setItem('ria_user', JSON.stringify({
+        name: fullName,
+        email: teacherEmail,
+        role: 'ROLE_TEACHER',
+        phone,
+        subject
+      }));
       setRegisterSuccessMsg(`Teacher account created in database for ${fullName}! You can now log in using email: ${teacherEmail}`);
       setTimeout(() => {
         setMode('login');
@@ -90,6 +108,14 @@ export default function LoginPage({ onBackToHome, onLoginSuccess, initialRole = 
       }, 2500);
     } else {
       const assignedId = result.student?.studentUniqueId || `STU-${Math.floor(100 + Math.random() * 900)}`;
+      localStorage.setItem('ria_user', JSON.stringify({
+        name: fullName || 'Pasindu Jayasinghe',
+        email: regEmail,
+        role: 'ROLE_STUDENT',
+        studentId: assignedId,
+        phone,
+        subject
+      }));
       setRegisterSuccessMsg(`Student account created in database! Assigned Student ID: ${assignedId}. You can now log in.`);
       setTimeout(() => {
         setMode('login');
