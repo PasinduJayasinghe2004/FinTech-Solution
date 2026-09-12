@@ -40,7 +40,18 @@ export default function StudentPaymentHistory({
 }: StudentPaymentHistoryProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'PAID' | 'OVERDUE'>('ALL');
-  const [historyList, setHistoryList] = useState<PaymentRecord[]>(mockHistory);
+  const [historyList, setHistoryList] = useState<PaymentRecord[]>([]);
+
+  const [storedUser] = useState<any>(() => {
+    try {
+      const saved = localStorage.getItem('ria_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  const currentStudentId = storedUser?.studentId || 'STU-NEW';
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -49,15 +60,17 @@ export default function StudentPaymentHistory({
         const stored = localStorage.getItem('ria_local_payments');
         if (stored) {
           const parsed = JSON.parse(stored);
-          localRecords = parsed.map((p: any) => ({
-            id: p.id,
-            month: p.month,
-            date: p.date || 'Today',
-            amount: p.amount,
-            method: p.method,
-            status: 'PAID',
-            receiptNo: p.receiptNo || 'TP-8841',
-          }));
+          localRecords = parsed
+            .filter((p: any) => !p.studentId || p.studentId === currentStudentId || p.studentName === studentName)
+            .map((p: any) => ({
+              id: p.id,
+              month: p.month,
+              date: p.date || 'Today',
+              amount: p.amount,
+              method: p.method,
+              status: 'PAID',
+              receiptNo: p.receiptNo || 'TP-8841',
+            }));
         }
       } catch (e) {
         console.error(e);
@@ -65,7 +78,7 @@ export default function StudentPaymentHistory({
 
       try {
         const res = await apiService.getPaymentHistory();
-        if (res && res.success && Array.isArray(res.payments) && res.payments.length > 0) {
+        if (res && res.success && Array.isArray(res.payments)) {
           const mapped: PaymentRecord[] = res.payments.map((p: any) => ({
             id: p.id,
             month: p.month,
@@ -82,25 +95,35 @@ export default function StudentPaymentHistory({
               combined.push(m);
             }
           });
-          setHistoryList(combined);
+
+          // Only show mock history if this is the original STU-001 demo student
+          if (combined.length === 0 && currentStudentId === 'STU-001') {
+            setHistoryList(mockHistory);
+          } else {
+            setHistoryList(combined);
+          }
           return;
         }
       } catch (err) {
         console.error(err);
       }
 
-      // Fallback
-      const combinedMock = [...localRecords];
-      mockHistory.forEach((m) => {
-        if (!combinedMock.some((c) => c.id === m.id || (c.month === m.month && c.status === m.status))) {
-          combinedMock.push(m);
-        }
-      });
-      setHistoryList(combinedMock);
+      // Fallback for STU-001 demo student or local records
+      if (currentStudentId === 'STU-001') {
+        const combinedMock = [...localRecords];
+        mockHistory.forEach((m) => {
+          if (!combinedMock.some((c) => c.id === m.id || (c.month === m.month && c.status === m.status))) {
+            combinedMock.push(m);
+          }
+        });
+        setHistoryList(combinedMock);
+      } else {
+        setHistoryList(localRecords);
+      }
     };
 
     fetchHistory();
-  }, []);
+  }, [currentStudentId, studentName]);
 
   const filteredHistory = historyList.filter((item) => {
     const matchesSearch = item.month.toLowerCase().includes(searchQuery.toLowerCase()) || item.receiptNo.toLowerCase().includes(searchQuery.toLowerCase());

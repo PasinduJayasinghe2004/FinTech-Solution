@@ -127,6 +127,7 @@ export default function LoginPage({ onBackToHome, onLoginSuccess, initialRole = 
 
       // Save user session and register in local database index
       localStorage.setItem('ria_user', JSON.stringify(newStudentObj));
+      localStorage.removeItem('ria_local_payments');
       try {
         const regMap = JSON.parse(localStorage.getItem('ria_registered_users') || '{}');
         regMap[assignedId.toUpperCase()] = newStudentObj;

@@ -74,12 +74,9 @@ export default function StudentDashboard({
     dueDate: dbData?.summary?.dueDate || 'September 15, 2026'
   };
 
-  const rawRecent = dbData?.recentPayments ?? [
-    { id: '1', date: 'Aug 10, 2026', month: 'August 2026', amount: 3000, status: 'Paid', method: 'Card' },
-    { id: '2', date: 'Jul 12, 2026', month: 'July 2026', amount: 3000, status: 'Paid', method: 'Bank Transfer' },
-  ];
+  const userLocalPayments = localPayments.filter(p => !p.studentId || p.studentId === currentStudentId || p.studentName === currentStudentName);
 
-  const mappedLocal = localPayments.map(p => ({
+  const mappedLocal = userLocalPayments.map(p => ({
     id: p.id,
     date: p.date,
     month: p.month,
@@ -88,7 +85,14 @@ export default function StudentDashboard({
     method: p.method
   }));
 
-  const recentPayments = [...mappedLocal, ...rawRecent];
+  const rawRecent = dbData?.recentPayments || [];
+  const recentPayments = (currentStudentId === 'STU-001' && mappedLocal.length === 0 && rawRecent.length === 0)
+    ? [
+        { id: '1', date: 'Aug 10, 2026', month: 'August 2026', amount: 3000, status: 'Paid', method: 'Card' },
+        { id: '2', date: 'Jul 12, 2026', month: 'July 2026', amount: 3000, status: 'Paid', method: 'Bank Transfer' },
+      ]
+    : [...mappedLocal, ...rawRecent];
+
   const userNotifications = dbData?.notifications || [];
 
   if (activeTab === 'payments') {
