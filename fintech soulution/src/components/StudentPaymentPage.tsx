@@ -1,6 +1,7 @@
 import { logoImg } from '@/assets/logo';
 import React, { useState } from 'react';
 import { apiService } from '../services/api';
+import { RIA_TEACHERS } from './StudentProfilePage';
 
 interface StudentPaymentPageProps {
   studentName?: string;
@@ -19,10 +20,30 @@ export default function StudentPaymentPage({
   onNavigateToNotifications,
   onNavigateToProfile,
 }: StudentPaymentPageProps) {
+  const [storedUser] = useState<any>(() => {
+    try {
+      const saved = localStorage.getItem('ria_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+
   const [step, setStep] = useState<'summary' | 'gateway' | 'otp' | 'success'>('summary');
   const [selectedMethod, setSelectedMethod] = useState<'card' | 'qr'>('card');
-  const [amount, setAmount] = useState('3000');
+  const [selectedTeacherId, setSelectedTeacherId] = useState<string>(storedUser?.teacherId || RIA_TEACHERS[0].id);
+  
+  const currentTeacher = RIA_TEACHERS.find(t => t.id === selectedTeacherId) || RIA_TEACHERS[0];
+  const [amount, setAmount] = useState(String(currentTeacher.fee));
   const [month, setMonth] = useState('September 2026');
+
+  const handleTeacherChange = (tId: string) => {
+    setSelectedTeacherId(tId);
+    const found = RIA_TEACHERS.find(t => t.id === tId);
+    if (found) {
+      setAmount(String(found.fee));
+    }
+  };
   
   // Card details state for 3DS summary
   const [cardNumber, setCardNumber] = useState('');
@@ -180,16 +201,34 @@ export default function StudentPaymentPage({
             <div className="lg:col-span-2 space-y-6">
               
               {/* Detailed Invoice Header Banner Card */}
-              <div className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm relative overflow-hidden">
+              <div className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm relative overflow-hidden space-y-6">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl pointer-events-none" />
                 
+                {/* 5 Teachers Select Dropdown Box */}
+                <div className="bg-blue-50/70 border border-blue-200/80 rounded-2xl p-4">
+                  <label className="block text-xs font-extrabold text-blue-950 uppercase tracking-wider mb-1.5">
+                    Select Enrolled Teacher & Subject Fee:
+                  </label>
+                  <select
+                    value={selectedTeacherId}
+                    onChange={(e) => handleTeacherChange(e.target.value)}
+                    className="w-full px-4 py-2.5 bg-white border border-blue-300 text-xs font-bold text-slate-900 rounded-xl outline-none focus:ring-2 focus:ring-blue-600 shadow-2xs"
+                  >
+                    {RIA_TEACHERS.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.name} — {t.subject} (Rs. {t.fee.toLocaleString()})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
                 <div className="flex items-start justify-between flex-wrap gap-4 pb-6 border-b border-slate-100">
                   <div>
                     <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200/60 mb-2">
                       <span className="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5 animate-pulse" />
                       Pending Payment
                     </span>
-                    <h3 className="text-xl font-bold text-slate-900 tracking-tight">Combined Mathematics 2026</h3>
+                    <h3 className="text-xl font-bold text-slate-900 tracking-tight">{currentTeacher.subject}</h3>
                     <p className="text-xs text-slate-500 mt-1">Invoice Ref: <span className="font-mono font-bold text-slate-700">#INV-2026-0982</span></p>
                   </div>
 
@@ -201,16 +240,16 @@ export default function StudentPaymentPage({
                 </div>
 
                 {/* Student & Class Info Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-6">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-2">
                   <div>
                     <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Student Name</p>
-                    <p className="text-sm font-bold text-slate-800 mt-0.5">{studentName}</p>
-                    <p className="text-[10px] text-slate-400">ID: STU-2026-8841</p>
+                    <p className="text-sm font-bold text-slate-800 mt-0.5">{storedUser?.name || studentName}</p>
+                    <p className="text-[10px] text-slate-400">ID: {storedUser?.studentId || 'STU-2026-8841'}</p>
                   </div>
                   <div>
-                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Instructor</p>
-                    <p className="text-sm font-bold text-slate-800 mt-0.5">Prof. Aruna Silva</p>
-                    <p className="text-[10px] text-slate-400">Department of Mathematics</p>
+                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Instructor / Lecturer</p>
+                    <p className="text-sm font-bold text-slate-800 mt-0.5">{currentTeacher.name}</p>
+                    <p className="text-[10px] text-slate-400">{currentTeacher.phone}</p>
                   </div>
                   <div>
                     <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Schedule</p>
@@ -232,10 +271,10 @@ export default function StudentPaymentPage({
                 <div className="divide-y divide-slate-100 text-xs">
                   <div className="py-3 flex justify-between items-center">
                     <div>
-                      <p className="font-bold text-slate-800">Monthly Tuition Fee - September 2026</p>
-                      <p className="text-[11px] text-slate-500">Advanced Level Theory & Revision Sessions</p>
+                      <p className="font-bold text-slate-800">{currentTeacher.subject} Fee - September 2026</p>
+                      <p className="text-[11px] text-slate-500">Lecturer: {currentTeacher.name}</p>
                     </div>
-                    <span className="font-bold text-slate-900">Rs. 3,000.00</span>
+                    <span className="font-bold text-slate-900">Rs. {Number(amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
                   </div>
 
                   <div className="py-3 flex justify-between items-center">
